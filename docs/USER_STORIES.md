@@ -143,3 +143,20 @@ Acceptance criteria:
    message that names the native alternative.
 3. Methods only available in tempify fail with an informative message under
    the native engine.
+
+## US-09 Protection against common input mistakes
+
+As an **agronomist**, I want the package to stop with a clear message when
+my inputs are inconsistent, instead of silently producing numbers, so that
+data errors do not reach my reports.
+
+Acceptance criteria:
+
+1. Swapped extremes (`tmin > tmax`) are reported with the position of the
+   first problem and are never corrected silently.
+2. The data frequency is never guessed from the number of values: daily data
+   passed as monthly, gaps in dates, or hourly series of the wrong length
+   are rejected.
+3. Monthly rasters with scaled values (for example degrees x 10, as in
+   WorldClim 1.4) or mismatched masks are flagged by
+   `check_monthly_climate()`.

@@ -1,19 +1,64 @@
-name: R CMD check
+name: R-CMD-check
 
 on:
   push:
+    branches: [main]
   pull_request:
+
+permissions: read-all
 
 jobs:
   R-CMD-check:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.config.os }}
+    name: ${{ matrix.config.os }} (${{ matrix.config.r }})
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {os: ubuntu-latest, r: 'release'}
+          - {os: ubuntu-latest, r: 'oldrel-1'}
+          - {os: windows-latest, r: 'release'}
+          - {os: macos-latest, r: 'release'}
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      R_KEEP_PKG_SOURCE: yes
     steps:
       - uses: actions/checkout@v4
+      - uses: r-lib/actions/setup-pandoc@v2
       - uses: r-lib/actions/setup-r@v2
         with:
+          r-version: ${{ matrix.config.r }}
           use-public-rspm: true
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::rcmdcheck
           needs: check
       - uses: r-lib/actions/check-r-package@v2
+        with:
+          upload-snapshots: true
+
+  tempify:
+    # Integration tests against the Python backend.
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install tempify
+        run: |
+          python -m venv "$HOME/.virtualenvs/thermify"
+          "$HOME/.virtualenvs/thermify/bin/pip" install "git+https://github.com/djwillichile/tempify"
+          echo "RETICULATE_PYTHON=$HOME/.virtualenvs/thermify/bin/python" >> "$GITHUB_ENV"
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: any::devtools
+          needs: check
+      - name: Run tests with tempify
+        run: |
+          Rscript -e 'devtools::load_all(); stopifnot(tempify_available()); devtools::test(stop_on_failure = TRUE)'

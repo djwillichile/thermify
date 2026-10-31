@@ -1,4 +1,13 @@
-# thermify 0.0.0.9000 (development version)
+# thermify 0.1.0
+
+First release. Functional, documented and tested package for agroclimatic
+thermal indices: growing degree-days, chilling hours, Utah chill units and
+Dynamic model chill portions, from hourly, daily or monthly temperatures, for
+single sites and rasters.
+
+Verified on Ubuntu (R release and oldrel), Windows and macOS. Results based on
+monthly climatologies are model-based estimates; empirical validation against
+station data is planned (see `vignette("validation")`).
 
 ## Breaking changes
 

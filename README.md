@@ -31,7 +31,8 @@ mean-preserving temporal densification.
 
 ```r
 # install.packages("remotes")
-remotes::install_github("djwillichile/thermify")
+remotes::install_github("djwillichile/thermify@v0.1.0")   # release
+remotes::install_github("djwillichile/thermify")          # development
 ```
 
 `terra` is needed for raster workflows. The optional
@@ -122,9 +123,18 @@ Computational verification is not empirical validation; see
 
 ## Documentation
 
-Site: <https://djwillichile.github.io/thermify/> (once deployed). Articles
+Site: <https://djwillichile.github.io/thermify/>. Articles
 cover GDD methods, chill models, the tempify integration, the Cauquenes
 tutorial and the validation protocol.
+
+## Citation
+
+```r
+citation("thermify")
+```
+
+Please also cite the original publications of the methods you use; they are
+listed in each function's help page.
 
 ## License
 

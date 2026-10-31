@@ -46,3 +46,21 @@ Acceptance criteria:
    obtained from the daily values.
 4. Records split across several files (blocks) give the same result when the
    model state is carried over.
+
+## US-03 Chill models when only daily extremes exist
+
+As an **agronomist** whose stations record only daily minimum and maximum
+temperatures, I want to estimate Utah chill units and chill portions through
+an explicit hourly reconstruction, so that I can use hourly chill models
+while knowing that the hours are modelled.
+
+Acceptance criteria:
+
+1. Reconstructed hours are flagged as such in the output and in the
+   provenance, together with the reconstruction method.
+2. The Linvill model requires a latitude and fails with an informative
+   message without it; the sine model does not need one.
+3. Reconstructed hours stay within the daily extremes that generated them
+   (between the minimum and maximum of the day and its neighbours).
+4. The analytical chilling-hours estimate from daily extremes is available
+   alongside the count on reconstructed hours, so both can be compared.

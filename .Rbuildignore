@@ -1,0 +1,12 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+^LICENSE\.md$
+^\.github$
+^docs$
+^_pkgdown\.yml$
+^pkgdown$
+^examples$
+^bench$
+^README\.Rmd$
+^codemeta\.json$
+^\.lintr$

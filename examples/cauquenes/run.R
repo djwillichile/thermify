@@ -15,6 +15,8 @@
 # Environment variables:
 #   THERMIFY_ENGINE      densification engine: auto (default), tempify, native
 #   RETICULATE_PYTHON    Python with tempify installed (optional)
+#   THERMIFY_COMPARE_RES if "1", also downloads the global 2.5' archive to
+#                        compare resolutions (reused when already cached)
 #   THERMIFY_SMOKE_TEST  if "1", replaces WorldClim by a synthetic field and
 #                        writes to THERMIFY_SMOKE_DIR (default: a temporary
 #                        directory). For software testing only; its numbers
@@ -86,30 +88,39 @@ get_climate <- function(res) {
     tmin_m <- 8 + 4 * cos(2 * pi * (m - 1) / 12)
     tmax_m <- 22 + 8 * cos(2 * pi * (m - 1) / 12)
     grad <- (xy[, 1] + 72.3) * 1.5 + (xy[, 2] + 36) * 0.8
-    list(tmin = setValues(r, outer(grad, tmin_m, "+")),
-         tmax = setValues(r, outer(grad * 0.6, tmax_m, "+")))
+    lapply(list(tmin = setValues(r, outer(grad, tmin_m, "+")),
+                tmax = setValues(r, outer(grad * 0.6, tmax_m, "+"))),
+           crop, win, snap = "out")
+  } else if (res == 0.5) {
+    # Only the window is transferred (HTTP range requests on the 30" tiles).
+    list(tmin = worldclim_region("tmin", win, data_dir),
+         tmax = worldclim_region("tmax", win, data_dir))
   } else {
-    country <- if (res == 0.5) "CHL" else NULL
-    list(tmin = worldclim_monthly("tmin", res, data_dir, country = country),
-         tmax = worldclim_monthly("tmax", res, data_dir, country = country))
+    # Coarser resolutions exist only as global archives (full download).
+    lapply(list(tmin = worldclim_monthly("tmin", res, data_dir),
+                tmax = worldclim_monthly("tmax", res, data_dir)),
+           crop, win, snap = "out")
   }
 }
-crop_pair <- function(x) lapply(x, function(r) crop(r, win, snap = "out"))
 
-log_msg("Reading WorldClim 2.1 at 2.5 arc-minutes")
-wc25 <- crop_pair(get_climate(2.5))
-n25 <- sum(!is.na(values(wc25$tmin[[1]])))
-log_msg("Valid cells at 2.5': ", n25)
-res_choice <- 2.5
-wc <- wc25
-if (n25 < cfg$min_cells) {
-  # A 20 km window holds only ~4 x 5 cells at 2.5' (about 4.6 x 3.7 km at
-  # this latitude), too few to represent the Coastal Range relief and the
-  # Cauquenes valley. Use the 30 arc-second (~0.9 km) product instead.
-  log_msg("Fewer than ", cfg$min_cells, " cells: switching to 30 arc-seconds")
-  wc <- crop_pair(get_climate(0.5))
-  res_choice <- 0.5
+# Number of 2.5' cells in the window, computed from the grid geometry so that
+# the resolution decision does not require downloading the global archive.
+grid25 <- rast(ext(-180, 180, -90, 90), resolution = 2.5 / 60)
+n25 <- ncell(crop(grid25, win, snap = "out"))
+log_msg("2.5' cells in the window: ", n25)
+res_choice <- if (n25 < cfg$min_cells) 0.5 else 2.5
+if (res_choice == 0.5) {
+  # About 3.8 x 4.6 km cells at this latitude: too few to represent the
+  # Coastal Range relief and the Cauquenes valley. Use 30 arc-seconds.
+  log_msg("Fewer than ", cfg$min_cells, " cells: using 30 arc-seconds")
 }
+wc <- get_climate(res_choice)
+# The official 2.5' product (global archive, ~0.9 GB for tmin + tmax) is
+# read only for the optional resolution comparison, or when already cached.
+compare_res <- res_choice == 0.5 && (
+  identical(Sys.getenv("THERMIFY_COMPARE_RES"), "1") || smoke_test ||
+    file.exists(file.path(data_dir, "wc2.1_2.5m_tmax.zip")))
+wc25 <- if (compare_res) get_climate(2.5) else NULL
 for (v in names(wc)) {
   writeRaster(wc[[v]], file.path(dirs[["rasters"]],
                                  sprintf("worldclim_%s_monthly.tif", v)),
@@ -239,8 +250,8 @@ stats_tab <- rbind(
           units = if (startsWith(k, "ch")) "h" else "degC day"))))
 write_tab(stats_tab, "spatial_statistics.csv")
 
-# Resolution comparison: same workflow on the 2.5' grid
-if (res_choice == 0.5) {
+# Resolution comparison: same workflow on the official 2.5' grid
+if (!is.null(wc25)) {
   coarse <- thermify_rast(wc25$tmin, wc25$tmax,
                           output_dir = file.path(tempdir(), "coarse"),
                           year = cfg$year, temporal = cfg$engine,

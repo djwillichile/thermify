@@ -16,7 +16,7 @@ temperature normals around Cauquenes (Maule Region, Chile).
 | Centre (WGS84) | -35.9671, -72.3225 |
 | Window | 20 x 20 km square in UTM 18S (EPSG:32718), returned as its enclosing lon/lat extent. Experimental area around the town, not the commune boundary. |
 | Climate data | WorldClim 2.1 `tmin`, `tmax`, 12 months, 1970-2000 |
-| Resolution | 2.5 arc-minutes is read first; with fewer than 100 valid cells the 30 arc-second country tile (`CHL`) is used. At this latitude a 2.5' cell is about 3.8 x 4.6 km, so the window holds only about 20 cells. |
+| Resolution | The number of 2.5 arc-minute cells in the window is computed from the grid (36 cells of about 3.8 x 4.6 km). Below 100 cells the 30 arc-second product is used, read with `worldclim_region()`: only the window is transferred (about 0.3 MB per variable) instead of the 41 MB country file or the 450 MB global archive. |
 | Daily reconstruction | `pchip_mp` (tempify, or the equivalent native engine) |
 | Hourly reconstruction | Linvill (1990), cell latitude |
 | GDD | average, single/double sine, single/double triangle, degree-hours; bases 5 and 10 degC; heat period 1 Sep - 30 Apr |
@@ -32,8 +32,10 @@ export RETICULATE_PYTHON=/path/to/venv/bin/python
 Rscript examples/cauquenes/run.R
 ```
 
-The script downloads WorldClim into `examples/cauquenes/data/` once (cached,
+The script reads WorldClim into `examples/cauquenes/data/` once (cached,
 git-ignored) and needs access to `geodata.ucdavis.edu`. Set
+`THERMIFY_COMPARE_RES=1` to also download the global 2.5 arc-minute archives
+(about 0.9 GB) for the resolution comparison. Set
 `THERMIFY_ENGINE=native` to run without Python.
 
 `THERMIFY_SMOKE_TEST=1` replaces WorldClim with a synthetic field and writes to

@@ -113,3 +113,17 @@ Acceptance criteria:
    extent, number of valid cells and versions; with tempify, its version and
    commit.
 3. Re-running with the same inputs gives identical values.
+
+## US-07 Large regions on modest hardware
+
+As a **GIS analyst** working on a laptop, I want to process large rasters in
+blocks with a memory limit I can set, without results depending on that
+limit, so that regional or national maps do not exhaust memory.
+
+Acceptance criteria:
+
+1. The block size (`max_cells`) controls how many blocks are processed, and
+   the number of blocks is recorded in the provenance.
+2. Results are identical for any block size.
+3. Daily or hourly rasters are not written unless explicitly requested
+   (`keep_daily = TRUE`), in which case daily layers are dated.

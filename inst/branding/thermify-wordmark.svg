@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 160" role="img" aria-labelledby="t">
+  <title id="t">thermify wordmark</title>
+  <defs>
+    <linearGradient id="mercury" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#E8702A"/>
+      <stop offset="1" stop-color="#F6B55C"/>
+    </linearGradient>
+  </defs>
+  <rect x="38" y="18" width="30" height="94" rx="15" fill="#0B5563"/>
+  <circle cx="53" cy="118" r="26" fill="#0B5563"/>
+  <rect x="47" y="52" width="12" height="66" rx="6" fill="url(#mercury)"/>
+  <circle cx="53" cy="118" r="16" fill="#E8702A"/>
+  <text x="104" y="112" font-family="'Helvetica Neue', Arial, sans-serif" font-size="92" font-weight="700" fill="#0B5563" letter-spacing="1">therm<tspan fill="#E8702A">ify</tspan></text>
+</svg>

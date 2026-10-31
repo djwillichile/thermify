@@ -2,14 +2,34 @@ Package: thermify
 Title: Efficient Agroclimatic Thermal Indices
 Version: 0.0.0.9000
 Authors@R: person("Guillermo", "Fuentes-Jaque", role = c("aut", "cre"), email = "gfuentesj@correo.uss.cl")
-Description: Calculates growing degree days and estimates chilling hours from
-    daily minimum and maximum temperatures. Includes a development roadmap for
-    efficient spatial processing of monthly climatologies and optional temporal
-    interpolation through tempify. Outputs based on monthly climatologies are
-    model-based estimates, not observed daily or hourly temperatures.
+Description: Computes growing degree-days (average, single and double sine,
+    single and double triangle methods with horizontal, vertical and
+    intermediate cutoffs), degree-hours, chilling hours, Utah model chill
+    units and Dynamic model chill portions from daily or hourly temperatures.
+    Monthly climatologies can be densified to daily values with a
+    mean-preserving interpolation, natively or through the 'tempify' Python
+    package, and then to hourly values with sine or Linvill diurnal models.
+    Raster workflows based on 'terra' process data in blocks. Outputs based on
+    monthly climatologies are model-based estimates, not observations.
 License: MIT + file LICENSE
+URL: https://github.com/djwillichile/thermify,
+    https://djwillichile.github.io/thermify/
+BugReports: https://github.com/djwillichile/thermify/issues
+Depends: R (>= 4.1.0)
+Imports: stats, utils
+Suggests: 
+    bench,
+    geodata,
+    jsonlite,
+    knitr,
+    ncdf4,
+    reticulate (>= 1.30),
+    rmarkdown,
+    terra (>= 1.7-0),
+    testthat (>= 3.0.0),
+    withr
+VignetteBuilder: knitr
+Config/testthat/edition: 3
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
-Suggests: testthat (>= 3.0.0), terra
-Config/testthat/edition: 3
+RoxygenNote: 7.3.1

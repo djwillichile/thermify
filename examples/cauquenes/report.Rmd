@@ -1,0 +1,206 @@
+---
+title: "Thermal indices for Cauquenes (Maule, Chile) from WorldClim 2.1"
+subtitle: "Reproducible thermify case study"
+output:
+  html_document:
+    toc: true
+    number_sections: true
+params:
+  output: "output"
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
+out <- params$output
+tab <- function(f) utils::read.csv(file.path(out, "tables", f))
+img <- function(f) knitr::include_graphics(file.path(out, "figures", f))
+meta <- readRDS(file.path(out, "reports", "run_metadata.rds"))
+cfg <- meta$cfg
+num <- function(x, d = 1) formatC(x, format = "f", digits = d, big.mark = ",")
+```
+
+```{r smoke, results = "asis"}
+if (isTRUE(meta$smoke_test)) {
+  cat("> **SYNTHETIC TEST RUN.** This report was produced with a synthetic",
+      "temperature field to test the software. None of its numbers describe",
+      "Cauquenes.\n\n")
+}
+```
+
+# Study area
+
+Experimental window of `r cfg$size_km` x `r cfg$size_km` km centred on the
+town of Cauquenes (`r cfg$centre[["lat"]]`, `r cfg$centre[["lon"]]`, WGS84),
+defined in `r meta$utm` and returned as its enclosing geographic extent
+(`r paste(round(meta$window, 4), collapse = ", ")`). The window is an
+experimental domain around the town, **not** the administrative boundary of
+the commune. It spans part of the coastal dryland (secano interior) of the
+Maule Region, where viticulture and other temperate crops depend on both heat
+accumulation and winter chill.
+
+# Data
+
+WorldClim 2.1 monthly minimum and maximum temperature normals for 1970-2000
+(Fick & Hijmans 2017), in degrees Celsius without scale factor. At 2.5
+arc-minutes the window contains `r meta$n25` valid cells;
+`r if (meta$res_choice == 0.5) "this is too few to represent the relief of the Coastal Range and the valley, so the 30 arc-second product (about 0.9 km) was used" else "this resolution was retained"`.
+The analysis grid has **`r meta$n_valid` valid cells**.
+
+```{r validation}
+knitr::kable(tab("input_validation.csv")[, c("check", "value", "ok")],
+             caption = "Input validation")
+```
+
+# Methods
+
+1. **Monthly to daily.** `tmin` and `tmax` were densified independently with
+   `r cfg$interpolation` (engine: `r cfg$engine`) for the reference calendar
+   year `r cfg$year` (365 days), treating the climatology as a closed annual
+   cycle. Monthly means are preserved; the joint consistency check
+   `tmin <= tmax` was enforced.
+2. **Daily to hourly.** Hourly temperatures were reconstructed with the
+   `r cfg$hourly_method` model (sine by day, logarithmic decay by night, with
+   astronomical day length at each cell latitude).
+3. **Indices.** GDD with bases `r paste(cfg$base, collapse = " and ")` degC by
+   `r paste(cfg$gdd_methods, collapse = ", ")`; chilling hours 0-7.2 degC
+   (analytical sine and counted on the hourly series); Utah chill units;
+   Dynamic model chill portions.
+4. **Periods** (southern hemisphere): heat accumulation
+   `r cfg$heat_period[1]` to `r cfg$heat_period[2]` (crossing the year end of
+   the cyclic climatology); chill accumulation `r cfg$chill_period[1]` to
+   `r cfg$chill_period[2]`. The Dynamic model runs continuously through the
+   chill period without monthly resets.
+
+```{r densification}
+knitr::kable(tab("densification_diagnostics.csv"), digits = 4,
+             caption = paste("Densification diagnostics (degC): monthly mean",
+                             "error, day-to-day steps at month boundaries and",
+                             "within months, crossings"))
+```
+
+```{r fig1, out.width = "90%"}
+img("01_monthly_daily_reconstruction.png")
+```
+
+```{r fig2, out.width = "90%"}
+img("02_hourly_reconstruction.png")
+```
+
+# Results
+
+## Reference cell
+
+```{r refsummary}
+s <- tab("reference_cell_summary.csv")
+s <- s[s$aggregation %in% c("season", "annual"), ]
+knitr::kable(s[, c("key", "aggregation", "value", "units")], digits = 1,
+             caption = "Reference cell totals")
+```
+
+```{r fig3, out.width = "90%"}
+img("03_gdd_methods.png")
+```
+
+```{r fig456, out.width = "32%", fig.show = "hold"}
+img("04_chill_hours_accumulation.png")
+img("05_utah_accumulation.png")
+img("06_dynamic_accumulation.png")
+```
+
+## Spatial patterns
+
+```{r stats}
+st <- tab("spatial_statistics.csv")
+knitr::kable(st[, c("product", "units", "mean", "sd", "min", "median",
+                    "max")], digits = 1,
+             caption = "Spatial statistics of seasonal totals")
+```
+
+```{r fig7, out.width = "100%"}
+img("07_maps.png")
+```
+
+## Method comparison
+
+```{r fig8, out.width = "100%"}
+img("08_method_differences.png")
+```
+
+```{r rescomp, results = "asis"}
+f <- file.path(out, "tables", "resolution_comparison.csv")
+if (file.exists(f)) {
+  print(knitr::kable(utils::read.csv(f), digits = 1,
+                     caption = "Resolution comparison (30 s vs 2.5 min)"))
+}
+```
+
+# Computational performance
+
+```{r bench}
+f <- file.path(out, "tables", "benchmarks.csv")
+b <- if (file.exists(f)) utils::read.csv(f) else data.frame()
+if (nrow(b)) {
+  knitr::kable(b[, c("stage", "variant", "cells", "median_s", "per_cell_ms",
+                     "mem_alloc_mb")], digits = 3,
+               caption = "Benchmarks (bench::mark medians)")
+}
+```
+
+```{r fig9, out.width = "90%"}
+if (file.exists(file.path(out, "figures", "09_performance.png")))
+  img("09_performance.png")
+```
+
+Full spatial workflow time: `r num(meta$t_rast, 2)` s. Session details are
+in `session_info.txt`.
+
+# Limitations
+
+* All values are **climatological estimates** from monthly normals,
+  densified and then disaggregated to hours. They are not observations of
+  `r cfg$year` and carry two layers of modelling uncertainty: the
+  monthly-to-daily interpolation (which removes day-to-day weather
+  variability) and the diurnal model.
+* Smooth daily series lack synoptic variability. Indices that are non-linear
+  in temperature (chilling hours, Utah, Dynamic, GDD near the base) can be
+  biased compared with values computed from observed daily or hourly data.
+* The mean-preserving correction produces small steps at month boundaries
+  (see diagnostics).
+* Dynamic model portions are completed in discrete steps (a portion is
+  fixed only when the intermediate reaches 1), so the seasonal total of
+  neighbouring cells can differ by up to about one portion for very similar
+  temperatures. Spatial differences of that order should not be
+  interpreted.
+* WorldClim interpolation uncertainty is largest in areas with few stations
+  and complex relief.
+* This experiment verifies computation and quantifies differences between
+  methods. It is **not an empirical validation**: no method is shown to be
+  more accurate than another. See the validation protocol in the package
+  documentation (`vignette("validation")`).
+
+# Conclusions (methodological)
+
+* Differences between GDD methods are largest for base 10 degC, when daily
+  minima fall below the base; the averaging method then omits heat
+  accumulated in the warm hours.
+* Chill estimates depend strongly on the model and on the diurnal
+  reconstruction; they should be compared within a model, not across models.
+* Results are reproducible with `Rscript examples/cauquenes/run.R`.
+
+# References
+
+Erez, A., Fishman, S., Linsley-Noakes, G. C., & Allan, P. (1990). The dynamic
+model for rest completion in peach buds. *Acta Horticulturae*, 276, 165-174.
+
+Fick, S. E., & Hijmans, R. J. (2017). WorldClim 2. *International Journal of
+Climatology*, 37(12), 4302-4315.
+
+Linvill, D. E. (1990). Calculating chilling hours and chill units from daily
+maximum and minimum temperature observations. *HortScience*, 25(1), 14-16.
+
+Richardson, E. A., Seeley, S. D., & Walker, D. R. (1974). A model for
+estimating the completion of rest for Redhaven and Elberta peach trees.
+*HortScience*, 9(4), 331-332.
+
+Zalom, F. G., et al. (1983). *Degree-days: the calculation and use of heat
+units in pest management*. UC DANR Leaflet 21373.

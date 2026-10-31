@@ -2,5 +2,13 @@
 .Rhistory
 .RData
 .Ruserdata
-.Rcheck/
-.Rbuildignore
+*.Rcheck/
+thermify_*.tar.gz
+pkgdown-site/
+# Downloaded data and large generated products of the case study
+examples/cauquenes/data/
+examples/cauquenes/output/rasters/*.tif
+examples/cauquenes/output/rasters/*.nc
+examples/cauquenes/output/rasters/daily_*
+/doc/
+/Meta/

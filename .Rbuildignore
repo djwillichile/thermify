@@ -1,0 +1,17 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+^LICENSE\.md$
+^\.github$
+^docs$
+^_pkgdown\.yml$
+^pkgdown$
+^examples$
+^bench$
+^README\.Rmd$
+^codemeta\.json$
+^\.lintr$
+^pkgdown-site$
+^inst/verification/.*\.csv$
+^scripts$
+^doc$
+^Meta$

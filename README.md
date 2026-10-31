@@ -4,6 +4,7 @@
 [![R-CMD-check](https://github.com/djwillichile/thermify/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/djwillichile/thermify/actions/workflows/R-CMD-check.yaml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23841857.svg)](https://doi.org/10.5281/zenodo.23841857)
 <!-- badges: end -->
 
 **Efficient, reproducible and spatially explicit agroclimatic thermal indices
@@ -132,6 +133,10 @@ tutorial and the validation protocol.
 ```r
 citation("thermify")
 ```
+
+> Fuentes-Jaque, G. (2026). *thermify: Efficient Agroclimatic Thermal
+> Indices* (v0.1.0) [R package]. Zenodo.
+> https://doi.org/10.5281/zenodo.23841857
 
 Please also cite the original publications of the methods you use; they are
 listed in each function's help page.

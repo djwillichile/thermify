@@ -127,3 +127,19 @@ Acceptance criteria:
 2. Results are identical for any block size.
 3. Daily or hourly rasters are not written unless explicitly requested
    (`keep_daily = TRUE`), in which case daily layers are dated.
+
+## US-08 Working without Python
+
+As an **agronomist** without a Python installation, I want the package to
+work fully with daily, hourly and monthly data, and to tell me clearly what
+to do if I explicitly ask for the tempify backend, so that Python is an
+option and not a requirement.
+
+Acceptance criteria:
+
+1. With `temporal = "auto"` and no tempify, the native engine is used and
+   recorded in the provenance.
+2. Asking explicitly for `temporal = "tempify"` without it fails with a
+   message that names the native alternative.
+3. Methods only available in tempify fail with an informative message under
+   the native engine.

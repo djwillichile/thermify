@@ -142,6 +142,10 @@ and the validation protocol.
 citation("thermify")
 ```
 
+> Fuentes-Jaque, G. (2026). *thermify: Efficient Agroclimatic Thermal
+> Indices* (v0.1.0) \[R package\]. Zenodo.
+> <https://doi.org/10.5281/zenodo.23841857>
+
 Please also cite the original publications of the methods you use; they
 are listed in each function’s help page.
 

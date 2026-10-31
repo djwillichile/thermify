@@ -37,13 +37,19 @@ jobs:
         with:
           upload-snapshots: true
 
-  tempify:
-    # Integration tests against the Python backend.
+  full-tests:
+    # Complete battery: tempify backend, network reads of WorldClim,
+    # cross-checks against chillR/degday sources and the case-study script.
+    name: full tests (tempify, network, references)
     runs-on: ubuntu-latest
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      NOT_CRAN: true
+      THERMIFY_ONLINE_TESTS: true
+      THERMIFY_SLOW_TESTS: true
     steps:
       - uses: actions/checkout@v4
+      - uses: r-lib/actions/setup-pandoc@v2
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -52,13 +58,20 @@ jobs:
           python -m venv "$HOME/.virtualenvs/thermify"
           "$HOME/.virtualenvs/thermify/bin/pip" install "git+https://github.com/djwillichile/tempify"
           echo "RETICULATE_PYTHON=$HOME/.virtualenvs/thermify/bin/python" >> "$GITHUB_ENV"
+      - name: Reference sources (GPL, used only for testing)
+        run: |
+          git clone --depth 1 https://github.com/cran/chillR "$RUNNER_TEMP/chillR"
+          git clone --depth 1 https://github.com/cran/degday "$RUNNER_TEMP/degday"
+          echo "CHILLR_SRC=$RUNNER_TEMP/chillR" >> "$GITHUB_ENV"
+          echo "DEGDAY_SRC=$RUNNER_TEMP/degday" >> "$GITHUB_ENV"
       - uses: r-lib/actions/setup-r@v2
         with:
           use-public-rspm: true
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: any::devtools
+          extra-packages: any::devtools, any::crayon, any::zoo, any::magrittr
           needs: check
-      - name: Run tests with tempify
+      - name: Run all tests
         run: |
-          Rscript -e 'devtools::load_all(); stopifnot(tempify_available()); devtools::test(stop_on_failure = TRUE)'
+          Rscript -e 'devtools::load_all(); stopifnot(tempify_available())'
+          Rscript -e 'res <- as.data.frame(devtools::test(stop_on_failure = TRUE)); stopifnot(sum(res$skipped) == 0)'

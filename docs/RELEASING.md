@@ -15,7 +15,8 @@ Steps:
 
 1. On a branch `code/release-vX.Y.Z`, set `Version: X.Y.Z` in `DESCRIPTION`
    and write the `NEWS.md` section. Open a pull request to `main`.
-2. After merging, tag the merge commit on `main` and push the tag:
+2. After merging, create the tag `vX.Y.Z` on the merge commit of `main`,
+   either from the command line:
 
    ```sh
    git checkout main && git pull
@@ -23,9 +24,13 @@ Steps:
    git push origin vX.Y.Z
    ```
 
-3. The `release` workflow checks that the tag matches `DESCRIPTION`, builds
-   and checks the package, and creates the GitHub Release with the
-   `NEWS.md` section as notes and the source tarball attached.
+   or from GitHub: *Releases → Draft a new release → Choose a tag: vX.Y.Z
+   (create on publish), target `main` → Publish release*.
+
+3. The `release` workflow (triggered by the tag push or the published
+   release) checks that the tag matches `DESCRIPTION`, builds and checks the
+   package, and creates or updates the GitHub Release with the `NEWS.md`
+   section as notes and the source tarball attached.
 4. On `main`, bump to the next development version (`X.Y.Z.9000`) and add a
    `# thermify (development version)` heading to `NEWS.md`.
 

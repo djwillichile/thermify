@@ -34,7 +34,12 @@ license: MIT
 repository-code: "https://github.com/djwillichile/thermify"
 url: "https://djwillichile.github.io/thermify/"
 version: "0.1.0"
+doi: 10.5281/zenodo.23841857
 date-released: "2026-10-31"
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.23841857
+    description: "Archived release v0.1.0 on Zenodo"
 references:
   - type: software
     title: "tempify: Temporal densification for geospatial raster stacks"

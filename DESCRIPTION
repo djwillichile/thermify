@@ -1,0 +1,15 @@
+Package: thermify
+Title: Efficient Agroclimatic Thermal Indices
+Version: 0.0.0.9000
+Authors@R: person("Guillermo", "Fuentes-Jaque", role = c("aut", "cre"), email = "gfuentesj@correo.uss.cl")
+Description: Calculates growing degree days and estimates chilling hours from
+    daily minimum and maximum temperatures. Includes a development roadmap for
+    efficient spatial processing of monthly climatologies and optional temporal
+    interpolation through tempify. Outputs based on monthly climatologies are
+    model-based estimates, not observed daily or hourly temperatures.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
+Suggests: testthat (>= 3.0.0), terra
+Config/testthat/edition: 3

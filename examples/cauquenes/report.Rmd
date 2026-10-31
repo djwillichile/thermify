@@ -137,7 +137,8 @@ if (file.exists(f)) {
 # Computational performance
 
 ```{r bench}
-b <- tab("benchmarks.csv")
+f <- file.path(out, "tables", "benchmarks.csv")
+b <- if (file.exists(f)) utils::read.csv(f) else data.frame()
 if (nrow(b)) {
   knitr::kable(b[, c("stage", "variant", "cells", "median_s", "per_cell_ms",
                      "mem_alloc_mb")], digits = 3,

@@ -57,7 +57,3 @@ as_series_matrix <- function(x, name = "temperature") {
   }
   list(m = matrix(x, nrow = 1L), was_vector = TRUE)
 }
-
-match_output <- function(output) {
-  match.arg(output, c("cumulative", "hourly", "total"))
-}

@@ -8,14 +8,16 @@
 #
 # Usage: Rscript inst/verification/verify_references.R [output.csv]
 
-suppressPackageStartupMessages({
-  if (requireNamespace("thermify", quietly = TRUE)) library(thermify) else
-    devtools::load_all(quiet = TRUE)
-})
+if (!"thermify" %in% loadedNamespaces()) {
+  suppressPackageStartupMessages({
+    if (requireNamespace("thermify", quietly = TRUE)) library(thermify) else
+      devtools::load_all(quiet = TRUE)
+  })
+}
 args <- commandArgs(trailingOnly = TRUE)
 out_csv <- if (length(args)) args[1] else NA_character_
 
-ref <- new.env()
+ref <- new.env(parent = globalenv())
 load_ref <- function(pkg, src_var, files) {
   if (requireNamespace(pkg, quietly = TRUE)) {
     for (f in c(files$functions)) assign(f, getExportedValue(pkg, f), ref)

@@ -17,6 +17,8 @@
 #   RETICULATE_PYTHON    Python with tempify installed (optional)
 #   THERMIFY_COMPARE_RES if "1", also downloads the global 2.5' archive to
 #                        compare resolutions (reused when already cached)
+#   THERMIFY_SKIP_BENCH  if "1", skips the benchmarks (used by the
+#                        integration test of this script)
 #   THERMIFY_SMOKE_TEST  if "1", replaces WorldClim by a synthetic field and
 #                        writes to THERMIFY_SMOKE_DIR (default: a temporary
 #                        directory). For software testing only; its numbers
@@ -273,11 +275,16 @@ if (!is.null(wc25)) {
 }
 
 # 8. Benchmarks -----------------------------------------------------------------------
-log_msg("Benchmarks")
-source(file.path("examples/cauquenes", "benchmark.R"), local = TRUE)
-bench_tab <- run_benchmarks(vmin[valid, ], vmax[valid, ], ref, cfg,
-                            wc = wc, dirs = dirs)
-write_tab(bench_tab, "benchmarks.csv")
+if (identical(Sys.getenv("THERMIFY_SKIP_BENCH"), "1")) {
+  log_msg("Benchmarks skipped (THERMIFY_SKIP_BENCH=1)")
+  bench_tab <- data.frame()
+} else {
+  log_msg("Benchmarks")
+  source(file.path("examples/cauquenes", "benchmark.R"), local = TRUE)
+  bench_tab <- run_benchmarks(vmin[valid, ], vmax[valid, ], ref, cfg,
+                              wc = wc, dirs = dirs)
+  write_tab(bench_tab, "benchmarks.csv")
+}
 session <- c(utils::capture.output(utils::sessionInfo()),
              "", "tempify:", utils::capture.output(str(tempify_version())))
 writeLines(session, file.path(dirs[["reports"]], "session_info.txt"))

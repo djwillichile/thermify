@@ -96,3 +96,20 @@ Acceptance criteria:
    inequality for the convex function max(0, T - Tb)), and all methods agree
    when temperatures never cross the base.
 3. Requesting several methods does not change the value of any single method.
+
+## US-06 Reproducible and traceable results
+
+As a **researcher**, I want every result to record the data frequency,
+methods, parameters and software versions used (including the exact tempify
+commit when it is used), and identical inputs to give identical outputs, so
+that my analyses can be audited and reproduced.
+
+Acceptance criteria:
+
+1. Single-site results include provenance: input frequency, thermify version,
+   densification engine, method, calendar year, consistency rule and the
+   maximum monthly-mean error.
+2. Raster runs write a `provenance.json` with parameters, CRS, resolution,
+   extent, number of valid cells and versions; with tempify, its version and
+   commit.
+3. Re-running with the same inputs gives identical values.

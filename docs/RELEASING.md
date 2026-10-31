@@ -26,6 +26,9 @@ Steps:
 
    or from GitHub: *Releases → Draft a new release → Choose a tag: vX.Y.Z
    (create on publish), target `main` → Publish release*.
+   Alternatively run the `release` workflow manually from `main`
+   (*Actions → release → Run workflow*): it creates the tag `vX.Y.Z` from
+   `DESCRIPTION` on the current commit.
 
 3. The `release` workflow (triggered by the tag push or the published
    release) checks that the tag matches `DESCRIPTION`, builds and checks the

@@ -28,7 +28,8 @@ thermify_rast(
   max_cells = 2000L,
   format = "GTiff",
   keep_daily = FALSE,
-  overwrite = FALSE
+  overwrite = FALSE,
+  progress = getOption("thermify.progress", interactive())
 )
 }
 \arguments{
@@ -80,6 +81,11 @@ chill from 1 May to 31 August, heat from 1 September to 30 April.}
 \code{tmax} (365 or 366 layers each) for diagnosis.}
 
 \item{overwrite}{Overwrite existing files.}
+
+\item{progress}{Show progress (blocks done, percentage, elapsed time and
+estimated time remaining). Defaults to the option \code{thermify.progress},
+or \code{TRUE} in interactive sessions. In non-interactive runs a status line
+is written at most every 10 seconds, so logs show the process is alive.}
 }
 \value{
 A named list of file-backed \code{SpatRaster} objects, one per index

@@ -9,7 +9,8 @@ worldclim_monthly(
   res = 2.5,
   path,
   country = NULL,
-  timeout = 3600
+  timeout = 3600,
+  progress = getOption("thermify.progress", interactive())
 )
 }
 \arguments{
@@ -22,6 +23,9 @@ worldclim_monthly(
 \item{country}{ISO3 code, required for \code{res = 0.5}.}
 
 \item{timeout}{Download timeout in seconds.}
+
+\item{progress}{Show the download progress bar. Defaults to the option
+\code{thermify.progress}, or \code{TRUE} in interactive sessions.}
 }
 \value{
 A 12-layer \code{SpatRaster} with layers named \code{m01} to \code{m12}.

@@ -24,6 +24,11 @@
   engine, with consistency checks and diagnostics (`densify_monthly()`,
   `densify_diagnostics()`, `tempify_available()`, `tempify_version()`).
 * Accumulation periods that may cross the year end (`season_days()`).
+* `threshold_date()` returns the date on which an accumulated index reaches
+  a requirement (for example a degree-day or chill-portion target).
+* Progress reporting (blocks, percentage, elapsed time, ETA) in
+  `thermify_rast()` and for archive downloads, controlled by `progress` or
+  the option `thermify.progress`.
 * Integrated workflows for one site (`thermify()`) and for monthly
   `SpatRaster` stacks processed in blocks (`thermify_rast()`), with GeoTIFF,
   NetCDF and provenance output.
@@ -37,3 +42,8 @@
 
 * Cross-checks against chillR and degday in
   `inst/verification/verify_references.R`.
+
+## Documentation
+
+* User stories with acceptance tests (`docs/USER_STORIES.md`,
+  `tests/testthat/test-story-*.R`).

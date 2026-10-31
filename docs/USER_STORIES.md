@@ -160,3 +160,20 @@ Acceptance criteria:
 3. Monthly rasters with scaled values (for example degrees x 10, as in
    WorldClim 1.4) or mismatched masks are flagged by
    `check_monthly_climate()`.
+
+## US-10 Feedback during long processes
+
+As a **GIS analyst** running a regional map that takes minutes, I want to
+see how far the process has gone, how long it has been running and how much
+time is left, so that I know it is working and has not stalled.
+
+Acceptance criteria:
+
+1. `thermify_rast()` reports blocks done, percentage, elapsed time and the
+   estimated time remaining; the last report shows 100%.
+2. In interactive sessions a single line is updated in place; in scripts and
+   logs a full line is written at most every 10 seconds (plus the first and
+   last), so logs are informative but not flooded.
+3. Progress can be switched off (`progress = FALSE` or the option
+   `thermify.progress`), and downloads of global archives show their own
+   progress bar when progress is on.

@@ -52,6 +52,8 @@ study_window <- function(lon, lat, size_km = 20) {
 #' @param path Cache directory.
 #' @param country ISO3 code, required for `res = 0.5`.
 #' @param timeout Download timeout in seconds.
+#' @param progress Show the download progress bar. Defaults to the option
+#'   `thermify.progress`, or `TRUE` in interactive sessions.
 #' @return A 12-layer `SpatRaster` with layers named `m01` to `m12`.
 #' @references
 #' Fick, S. E., & Hijmans, R. J. (2017). WorldClim 2: new 1-km spatial
@@ -59,7 +61,9 @@ study_window <- function(lon, lat, size_km = 20) {
 #' of Climatology*, 37(12), 4302-4315.
 #' @export
 worldclim_monthly <- function(var = c("tmin", "tmax"), res = 2.5, path,
-                              country = NULL, timeout = 3600) {
+                              country = NULL, timeout = 3600,
+                              progress = getOption("thermify.progress",
+                                                   interactive())) {
   var <- match.arg(var)
   if (!requireNamespace("terra", quietly = TRUE)) {
     stop("worldclim_monthly() requires the 'terra' package.", call. = FALSE)
@@ -81,7 +85,8 @@ worldclim_monthly <- function(var = c("tmin", "tmax"), res = 2.5, path,
   } else if (res == 0.5) {
     f <- file.path(path, sprintf("%s_wc2.1_30s_%s.tif", country, var))
     if (!valid_raster(f, 12L)) {
-      download(sprintf("%s/tiles/iso/%s", base, basename(f)), f, timeout)
+      download(sprintf("%s/tiles/iso/%s", base, basename(f)), f, timeout,
+               progress)
     }
     r <- terra::rast(f)
   } else {
@@ -91,7 +96,8 @@ worldclim_monthly <- function(var = c("tmin", "tmax"), res = 2.5, path,
     if (!all(vapply(tifs, valid_raster, logical(1), n = 1L))) {
       zip <- file.path(path, paste0(tag, ".zip"))
       if (!file.exists(zip)) {
-        download(sprintf("%s/base/%s.zip", base, tag), zip, timeout)
+        download(sprintf("%s/base/%s.zip", base, tag), zip, timeout,
+                 progress)
       }
       utils::unzip(zip, exdir = dir)
     }
@@ -278,11 +284,13 @@ valid_raster <- function(f, n) {
                                     error = function(e) FALSE))
 }
 
-download <- function(url, dest, timeout) {
+download <- function(url, dest, timeout, progress = FALSE) {
   old <- options(timeout = max(timeout, getOption("timeout")))
   on.exit(options(old))
   tmp <- paste0(dest, ".part")
-  status <- utils::download.file(url, tmp, mode = "wb", quiet = TRUE)
+  if (isTRUE(progress)) message("Downloading ", url)
+  status <- utils::download.file(url, tmp, mode = "wb",
+                                 quiet = !isTRUE(progress))
   if (status != 0L) stop("Download failed: ", url, call. = FALSE)
   file.rename(tmp, dest)
 }

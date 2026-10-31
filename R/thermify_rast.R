@@ -36,6 +36,10 @@
 #' @param keep_daily If `TRUE`, also write the reconstructed daily `tmin` and
 #'   `tmax` (365 or 366 layers each) for diagnosis.
 #' @param overwrite Overwrite existing files.
+#' @param progress Show progress (blocks done, percentage, elapsed time and
+#'   estimated time remaining). Defaults to the option `thermify.progress`,
+#'   or `TRUE` in interactive sessions. In non-interactive runs a status line
+#'   is written at most every 10 seconds, so logs show the process is alive.
 #' @inheritParams thermify
 #' @return A named list of file-backed `SpatRaster` objects, one per index
 #'   key, with attribute `"provenance"`.
@@ -71,7 +75,9 @@ thermify_rast <- function(tmin, tmax, output_dir, year = 2023,
                           temporal_aggregation = c("season", "annual",
                                                    "monthly"),
                           max_cells = 2000L, format = "GTiff",
-                          keep_daily = FALSE, overwrite = FALSE) {
+                          keep_daily = FALSE, overwrite = FALSE,
+                          progress = getOption("thermify.progress",
+                                               interactive())) {
   if (!requireNamespace("terra", quietly = TRUE)) {
     stop("thermify_rast() requires the 'terra' package.", call. = FALSE)
   }
@@ -137,8 +143,10 @@ thermify_rast <- function(tmin, tmax, output_dir, year = 2023,
   n_valid <- 0L
   max_mean_error <- 0
   t0 <- proc.time()[["elapsed"]]
+  bar <- progress_start(length(starts), "thermify_rast", progress)
 
-  for (row in starts) {
+  for (b in seq_along(starts)) {
+    row <- starts[b]
     nr <- min(rows_per_block, terra::nrow(tmin) - row + 1L)
     vmin <- terra::readValues(tmin, row, nr, 1, nc, mat = TRUE)
     vmax <- terra::readValues(tmax, row, nr, 1, nc, mat = TRUE)
@@ -182,6 +190,7 @@ thermify_rast <- function(tmin, tmax, output_dir, year = 2023,
       terra::writeValues(daily_out$tmin, dmin_all, row, nr)
       terra::writeValues(daily_out$tmax, dmax_all, row, nr)
     }
+    progress_tick(bar, b, sprintf("%d valid cells", n_valid))
   }
   elapsed <- proc.time()[["elapsed"]] - t0
 

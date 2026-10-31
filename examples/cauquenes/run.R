@@ -50,6 +50,8 @@ cfg <- list(
   min_cells = 100   # finer resolution is used below this number of cells
 )
 smoke_test <- identical(Sys.getenv("THERMIFY_SMOKE_TEST"), "1")
+# Report progress of long steps (downloads, raster blocks) in the log.
+options(thermify.progress = TRUE)
 root <- if (smoke_test) {
   Sys.getenv("THERMIFY_SMOKE_DIR", file.path(tempdir(), "cauquenes-smoke"))
 } else {

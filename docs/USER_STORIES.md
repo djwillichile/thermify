@@ -28,3 +28,21 @@ Acceptance criteria:
    reaches the threshold, and `NA` when it is not reached.
 3. Missing days make the date `NA` unless the user explicitly chooses to skip
    them.
+
+## US-02 Chill requirement from hourly station records
+
+As a **fruit grower**, I want to compute chill portions (Dynamic model) and
+chilling hours from my hourly station records between 1 May and 31 August,
+and know when my cultivar's requirement is met, so that I can judge whether
+the winter was sufficient and plan dormancy-breaking treatments.
+
+Acceptance criteria:
+
+1. Hourly input is declared explicitly (`input = "hourly"`) and indices are
+   computed on the observed hours, without reconstruction.
+2. Chill accumulation is restricted to the configured period and the Dynamic
+   model is not reset inside it.
+3. The date on which a requirement (for example 50 portions) is met can be
+   obtained from the daily values.
+4. Records split across several files (blocks) give the same result when the
+   model state is carried over.

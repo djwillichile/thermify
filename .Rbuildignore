@@ -12,3 +12,4 @@
 ^\.lintr$
 ^pkgdown-site$
 ^inst/verification/.*\.csv$
+^scripts$

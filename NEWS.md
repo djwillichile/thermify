@@ -27,8 +27,10 @@
 * Integrated workflows for one site (`thermify()`) and for monthly
   `SpatRaster` stacks processed in blocks (`thermify_rast()`), with GeoTIFF,
   NetCDF and provenance output.
-* WorldClim 2.1 helpers (`worldclim_monthly()`, `study_window()`,
-  `check_monthly_climate()`).
+* WorldClim 2.1 helpers: `worldclim_region()` reads 30 arc-second normals
+  for a region (extent or polygon, optional mask) through HTTP range
+  requests on the remote tiles, without downloading global or country
+  files; `worldclim_monthly()`, `study_window()`, `check_monthly_climate()`.
 * Cauquenes case study in `examples/cauquenes`.
 
 ## Verification

@@ -73,6 +73,15 @@ res <- thermify(tmin, tmax, input = "monthly", latitude = -35.97,
 res$summary
 ```
 
+WorldClim 2.1 at 30 arc-seconds can be read for a region only, transferring
+just the bytes of that window (optionally masked by a polygon):
+
+```r
+win  <- study_window(lon = -72.3225, lat = -35.9671, size_km = 20)
+tmin <- worldclim_region("tmin", win, path = "data")
+tmax <- worldclim_region("tmax", win, path = "data")
+```
+
 For rasters, `thermify_rast()` applies the same workflow block by block to
 12-layer `SpatRaster` stacks and writes one file per index.
 

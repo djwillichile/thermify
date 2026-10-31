@@ -26,26 +26,31 @@ win
 A 20 x 20 km square in UTM zone 18S around the town. It is an experimental
 domain, not the commune boundary.
 
-## 2. WorldClim 2.1 (cached)
+## 2. WorldClim 2.1 for the window only
+
+A 2.5 arc-minute grid has only 36 cells (about 3.8 x 4.6 km) in this window,
+too few to represent the Coastal Range and the Cauquenes valley, so the
+30 arc-second product is used. `worldclim_region()` opens the remote 30x30
+degree tiles with GDAL `/vsicurl/` and transfers only the strips covering the
+window (about 0.3 MB per variable), caching the result:
 
 ```{r}
-tmin <- worldclim_monthly("tmin", res = 2.5, path = "data")
-tmax <- worldclim_monthly("tmax", res = 2.5, path = "data")
-tmin <- crop(tmin, win, snap = "out")
-tmax <- crop(tmax, win, snap = "out")
+tmin <- worldclim_region("tmin", win, path = "data")
+tmax <- worldclim_region("tmax", win, path = "data")
 check_monthly_climate(tmin, tmax)
 ```
 
-At 2.5 arc-minutes (about 3.8 x 4.6 km here) the window holds only about 20
-cells, too few to represent the Coastal Range and the Cauquenes valley. The
-case study switches to the 30 arc-second country tile:
+A polygon (for example a commune boundary from a GeoPackage) can be used
+both to select and to mask the region:
 
 ```{r}
-tmin <- crop(worldclim_monthly("tmin", 0.5, "data", country = "CHL"), win,
-             snap = "out")
-tmax <- crop(worldclim_monthly("tmax", 0.5, "data", country = "CHL"), win,
-             snap = "out")
+comuna <- terra::vect("cauquenes.gpkg")
+tmin_c <- worldclim_region("tmin", comuna, path = "data", mask = TRUE)
 ```
+
+The coarser official products (2.5, 5 and 10 arc-minutes) are distributed
+only as global compressed archives; `worldclim_monthly()` downloads and
+caches them.
 
 ## 3. Indices for every cell
 

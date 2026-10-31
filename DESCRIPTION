@@ -1,6 +1,6 @@
 Package: thermify
 Title: Efficient Agroclimatic Thermal Indices
-Version: 0.1.0
+Version: 0.1.0.9000
 Authors@R: person("Guillermo", "Fuentes-Jaque", role = c("aut", "cre"), email = "gfuentesj@correo.uss.cl")
 Description: Computes growing degree-days (average, single and double sine,
     single and double triangle methods with horizontal, vertical and

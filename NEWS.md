@@ -1,3 +1,5 @@
+# thermify (development version)
+
 # thermify 0.1.0
 
 First release. Functional, documented and tested package for agroclimatic

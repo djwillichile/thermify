@@ -1,7 +1,7 @@
 {
   "thermify": "0.0.0.9000",
   "terra": "1.7.65",
-  "created": "2026-10-31 11:03:53",
+  "created": "2026-10-31 11:11:47",
   "year": 2023,
   "engine": "tempify",
   "interpolation": "pchip_mp",
@@ -35,6 +35,6 @@
   "n_valid_cells": 672,
   "max_cells_per_block": 2000,
   "n_blocks": 1,
-  "elapsed_seconds": 7.69600000000001,
+  "elapsed_seconds": 7.093,
   "outputs": ["gdd_average_b5.tif", "gdd_average_b10.tif", "gdd_single_sine_b5.tif", "gdd_single_sine_b10.tif", "gdd_single_triangle_b5.tif", "gdd_single_triangle_b10.tif", "gdd_double_sine_b5.tif", "gdd_double_sine_b10.tif", "gdd_double_triangle_b5.tif", "gdd_double_triangle_b10.tif", "gdd_hourly_b5.tif", "gdd_hourly_b10.tif", "ch_sine.tif", "ch_hourly.tif", "cu_utah.tif", "cp_dynamic.tif"]
 }

@@ -64,3 +64,19 @@ Acceptance criteria:
    (between the minimum and maximum of the day and its neighbours).
 4. The analytical chilling-hours estimate from daily extremes is available
    alongside the count on reconstructed hours, so both can be compared.
+
+## US-04 Maps for a territory from WorldClim
+
+As a **GIS analyst**, I want to compute thermal-index maps for a territory
+(a study window or a commune polygon) from WorldClim 2.1 without downloading
+global files, so that I can produce planning maps quickly and with modest
+storage.
+
+Acceptance criteria:
+
+1. Monthly 30 arc-second data are read for the territory only and can be
+   masked by its polygon.
+2. Output rasters keep the CRS, extent, resolution and NA mask of the input;
+   cells outside the polygon stay `NA`.
+3. Each index is written as one file with named, documented layers (season,
+   annual, monthly) and units.

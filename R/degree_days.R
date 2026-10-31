@@ -193,8 +193,12 @@ hours_to_days <- function(x, fun = c("sum", "mean")) {
     stop("Hourly series length must be a multiple of 24.", call. = FALSE)
   }
   n_days <- ncol(m) %/% 24L
-  arr <- array(t(m), dim = c(24L, n_days, nrow(m)))
-  out <- t(matrix(colSums(arr), nrow = n_days))
+  # Column-major storage makes (series, hour, day) a free reshape; summing the
+  # 24 hour slices avoids transposing the full hourly matrix.
+  arr <- array(m, dim = c(nrow(m), 24L, n_days))
+  out <- arr[, 1L, ]
+  for (h in 2:24) out <- out + arr[, h, ]
+  dim(out) <- c(nrow(m), n_days)
   if (fun == "mean") out <- out / 24
   if (s$was_vector) as.vector(out) else out
 }

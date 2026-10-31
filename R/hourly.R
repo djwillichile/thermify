@@ -209,12 +209,14 @@ hourly_linvill <- function(tmin, tmax, tmax_prev, tmin_next, latitude, doy,
   tmean <- (tmin + tmax) / 2
 
   hours <- lapply(0:23, function(h) {
-    morning <- t_sunset_prev - (t_sunset_prev - tmin) *
-      log(h + 24 - ss_prev + 1) / pre_dawn_den
-    day <- tmin + (tmax - tmin) * sin(pi * (h - sr) / (dl + 4))
-    evening <- t_sunset - (t_sunset - tmin_next) *
-      log(pmax(h - ss + 1, 1)) / log(24 - ss + sr_next + 1)
-    val <- ifelse(h <= sr, morning, ifelse(h <= ss, day, evening))
+    # Evaluate each branch only where it applies.
+    val <- tmin + (tmax - tmin) * sin(pi * (h - sr) / (dl + 4))
+    am <- h <= sr
+    val[am] <- (t_sunset_prev - (t_sunset_prev - tmin) *
+      log(h + 24 - ss_prev + 1) / pre_dawn_den)[am]
+    pm <- h > ss
+    val[pm] <- (t_sunset - (t_sunset - tmin_next) *
+      log(pmax(h - ss + 1, 1)) / log(24 - ss + sr_next + 1))[pm]
     val[polar] <- tmean[polar]
     val
   })

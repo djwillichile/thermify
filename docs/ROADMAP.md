@@ -1,24 +1,27 @@
 # Development roadmap
 
-## v0.1 — Numeric core
-- [ ] Confirm GDD definitions, thresholds, and methods with literature.
-- [ ] Validate the analytical chill-hour estimator by numerical integration.
-- [ ] Add input validation, boundary tests and complete reference documentation.
-- [ ] Run R CMD check on supported platforms.
+## v0.1 — Numerical core and chill models
+- [x] GDD: average, single/double sine, single/double triangle.
+- [x] Horizontal, vertical and intermediate cutoffs; degree-hours.
+- [x] Chilling hours (analytical, numerical reference, hourly counts).
+- [x] Utah and Dynamic models; Dynamic state across blocks.
+- [x] Verification against chillR and degday.
+- [ ] Verify the intermediate cutoff against the original Zalom et al. (1983)
+      tables.
 
-## v0.2 — WorldClim raster support
-- [ ] Process 12-month minimum/maximum SpatRaster stacks with `terra`.
-- [ ] Handle temperature scale and units explicitly.
-- [ ] Compute monthly and annual indices with transparent assumptions.
-- [ ] Store metadata and enable file-backed outputs.
+## v0.2 — Temporal reconstruction and spatial processing
+- [x] tempify integration (reticulate) and native `pchip_mp` engine.
+- [x] Tmin <= Tmax checks and joint mean/range densification.
+- [x] Linvill and sine hourly reconstruction.
+- [x] Block-wise `SpatRaster` processing, GeoTIFF/NetCDF, provenance.
+- [ ] Daily `SpatRaster` input (observed gridded daily data).
 
-## v0.3 — Optional tempify backend
-- [ ] Verify Python tempify compatibility.
-- [ ] Reconstruct daily minimum/maximum values using `pchip_mp`.
-- [ ] Enforce Tmin <= Tmax in reconstructed data.
-- [ ] Compare memory usage, throughput, and output differences.
+## v0.3 — Case study and documentation
+- [x] Cauquenes experiment script, figures, report template.
+- [ ] Run the Cauquenes experiment with WorldClim 2.1 and publish outputs.
+- [ ] Deploy the pkgdown site.
 
-## v0.4 — Validation and dissemination
-- [ ] Validate against observed daily/hourly station data.
-- [ ] Publish reproducible error metrics and benchmarks.
-- [ ] Add phenological examples, pkgdown documentation and release.
+## v0.4 — Empirical validation and dissemination
+- [ ] Validate against hourly station data (protocol in the validation
+      vignette).
+- [ ] Publish error metrics and benchmarks; first tagged release.

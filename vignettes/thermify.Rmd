@@ -1,0 +1,79 @@
+---
+title: "Getting started with thermify"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting started with thermify}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 7,
+                      fig.height = 4)
+```
+
+```{r setup}
+library(thermify)
+```
+
+## Architecture
+
+`thermify` separates the stages of a thermal-index workflow so that each
+can be tested and replaced independently:
+
+```
+monthly normals --densify_monthly()--> daily Tmin/Tmax --hourly_temperatures()--> hourly T
+                                            |                                        |
+                       degree_days(), chill_hours()        degree_hours(), chill_hours_hourly(),
+                                            |              chill_units(), chill_portions()
+                                            +------------------+---------------------+
+                                                               |
+                                    season_days() / aggregation (thermify(), thermify_rast())
+                                                               |
+                                               data frames, GeoTIFF, NetCDF, provenance
+```
+
+Scientific functions never read or write files; `thermify()` and
+`thermify_rast()` orchestrate them.
+
+## Inputs are explicit
+
+Frequencies are never inferred from the number of values. Daily functions take
+`tmin` and `tmax`; hourly functions take `temperature`; monthly workflows are
+selected with `input = "monthly"`.
+
+```{r}
+tmin <- c(2, 5, 9, 12)
+tmax <- c(14, 19, 25, 31)
+degree_days(tmin, tmax, method = "average", base = 10)
+degree_days(tmin, tmax, method = "single_sine", base = 10)
+chill_hours(tmin, tmax)
+```
+
+## Monthly climatology for one site
+
+```{r}
+tmin_m <- c(11.4, 11.1, 9.2, 6.8, 5.3, 3.9, 3.1, 3.6, 4.6, 6.3, 8.4, 10.3)
+tmax_m <- c(29.6, 29.2, 26.5, 21.9, 17.2, 13.9, 13.6, 15.3, 17.9, 21.2,
+            24.9, 28.2)
+res <- thermify(tmin_m, tmax_m, input = "monthly", latitude = -35.97,
+                temporal = "native", gdd_methods = c("average", "single_sine"),
+                base = c(5, 10))
+res
+```
+
+The `daily`, `hourly` and `summary` elements are ordinary data frames:
+
+```{r}
+with(res$daily, plot(date, cumsum(gdd_single_sine_b10), type = "l",
+                     ylab = "Cumulative GDD base 10 (degC day)", xlab = ""))
+```
+
+These values are **climatological estimates** for a reference 365-day year,
+not observations of 2023.
+
+## Rasters
+
+`thermify_rast()` takes two 12-layer `SpatRaster` objects and writes one
+multi-layer file per index (season, annual and monthly totals). See
+`vignette("cauquenes")`.

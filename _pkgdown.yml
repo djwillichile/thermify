@@ -1,0 +1,60 @@
+url: https://djwillichile.github.io/thermify/
+destination: pkgdown-site
+
+template:
+  bootstrap: 5
+  bslib:
+    primary: "#0B5563"
+    link-color: "#0B5563"
+
+home:
+  title: "thermify: agroclimatic thermal indices in R"
+
+navbar:
+  structure:
+    left: [intro, reference, articles, news]
+    right: [search, github]
+
+reference:
+  - title: Growing degree-days
+    contents:
+      - degree_days
+      - degree_hours
+  - title: Chill models
+    contents:
+      - chill_hours
+      - chill_hours_hourly
+      - chill_units
+      - utah_weights
+      - chill_portions
+  - title: Temporal reconstruction
+    contents:
+      - densify_monthly
+      - densify_diagnostics
+      - tempify_available
+      - tempify_version
+      - hourly_temperatures
+      - daylength
+  - title: Workflows and periods
+    contents:
+      - thermify
+      - thermify_rast
+      - season_days
+  - title: Spatial data
+    contents:
+      - study_window
+      - worldclim_monthly
+      - check_monthly_climate
+
+articles:
+  - title: Methods
+    navbar: Methods
+    contents:
+      - gdd-methods
+      - chill-models
+      - tempify-integration
+  - title: Applications
+    navbar: Applications
+    contents:
+      - cauquenes
+      - validation

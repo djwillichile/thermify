@@ -4,23 +4,7 @@
 .Ruserdata
 *.Rcheck/
 thermify_*.tar.gz
-docs/reference/
-docs/articles/
-docs/*.html
-docs/*.js
-docs/*.css
-docs/deps/
-docs/search.json
-docs/sitemap.xml
-docs/pkgdown.yml
-docs/404.md
-docs/LICENSE*.md
-docs/authors.md
-docs/news/
-docs/*.png
-docs/*.svg
-docs/link.svg
-docs/bootstrap-toc*
+pkgdown-site/
 # Downloaded data and large generated products of the case study
 examples/cauquenes/data/
 examples/cauquenes/output/rasters/*.tif

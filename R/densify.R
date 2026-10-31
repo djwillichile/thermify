@@ -101,7 +101,7 @@ densify_monthly <- function(tmin, tmax, year = 2023, method = "pchip_mp",
       stop(sprintf(paste(
         "Independent densification produced %d day(s) with tmin > tmax.",
         "Use consistency = \"mean_range\" for a joint, mean-preserving",
-        "reconstruction.")), crossings, call. = FALSE)
+        "reconstruction."), crossings), call. = FALSE)
     }
   } else {
     dmean <- run((tmin + tmax) / 2)

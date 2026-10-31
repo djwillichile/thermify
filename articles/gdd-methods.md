@@ -1,0 +1,96 @@
+# Growing degree-day methods
+
+## One framework for all daily methods
+
+For an idealised diurnal profile between $`T_{min}`$ and $`T_{max}`$,
+define
+
+- the **excess** $`I(x) = \frac{1}{P}\int_0^P \max(0, T(t) - x)\,dt`$,
+  and
+- the **exceedance** $`F(x)`$, the fraction of the day with
+  $`T(t) > x`$.
+
+Both depend only on the distribution of temperatures within the day. For
+a sine wave with mean $`M`$ and amplitude $`A`$, with
+$`\theta = \arcsin((x - M)/A)`$,
+
+``` math
+I(x) = \frac{1}{\pi}\left[(M - x)\left(\frac{\pi}{2} - \theta\right) + A\cos\theta\right],
+\qquad F(x) = \frac{1}{2} - \frac{\theta}{\pi},
+```
+
+which is the Baskerville-Emin (1969) formula. For a symmetric triangle
+$`I(x) = (T_{max} - x)^2 / (2(T_{max} - T_{min}))`$ when
+$`T_{min} < x < T_{max}`$.
+
+With a lower threshold $`L`$ and an upper threshold $`U`$:
+
+| Cutoff       | Degree-days                   | Development above $`U`$ |
+|--------------|-------------------------------|-------------------------|
+| none         | $`I(L)`$                      | unbounded               |
+| horizontal   | $`I(L) - I(U)`$               | constant at $`U - L`$   |
+| vertical     | $`I(L) - I(U) - (U - L)F(U)`$ | zero                    |
+| intermediate | $`I(L) - 2I(U) + I(2U - L)`$  | decreases with slope -1 |
+
+Double methods split the day into a rising half
+($`T_{min,d} \to T_{max,d}`$) and a falling half
+($`T_{max,d} \to T_{min,d+1}`$), each contributing half a day.
+
+## Methods compared
+
+``` r
+
+tmin <- 8; tmax <- seq(10, 40, by = 1)
+methods <- c("average", "single_sine", "single_triangle")
+gdd <- sapply(methods, function(m) degree_days(rep(tmin, length(tmax)), tmax,
+                                               method = m, base = 10))
+matplot(tmax, gdd, type = "l", lty = 1, lwd = 2,
+        col = c("grey40", "#0B5563", "#E8702A"),
+        xlab = "Tmax (degC), Tmin = 8 degC", ylab = "GDD base 10 (degC day)")
+legend("topleft", legend = methods, lty = 1, lwd = 2, bty = "n",
+       col = c("grey40", "#0B5563", "#E8702A"))
+```
+
+![](gdd-methods_files/figure-html/unnamed-chunk-2-1.png)
+
+When $`T_{min} < T_b < T_{max}`$ the averaging method underestimates
+heat accumulation because it ignores the warm hours (a consequence of
+Jensen’s inequality for the convex function $`\max(0, T - T_b)`$).
+
+## Cutoffs are not interchangeable
+
+``` r
+
+tmax <- seq(20, 45, by = 1)
+cuts <- c("horizontal", "intermediate", "vertical")
+gdd <- sapply(cuts, function(k) degree_days(rep(15, length(tmax)), tmax,
+                                            base = 10, upper = 30, cutoff = k))
+matplot(tmax, gdd, type = "l", lty = 1, lwd = 2,
+        col = c("#0B5563", "#5DA9C9", "#E8702A"),
+        xlab = "Tmax (degC), Tmin = 15 degC",
+        ylab = "GDD (degC day), base 10, upper 30")
+legend("topleft", legend = cuts, lty = 1, lwd = 2, bty = "n",
+       col = c("#0B5563", "#5DA9C9", "#E8702A"))
+```
+
+![](gdd-methods_files/figure-html/unnamed-chunk-3-1.png)
+
+## Hourly data
+
+With hourly observations use
+[`degree_hours()`](https://djwillichile.github.io/thermify/reference/degree_hours.md);
+the conversion to degree-days divides the daily sum by 24:
+
+``` r
+
+temp <- 12 + 9 * sin(2 * pi * (0:47 - 9) / 24)
+degree_hours(temp, base = 10, by_day = TRUE)
+#> [1] 3.931741 3.931741
+```
+
+## References
+
+Baskerville & Emin (1969); Lindsey & Newman (1956); Sevacherian et al.
+(1977); Allen (1976); Zalom et al. (1983); McMaster & Wilhelm (1997).
+Full citations are in
+[`?degree_days`](https://djwillichile.github.io/thermify/reference/degree_days.md).

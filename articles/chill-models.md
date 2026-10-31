@@ -1,0 +1,81 @@
+# Chill models: chilling hours, Utah and Dynamic
+
+## Three different quantities
+
+| Model | Unit | Input | Key property |
+|----|----|----|----|
+| Chilling hours 0-7.2 degC | h | hourly (or estimated from daily extremes) | counts time in an interval |
+| Utah (Richardson et al. 1974) | CU | hourly | negative weights above 15.9 degC |
+| Dynamic (Fishman et al. 1987; Erez et al. 1990) | CP | hourly, ordered | irreversible portions, state carried |
+
+Values from different models are not comparable; chill requirements must
+be expressed in the same model they were derived with. The literature
+(e.g. Luedeling 2012) generally recommends the Dynamic model, especially
+in warm-winter regions such as central Chile.
+
+## Response to temperature
+
+``` r
+
+temp <- seq(-5, 25, by = 0.1)
+cp_day <- sapply(temp, function(t) chill_portions(rep(t, 24 * 20),
+                                                  output = "total") / 20)
+op <- par(mfrow = c(1, 2))
+plot(temp, utah_weights(temp), type = "s", xlab = "Temperature (degC)",
+     ylab = "Utah weight (CU per hour)", main = "Utah")
+plot(temp, cp_day, type = "l", xlab = "Constant temperature (degC)",
+     ylab = "Chill portions per day", main = "Dynamic")
+```
+
+![](chill-models_files/figure-html/unnamed-chunk-2-1.png)
+
+``` r
+
+par(op)
+```
+
+## Hourly input and reconstruction
+
+Utah and Dynamic models need ordered hourly temperatures. With only
+daily extremes,
+[`hourly_temperatures()`](https://djwillichile.github.io/thermify/reference/hourly_temperatures.md)
+reconstructs them (Linvill 1990 by default). This is a modelling step,
+not an observation.
+
+``` r
+
+doy <- 121:243            # 1 May to 31 August
+set.seed(1)
+tmin <- 4 + rnorm(length(doy)); tmax <- tmin + 11 + rnorm(length(doy))
+h <- hourly_temperatures(tmin, tmax, latitude = -35.97, doy = doy)
+c(chill_hours_hourly = as.vector(chill_hours_hourly(h, output = "total")),
+  chill_hours_sine = sum(chill_hours(tmin, tmax)),
+  utah = as.vector(chill_units(h, output = "total")),
+  dynamic = as.vector(chill_portions(h, output = "total")))
+#> chill_hours_hourly   chill_hours_sine               utah            dynamic 
+#>         1283.00000         1049.74339         1909.00000           86.78819
+```
+
+## State and blocks
+
+The Dynamic model keeps an intermediate between hours. Processing a
+season in blocks gives exactly the same result when the state is passed
+on:
+
+``` r
+
+a <- chill_portions(h[1:1000])
+b <- chill_portions(h[-(1:1000)], state = attr(a, "state"))
+all.equal(as.vector(tail(b, 1)), as.vector(chill_portions(h, output = "total")))
+#> [1] TRUE
+```
+
+The model is never reset implicitly (for example at month boundaries);
+define the accumulation period by subsetting, for instance with
+[`season_days()`](https://djwillichile.github.io/thermify/reference/season_days.md).
+
+## Relation to chillR
+
+thermify’s Dynamic model reproduces `chillR::Dynamic_Model()` to machine
+precision. chillR reports the portion produced in hour *h* at position
+*h + 1*; thermify assigns it to hour *h*.

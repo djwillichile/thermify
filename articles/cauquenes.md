@@ -1,0 +1,81 @@
+# Tutorial: Cauquenes (Maule, Chile) from WorldClim 2.1
+
+This tutorial follows `examples/cauquenes/run.R`. Code is not evaluated
+when building the documentation because it downloads WorldClim data.
+
+## 1. Study window
+
+``` r
+
+library(thermify)
+library(terra)
+win <- study_window(lon = -72.3225, lat = -35.9671, size_km = 20)
+win
+```
+
+A 20 x 20 km square in UTM zone 18S around the town. It is an
+experimental domain, not the commune boundary.
+
+## 2. WorldClim 2.1 for the window only
+
+A 2.5 arc-minute grid has only 36 cells (about 3.8 x 4.6 km) in this
+window, too few to represent the Coastal Range and the Cauquenes valley,
+so the 30 arc-second product is used.
+[`worldclim_region()`](https://djwillichile.github.io/thermify/reference/worldclim_region.md)
+opens the remote 30x30 degree tiles with GDAL `/vsicurl/` and transfers
+only the strips covering the window (about 0.3 MB per variable), caching
+the result:
+
+``` r
+
+tmin <- worldclim_region("tmin", win, path = "data")
+tmax <- worldclim_region("tmax", win, path = "data")
+check_monthly_climate(tmin, tmax)
+```
+
+A polygon (for example a commune boundary from a GeoPackage) can be used
+both to select and to mask the region:
+
+``` r
+
+comuna <- terra::vect("cauquenes.gpkg")
+tmin_c <- worldclim_region("tmin", comuna, path = "data", mask = TRUE)
+```
+
+The coarser official products (2.5, 5 and 10 arc-minutes) are
+distributed only as global compressed archives;
+[`worldclim_monthly()`](https://djwillichile.github.io/thermify/reference/worldclim_monthly.md)
+downloads and caches them.
+
+## 3. Indices for every cell
+
+``` r
+
+maps <- thermify_rast(
+  tmin, tmax, output_dir = "output/rasters", year = 2023,
+  temporal = "auto", interpolation = "pchip_mp",
+  indices = c("gdd", "ch", "cu", "cp"),
+  gdd_methods = c("average", "single_sine", "double_sine"),
+  base = c(5, 10), ch_methods = c("sine", "hourly"),
+  chill_period = c("05-01", "08-31"), heat_period = c("09-01", "04-30"),
+  format = c("GTiff", "netCDF"))
+plot(maps$cp_dynamic$season, main = "Chill portions, 1 May - 31 Aug")
+```
+
+## 4. Method differences
+
+``` r
+
+d <- maps$gdd_single_sine_b10$season - maps$gdd_average_b10$season
+plot(d, main = "GDD base 10: single sine minus average (degC day)")
+```
+
+## Interpretation
+
+- Values are climatological estimates for a reference 365-day calendar
+  (2023), not observations of that year.
+- Two modelling layers (monthly to daily, daily to hourly) add
+  uncertainty, especially to non-linear chill indices.
+- The experiment checks computation and quantifies method differences;
+  it does not validate any method (see
+  [`vignette("validation")`](https://djwillichile.github.io/thermify/articles/validation.md)).

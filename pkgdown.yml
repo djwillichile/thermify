@@ -1,0 +1,14 @@
+pandoc: 3.8.3
+pkgdown: 2.2.1
+pkgdown_sha: ~
+articles:
+  cauquenes: cauquenes.html
+  chill-models: chill-models.html
+  gdd-methods: gdd-methods.html
+  tempify-integration: tempify-integration.html
+  thermify: thermify.html
+  validation: validation.html
+last_built: 2026-10-31T17:51Z
+urls:
+  reference: https://djwillichile.github.io/thermify/reference
+  article: https://djwillichile.github.io/thermify/articles

@@ -1,8 +1,14 @@
 name: pkgdown
 
+# Builds the site on pull requests (to catch errors before merging) and
+# deploys it to the gh-pages branch from main, releases or manual runs.
+# The site is built into pkgdown-site/ because docs/ holds development
+# documents (roadmap, testing, user stories, release process).
+
 on:
   push:
     branches: [main]
+  pull_request:
   release:
     types: [published]
   workflow_dispatch:
@@ -29,9 +35,12 @@ jobs:
           extra-packages: any::pkgdown, local::.
           needs: website
       - name: Build site
-        run: pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE)
+        run: |
+          pkgdown::build_site_github_pages(new_process = FALSE, install = FALSE,
+                                           dest_dir = "pkgdown-site")
         shell: Rscript {0}
       - name: Deploy to GitHub pages
+        if: github.event_name != 'pull_request'
         uses: JamesIves/github-pages-deploy-action@v4.5.0
         with:
           clean: false

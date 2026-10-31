@@ -18,7 +18,10 @@
 
 ## v0.3 — Case study and documentation
 - [x] Cauquenes experiment script, figures, report template.
-- [ ] Run the Cauquenes experiment with WorldClim 2.1 and publish outputs.
+- [x] Run the Cauquenes experiment with WorldClim 2.1 and publish outputs.
+- [x] Region-only WorldClim 2.1 reads at 30 arc-seconds (`worldclim_region()`).
+- [x] User stories with acceptance tests; integration and error-path tests.
+- [x] Progress feedback for long raster runs.
 - [ ] Deploy the pkgdown site.
 
 ## v0.4 — Empirical validation and dissemination

@@ -82,8 +82,19 @@ tmin <- worldclim_region("tmin", win, path = "data")
 tmax <- worldclim_region("tmax", win, path = "data")
 ```
 
+When does a crop reach its degree-day requirement, or a cultivar its chill
+requirement?
+
+```r
+# station: data frame with daily date, tmin, tmax from 1 Sep to 30 Apr
+gdd <- degree_days(station$tmin, station$tmax, method = "single_sine",
+                   base = 10)
+threshold_date(gdd, station$date, threshold = 500)
+```
+
 For rasters, `thermify_rast()` applies the same workflow block by block to
-12-layer `SpatRaster` stacks and writes one file per index.
+12-layer `SpatRaster` stacks and writes one file per index, reporting
+progress (blocks done, elapsed time and estimated time remaining).
 
 ## Verification
 
@@ -96,6 +107,10 @@ For rasters, `thermify_rast()` applies the same workflow block by block to
   1e-12, except for one documented convention in the pre-dawn Linvill curve
   (`night = "chillr"` reproduces chillR exactly).
 * The native `pchip_mp` engine reproduces tempify to within 1e-13 degC.
+
+* About 400 expectations in unit, acceptance (one per
+  [user story](docs/USER_STORIES.md)), integration and error-path tests,
+  with 94 % line coverage; see [docs/TESTING.md](docs/TESTING.md).
 
 Computational verification is not empirical validation; see
 `vignette("validation")` for the station-based protocol.

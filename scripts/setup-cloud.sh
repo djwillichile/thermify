@@ -19,7 +19,7 @@ log() { echo "[thermify-setup] $*"; }
 log "Installing R and R packages (Ubuntu repositories)"
 apt-get update -qq
 apt-get install -y -qq --no-install-recommends \
-  r-base r-base-dev pandoc \
+  r-base r-base-dev pandoc qpdf \
   r-cran-terra r-cran-ncdf4 \
   r-cran-testthat r-cran-withr r-cran-devtools r-cran-roxygen2 \
   r-cran-rcmdcheck r-cran-usethis r-cran-pkgdown r-cran-knitr \

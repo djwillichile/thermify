@@ -46,4 +46,6 @@
 ## Documentation
 
 * User stories with acceptance tests (`docs/USER_STORIES.md`,
-  `tests/testthat/test-story-*.R`).
+  `tests/testthat/test-story-*.R`) and a testing strategy
+  (`docs/TESTING.md`): unit, acceptance, integration and error-path tests,
+  397 expectations and 94 % line coverage with all optional groups.

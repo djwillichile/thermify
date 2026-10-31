@@ -10,3 +10,5 @@ examples/cauquenes/data/
 examples/cauquenes/output/rasters/*.tif
 examples/cauquenes/output/rasters/*.nc
 examples/cauquenes/output/rasters/daily_*
+/doc/
+/Meta/

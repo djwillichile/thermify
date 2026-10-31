@@ -13,3 +13,5 @@
 ^pkgdown-site$
 ^inst/verification/.*\.csv$
 ^scripts$
+^doc$
+^Meta$

@@ -15,3 +15,5 @@
 ^scripts$
 ^doc$
 ^Meta$
+^CITATION\.cff$
+^\.zenodo\.json$

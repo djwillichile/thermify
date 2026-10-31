@@ -1,0 +1,43 @@
+{
+  "title": "thermify: Efficient Agroclimatic Thermal Indices",
+  "upload_type": "software",
+  "creators": [
+    {
+      "name": "Fuentes-Jaque, Guillermo",
+      "orcid": "0000-0002-7864-4899",
+      "affiliation": "Universidad San Sebastián; Instituto de Ciencias y Tecnología Ambiental ICTA Ltda., Chile"
+    }
+  ],
+  "description": "<p>thermify is an R package for efficient, reproducible and spatially explicit agroclimatic thermal indices: growing degree-days (average, single and double sine, single and double triangle, with horizontal, vertical and intermediate cutoffs), degree-hours, chilling hours, Utah model chill units and Dynamic model chill portions, from hourly, daily or monthly temperatures.</p><p>Monthly climatologies such as WorldClim 2.1 are densified to daily values with a mean-preserving method (natively or through tempify) and disaggregated to hours; rasters are processed in blocks with terra. Results based on monthly climatologies are model-based estimates, not observations.</p><p>Documentation: https://djwillichile.github.io/thermify/</p>",
+  "license": "MIT",
+  "keywords": [
+    "agroclimatology",
+    "growing degree-days",
+    "chilling hours",
+    "chill portions",
+    "dynamic model",
+    "utah model",
+    "phenology",
+    "worldclim",
+    "raster",
+    "R"
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/djwillichile/thermify",
+      "relation": "isSupplementTo",
+      "scheme": "url"
+    },
+    {
+      "identifier": "https://djwillichile.github.io/thermify/",
+      "relation": "isDocumentedBy",
+      "scheme": "url"
+    },
+    {
+      "identifier": "10.5281/zenodo.20297689",
+      "relation": "requires",
+      "scheme": "doi"
+    }
+  ],
+  "language": "eng"
+}

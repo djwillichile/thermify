@@ -1,0 +1,45 @@
+cff-version: 1.2.0
+message: "If you use thermify in research, please cite the software as below."
+title: "thermify: Efficient Agroclimatic Thermal Indices"
+type: software
+authors:
+  - family-names: Fuentes-Jaque
+    given-names: Guillermo
+    orcid: https://orcid.org/0000-0002-7864-4899
+    email: gfuentesj@correo.uss.cl
+    affiliation: >-
+      Facultad de Ingeniería, Universidad San Sebastián, Chile;
+      Instituto de Ciencias y Tecnología Ambiental ICTA Ltda., Chile
+abstract: >-
+  thermify is an R package for efficient, reproducible and spatially explicit
+  agroclimatic thermal indices: growing degree-days (average, single and
+  double sine, single and double triangle, with horizontal, vertical and
+  intermediate cutoffs), degree-hours, chilling hours, Utah model chill units
+  and Dynamic model chill portions. It computes them from hourly, daily or
+  monthly temperatures; monthly climatologies such as WorldClim 2.1 are
+  densified with a mean-preserving method (natively or through tempify) and
+  disaggregated to hours, and rasters are processed in blocks with terra.
+keywords:
+  - agroclimatology
+  - growing degree-days
+  - chilling hours
+  - chill portions
+  - dynamic model
+  - utah model
+  - phenology
+  - worldclim
+  - raster
+  - R
+license: MIT
+repository-code: "https://github.com/djwillichile/thermify"
+url: "https://djwillichile.github.io/thermify/"
+version: "0.1.0"
+date-released: "2026-10-31"
+references:
+  - type: software
+    title: "tempify: Temporal densification for geospatial raster stacks"
+    authors:
+      - family-names: Fuentes-Jaque
+        given-names: Guillermo S.
+    doi: 10.5281/zenodo.20297689
+    repository-code: "https://github.com/djwillichile/tempify"

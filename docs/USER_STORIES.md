@@ -80,3 +80,19 @@ Acceptance criteria:
    cells outside the polygon stay `NA`.
 3. Each index is written as one file with named, documented layers (season,
    annual, monthly) and units.
+
+## US-05 Comparing methods on the same data
+
+As a **researcher**, I want all GDD and chill methods computed on exactly the
+same inputs and returned in one tidy table with units, so that I can quantify
+differences between methods without re-running or reshaping.
+
+Acceptance criteria:
+
+1. One call returns every requested method x base temperature, each row with
+   its key, aggregation and units.
+2. Results respect known mathematical properties: without an upper threshold,
+   sine and triangle GDD are never below the averaging method (Jensen's
+   inequality for the convex function max(0, T - Tb)), and all methods agree
+   when temperatures never cross the base.
+3. Requesting several methods does not change the value of any single method.

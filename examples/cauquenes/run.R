@@ -55,6 +55,8 @@ root <- if (smoke_test) {
 }
 data_dir <- file.path("examples/cauquenes", "data")
 out <- file.path(root, "output")
+dir.create(out, recursive = TRUE, showWarnings = FALSE)
+out <- normalizePath(out)
 dirs <- file.path(out, c("rasters", "tables", "figures", "reports"))
 invisible(lapply(dirs, dir.create, recursive = TRUE, showWarnings = FALSE))
 names(dirs) <- c("rasters", "tables", "figures", "reports")
@@ -283,7 +285,7 @@ if (requireNamespace("rmarkdown", quietly = TRUE) &&
     rmarkdown::pandoc_available()) {
   rmarkdown::render(file.path("examples/cauquenes", "report.Rmd"),
                     output_dir = dirs[["reports"]],
-                    params = list(output = normalizePath(out)),
+                    params = list(output = out),
                     quiet = TRUE, envir = new.env())
 }
-log_msg("Done. Outputs in ", normalizePath(out))
+log_msg("Done. Outputs in ", out)

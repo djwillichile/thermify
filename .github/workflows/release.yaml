@@ -1,8 +1,9 @@
 name: release
 
-# Publishes a GitHub Release for a version tag (v*). It runs either when the
-# tag is pushed, or when a release is published from the GitHub interface
-# (which creates the tag). The tag must match the Version field of
+# Publishes a GitHub Release for a version tag (v*). It runs when the tag is
+# pushed, when a release is published from the GitHub interface (which
+# creates the tag), or manually from main (Actions > release > Run workflow),
+# in which case the tag v<Version> is created on the current commit. The tag must match the Version field of
 # DESCRIPTION; the release notes are the NEWS.md section of that version and
 # the source tarball is attached (an existing release is updated).
 
@@ -11,6 +12,7 @@ on:
     tags: ['v*']
   release:
     types: [published]
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -34,6 +36,11 @@ jobs:
         run: |
           tag="${{ github.event.release.tag_name || github.ref_name }}"
           version=$(Rscript -e 'cat(read.dcf("DESCRIPTION", "Version"))')
+          if [ "${GITHUB_EVENT_NAME}" = "workflow_dispatch" ]; then
+            test "${GITHUB_REF_NAME}" = "main" || {
+              echo "Manual releases run only from main"; exit 1; }
+            tag="v${version}"
+          fi
           test "v${version}" = "${tag}" || {
             echo "Tag ${tag} does not match Version ${version}"; exit 1; }
           echo "TAG=${tag}" >> "$GITHUB_ENV"
@@ -52,6 +59,7 @@ jobs:
       - uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ env.TAG }}
+          target_commitish: ${{ github.sha }}
           name: thermify ${{ env.VERSION }}
           body_path: release-notes.md
           files: thermify_${{ env.VERSION }}.tar.gz

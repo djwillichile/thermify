@@ -22,7 +22,8 @@
 - [x] Region-only WorldClim 2.1 reads at 30 arc-seconds (`worldclim_region()`).
 - [x] User stories with acceptance tests; integration and error-path tests.
 - [x] Progress feedback for long raster runs.
-- [ ] Deploy the pkgdown site.
+- [ ] Deploy the pkgdown site (workflow ready; deploys on merge to main).
+- [x] Release process documented (`docs/RELEASING.md`) and automated.
 
 ## v0.4 — Empirical validation and dissemination
 - [ ] Validate against hourly station data (protocol in the validation

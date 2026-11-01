@@ -41,6 +41,11 @@ reference:
       - thermify_rast
       - season_days
       - threshold_date
+  - title: Validation
+    contents:
+      - prepare_station_hourly
+      - validate_station
+      - validation_metrics
   - title: Spatial data
     contents:
       - study_window

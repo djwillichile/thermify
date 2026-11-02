@@ -1,17 +1,24 @@
 # Changelog
 
-## thermify (development version)
+## thermify 0.2.0
 
-### Changes
+Adds the tools for empirical validation against station records, the
+official DPA 2023 boundaries of Cauquenes, and attaches `terra` with the
+package. Validation results with real stations
+([\#3](https://github.com/djwillichile/thermify/issues/3)) are not part
+of this release.
 
-- `terra` is now a dependency (`Depends`):
+### Breaking changes
+
+- `terra` is now a dependency (`Depends`) instead of a suggested
+  package: installing thermify installs terra, and
   [`library(thermify)`](https://github.com/djwillichile/thermify)
   attaches it, so
   [`vect()`](https://rspatial.github.io/terra/reference/vect.html),
   [`rast()`](https://rspatial.github.io/terra/reference/rast.html),
   [`plot()`](https://rspatial.github.io/terra/reference/plot.html) and
-  the other `terra` functions are available without `terra::`.
-  Installing thermify now installs terra.
+  the other `terra` functions are available without `terra::`. On Linux,
+  terra needs the GDAL, GEOS and PROJ system libraries.
 
 ### New features
 
@@ -34,6 +41,17 @@
   returns bias, MAE, RMSE, relative bias and correlation. The protocol
   is tested on synthetic records; results with real stations are
   pending.
+
+### Documentation
+
+- The `cauquenes` dataset cites its source (SUBDERE, DPA 2023) and
+  carries the DIFROL circulation notice (Resolución Nº 87 de 2023).
+- [`vignette("validation")`](https://djwillichile.github.io/thermify/articles/validation.md)
+  documents the implementation; examples, the Cauquenes tutorial and the
+  README use
+  [`cauquenes_boundary()`](https://djwillichile.github.io/thermify/reference/cauquenes_boundary.md)
+  and bare `terra` calls.
+- Release and development version badges in the README and the site.
 
 ## thermify 0.1.0
 

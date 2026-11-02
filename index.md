@@ -26,7 +26,7 @@ after a mean-preserving temporal densification.
 ``` r
 
 # install.packages("remotes")
-remotes::install_github("djwillichile/thermify@v0.1.0")   # release
+remotes::install_github("djwillichile/thermify@v0.2.0")   # release
 remotes::install_github("djwillichile/thermify")          # development
 ```
 

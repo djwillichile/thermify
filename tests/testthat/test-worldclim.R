@@ -43,23 +43,20 @@ test_that("worldclim_region reads a window remotely and caches it", {
   expect_true(anyNA(terra::values(m[[1]])))
 })
 
-test_that("the packaged DPA 2023 boundaries of Cauquenes are valid", {
+test_that("the DPA 2023 boundaries of Cauquenes are valid", {
   skip_if_not_installed("terra")
-  f <- system.file("extdata", "cauquenes.gpkg", package = "thermify")
-  expect_true(nzchar(f))
-  expect_setequal(terra::vector_layers(f), c("comuna", "provincia"))
-  comuna <- terra::vect(f, layer = "comuna")
-  provincia <- terra::vect(f, layer = "provincia")
-  expect_equal(nrow(comuna), 1)
-  expect_equal(comuna$CUT_COM, "07201")
-  expect_equal(provincia$CUT_PROV, "072")
-  expect_equal(terra::crs(comuna, describe = TRUE)$code, "5360")
-  expect_true(all(terra::is.valid(comuna)))
-  # Computed area matches the DPA SUPERFICIE attribute (km2).
-  expect_equal(terra::expanse(comuna, unit = "km"), comuna$SUPERFICIE,
+  cq <- terra::vect(cauquenes)
+  expect_s4_class(cq, "SpatVector")
+  expect_equal(cq$nivel, c("comuna", "provincia"))
+  expect_equal(cq$CUT_COM[1], "07201")
+  expect_equal(cq$CUT_PROV, c("072", "072"))
+  expect_equal(terra::crs(cq, describe = TRUE)$code, "5360")
+  expect_true(all(terra::is.valid(cq)))
+  # Computed areas match the DPA SUPERFICIE attribute (km2).
+  expect_equal(terra::expanse(cq, unit = "km"), cq$SUPERFICIE,
                tolerance = 1e-3)
-  expect_equal(terra::expanse(provincia, unit = "km"), provincia$SUPERFICIE,
-               tolerance = 1e-3)
+  # The commune lies inside its province.
+  expect_true(terra::relate(cq[1], terra::buffer(cq[2], 1), "within")[1, 1])
 })
 
 test_that("worldclim_region masks WorldClim with the commune polygon", {
@@ -67,8 +64,8 @@ test_that("worldclim_region masks WorldClim with the commune polygon", {
   skip_if_not_installed("terra")
   skip_if_not(identical(Sys.getenv("THERMIFY_ONLINE_TESTS"), "true"),
               "set THERMIFY_ONLINE_TESTS=true to run network tests")
-  f <- system.file("extdata", "cauquenes.gpkg", package = "thermify")
-  comuna <- terra::vect(f, layer = "comuna")
+  cq <- terra::vect(cauquenes)
+  comuna <- cq[cq$nivel == "comuna", ]
   r <- worldclim_region("tmin", comuna, tempfile(), mask = TRUE)
   inside <- sum(!is.na(terra::values(r[[1]], mat = FALSE)))
   # 30 arc-second cells are about 0.68 km2 at this latitude.

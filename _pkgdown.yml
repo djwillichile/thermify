@@ -47,6 +47,7 @@ reference:
       - worldclim_region
       - worldclim_monthly
       - check_monthly_climate
+      - cauquenes
 
 articles:
   - title: Methods

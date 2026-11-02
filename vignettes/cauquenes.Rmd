@@ -46,9 +46,9 @@ the 2023 Political and Administrative Division of Chile (DPA 2023,
 SIRGAS-Chile 2002):
 
 ```{r}
-f <- system.file("extdata", "cauquenes.gpkg", package = "thermify")
-comuna <- vect(f, layer = "comuna")        # CUT_COM 07201, 2,124.5 km2
-provincia <- vect(f, layer = "provincia")  # CUT_PROV 072, 3,021.7 km2
+cq <- vect(cauquenes)                      # data(cauquenes), DPA 2023
+comuna <- cq[cq$nivel == "comuna", ]       # CUT_COM 07201, 2,124.5 km2
+provincia <- cq[cq$nivel == "provincia", ] # CUT_PROV 072, 3,021.7 km2
 tmin_c <- worldclim_region("tmin", comuna, path = "data", mask = TRUE)
 tmax_c <- worldclim_region("tmax", comuna, path = "data", mask = TRUE)
 ```

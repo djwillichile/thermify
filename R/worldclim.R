@@ -165,8 +165,8 @@ worldclim_monthly <- function(var = c("tmin", "tmax"), res = 2.5, path,
 #'
 #' # Mask with a polygon: the Cauquenes commune boundary (DPA 2023),
 #' # distributed with the package
-#' f <- system.file("extdata", "cauquenes.gpkg", package = "thermify")
-#' comuna <- terra::vect(f, layer = "comuna")
+#' cq <- terra::vect(cauquenes)
+#' comuna <- cq[cq$nivel == "comuna", ]
 #' tmax <- worldclim_region("tmax", comuna, path = "data", mask = TRUE)
 #'
 #' # Any polygon layer works, for example your own GeoPackage:

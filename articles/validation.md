@@ -62,11 +62,34 @@ made without empirical validation.
     [`tempify_version()`](https://djwillichile.github.io/thermify/reference/tempify_version.md)),
     and uncertainty intervals (bootstrap across years).
 
+## Implementation
+
+The protocol is implemented by three functions:
+
+- [`prepare_station_hourly()`](https://djwillichile.github.io/thermify/reference/prepare_station_hourly.md)
+  puts the record on a regular hourly grid, fills gaps of up to
+  `max_gap` hours by linear interpolation and flags incomplete days;
+- [`validate_station()`](https://djwillichile.github.io/thermify/reference/validate_station.md)
+  computes the observed indices from the hourly data and the estimates
+  at the daily, monthly and (optionally) gridded levels, for complete
+  seasons only, and reports excluded seasons;
+- [`validation_metrics()`](https://djwillichile.github.io/thermify/reference/validation_metrics.md)
+  returns bias, MAE, RMSE, relative bias and correlation.
+
 ``` r
 
-metrics <- function(est, obs) {
-  e <- est - obs
-  c(bias = mean(e), mae = mean(abs(e)), rmse = sqrt(mean(e^2)),
-    r = stats::cor(est, obs))
-}
+st <- prepare_station_hourly(obs$time, obs$temperature, max_gap = 2)
+st
+v <- validate_station(
+  st, latitude = -35.97,
+  gridded = list(tmin = wc_tmin_cell, tmax = wc_tmax_cell))
+v$metrics      # one row per index, level and method
+v$seasons      # estimate and observed value per season
+v$excluded     # seasons not evaluated and why
 ```
+
+At the monthly and gridded levels a single climatological estimate is
+compared with every season, so the error includes interannual
+variability and correlation is not defined. Daily minima taken from
+hourly records can fall in the evening when the following night is
+colder; this is part of the error being measured.

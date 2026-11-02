@@ -57,6 +57,7 @@
 <code>cauquenes</code> dataset: official DPA 2023 boundaries of the Cauquenes commune and province (packed <code>SpatVector</code>, EPSG:5360), replacing the undocumented <code>cauquenes.gpkg</code> referenced in earlier documentation.</li>
 <li>
 <code><a href="../reference/cauquenes_boundary.html">cauquenes_boundary()</a></code> returns one or both levels as a <code>SpatVector</code>, optionally projected (<code>crs</code>).</li>
+<li>Station validation (<a href="https://github.com/djwillichile/thermify/issues/3" class="external-link">#3</a>): <code><a href="../reference/prepare_station_hourly.html">prepare_station_hourly()</a></code> regularises hourly records, fills short gaps and flags incomplete days; <code><a href="../reference/validate_station.html">validate_station()</a></code> compares indices observed on hourly data with estimates from daily extremes, from the station’s densified monthly climatology and, optionally, from a gridded climatology; <code><a href="../reference/validation_metrics.html">validation_metrics()</a></code> returns bias, MAE, RMSE, relative bias and correlation. The protocol is tested on synthetic records; results with real stations are pending.</li>
 </ul></div>
 </div>
     <div class="section level2">

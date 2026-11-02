@@ -21,6 +21,19 @@
 - [`cauquenes_boundary()`](https://djwillichile.github.io/thermify/reference/cauquenes_boundary.md)
   returns one or both levels as a `SpatVector`, optionally projected
   (`crs`).
+- Station validation
+  ([\#3](https://github.com/djwillichile/thermify/issues/3)):
+  [`prepare_station_hourly()`](https://djwillichile.github.io/thermify/reference/prepare_station_hourly.md)
+  regularises hourly records, fills short gaps and flags incomplete
+  days;
+  [`validate_station()`](https://djwillichile.github.io/thermify/reference/validate_station.md)
+  compares indices observed on hourly data with estimates from daily
+  extremes, from the station’s densified monthly climatology and,
+  optionally, from a gridded climatology;
+  [`validation_metrics()`](https://djwillichile.github.io/thermify/reference/validation_metrics.md)
+  returns bias, MAE, RMSE, relative bias and correlation. The protocol
+  is tested on synthetic records; results with real stations are
+  pending.
 
 ## thermify 0.1.0
 

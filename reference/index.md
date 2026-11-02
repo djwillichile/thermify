@@ -46,6 +46,15 @@
 - [`threshold_date()`](https://djwillichile.github.io/thermify/reference/threshold_date.md)
   : Date on which an accumulated index reaches a threshold
 
+## Validation
+
+- [`prepare_station_hourly()`](https://djwillichile.github.io/thermify/reference/prepare_station_hourly.md)
+  : Prepare an hourly station record for validation
+- [`validate_station()`](https://djwillichile.github.io/thermify/reference/validate_station.md)
+  : Validate thermal-index estimates against an hourly station record
+- [`validation_metrics()`](https://djwillichile.github.io/thermify/reference/validation_metrics.md)
+  : Agreement metrics between estimated and observed values
+
 ## Spatial data
 
 - [`study_window()`](https://djwillichile.github.io/thermify/reference/study_window.md)

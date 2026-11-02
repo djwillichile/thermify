@@ -200,12 +200,39 @@ exact package versions (<code><a href="https://rdrr.io/r/utils/sessionInfo.html"
 <code><a href="../reference/tempify_version.html">tempify_version()</a></code>), and uncertainty intervals (bootstrap
 across years).</li>
 </ol>
+</div>
+<div class="section level2">
+<h2 id="implementation">Implementation<a class="anchor" aria-label="anchor" href="#implementation"></a>
+</h2>
+<p>The protocol is implemented by three functions:</p>
+<ul>
+<li>
+<code><a href="../reference/prepare_station_hourly.html">prepare_station_hourly()</a></code> puts the record on a regular
+hourly grid, fills gaps of up to <code>max_gap</code> hours by linear
+interpolation and flags incomplete days;</li>
+<li>
+<code><a href="../reference/validate_station.html">validate_station()</a></code> computes the observed indices from
+the hourly data and the estimates at the daily, monthly and (optionally)
+gridded levels, for complete seasons only, and reports excluded
+seasons;</li>
+<li>
+<code><a href="../reference/validation_metrics.html">validation_metrics()</a></code> returns bias, MAE, RMSE, relative
+bias and correlation.</li>
+</ul>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">metrics</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">est</span>, <span class="va">obs</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">e</span> <span class="op">&lt;-</span> <span class="va">est</span> <span class="op">-</span> <span class="va">obs</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>bias <span class="op">=</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/summarize-generics.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">e</span><span class="op">)</span>, mae <span class="op">=</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/summarize-generics.html" class="external-link">mean</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">e</span><span class="op">)</span><span class="op">)</span>, rmse <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/summarize-generics.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">e</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>    r <span class="op">=</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span><span class="va">est</span>, <span class="va">obs</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="op">}</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">st</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/prepare_station_hourly.html">prepare_station_hourly</a></span><span class="op">(</span><span class="va">obs</span><span class="op">$</span><span class="va">time</span>, <span class="va">obs</span><span class="op">$</span><span class="va">temperature</span>, max_gap <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="va">st</span></span>
+<span><span class="va">v</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/validate_station.html">validate_station</a></span><span class="op">(</span></span>
+<span>  <span class="va">st</span>, latitude <span class="op">=</span> <span class="op">-</span><span class="fl">35.97</span>,</span>
+<span>  gridded <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>tmin <span class="op">=</span> <span class="va">wc_tmin_cell</span>, tmax <span class="op">=</span> <span class="va">wc_tmax_cell</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">v</span><span class="op">$</span><span class="va">metrics</span>      <span class="co"># one row per index, level and method</span></span>
+<span><span class="va">v</span><span class="op">$</span><span class="va">seasons</span>      <span class="co"># estimate and observed value per season</span></span>
+<span><span class="va">v</span><span class="op">$</span><span class="va">excluded</span>     <span class="co"># seasons not evaluated and why</span></span></code></pre></div>
+<p>At the monthly and gridded levels a single climatological estimate is
+compared with every season, so the error includes interannual
+variability and correlation is not defined. Daily minima taken from
+hourly records can fall in the evening when the following night is
+colder; this is part of the error being measured.</p>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside>

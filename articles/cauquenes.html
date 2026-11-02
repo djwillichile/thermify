@@ -84,8 +84,7 @@ WorldClim data.</p>
 <h2 id="study-window">1. Study window<a class="anchor" aria-label="anchor" href="#study-window"></a>
 </h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/djwillichile/thermify" class="external-link">thermify</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://rspatial.org/" class="external-link">terra</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/djwillichile/thermify" class="external-link">thermify</a></span><span class="op">)</span>   <span class="co"># also attaches terra</span></span>
 <span><span class="va">win</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/study_window.html">study_window</a></span><span class="op">(</span>lon <span class="op">=</span> <span class="op">-</span><span class="fl">72.3225</span>, lat <span class="op">=</span> <span class="op">-</span><span class="fl">35.9671</span>, size_km <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span>
 <span><span class="va">win</span></span></code></pre></div>
 <p>A 20 x 20 km square in UTM zone 18S around the town. It is an
@@ -104,11 +103,19 @@ variable), caching the result:</p>
 <code class="sourceCode R"><span><span class="va">tmin</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/worldclim_region.html">worldclim_region</a></span><span class="op">(</span><span class="st">"tmin"</span>, <span class="va">win</span>, path <span class="op">=</span> <span class="st">"data"</span><span class="op">)</span></span>
 <span><span class="va">tmax</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/worldclim_region.html">worldclim_region</a></span><span class="op">(</span><span class="st">"tmax"</span>, <span class="va">win</span>, path <span class="op">=</span> <span class="st">"data"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/check_monthly_climate.html">check_monthly_climate</a></span><span class="op">(</span><span class="va">tmin</span>, <span class="va">tmax</span><span class="op">)</span></span></code></pre></div>
-<p>A polygon (for example a commune boundary from a GeoPackage) can be
-used both to select and to mask the region:</p>
+<p>A polygon can be used both to select and to mask the region. thermify
+includes the official boundaries of the Cauquenes commune and province
+from the 2023 Political and Administrative Division of Chile (DPA 2023,
+SIRGAS-Chile 2002):</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">comuna</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/vect.html" class="external-link">vect</a></span><span class="op">(</span><span class="st">"cauquenes.gpkg"</span><span class="op">)</span></span>
-<span><span class="va">tmin_c</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/worldclim_region.html">worldclim_region</a></span><span class="op">(</span><span class="st">"tmin"</span>, <span class="va">comuna</span>, path <span class="op">=</span> <span class="st">"data"</span>, mask <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">comuna</span>    <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cauquenes_boundary.html">cauquenes_boundary</a></span><span class="op">(</span><span class="st">"comuna"</span><span class="op">)</span>     <span class="co"># CUT_COM 07201, 2,124.5 km2</span></span>
+<span><span class="va">provincia</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cauquenes_boundary.html">cauquenes_boundary</a></span><span class="op">(</span><span class="st">"provincia"</span><span class="op">)</span>  <span class="co"># CUT_PROV 072, 3,021.7 km2</span></span>
+<span><span class="va">tmin_c</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/worldclim_region.html">worldclim_region</a></span><span class="op">(</span><span class="st">"tmin"</span>, <span class="va">comuna</span>, path <span class="op">=</span> <span class="st">"data"</span>, mask <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">tmax_c</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/worldclim_region.html">worldclim_region</a></span><span class="op">(</span><span class="st">"tmax"</span>, <span class="va">comuna</span>, path <span class="op">=</span> <span class="st">"data"</span>, mask <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p>Cells outside the commune are <code>NA</code> and stay
+<code>NA</code> in every output of <code><a href="../reference/thermify_rast.html">thermify_rast()</a></code>. Any
+other polygon layer can be used instead, for example
+<code>vect("path/to/area.gpkg")</code>.</p>
 <p>The coarser official products (2.5, 5 and 10 arc-minutes) are
 distributed only as global compressed archives;
 <code><a href="../reference/worldclim_monthly.html">worldclim_monthly()</a></code> downloads and caches them.</p>

@@ -46,6 +46,18 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="thermify-development-version">thermify (development version)<a class="anchor" aria-label="anchor" href="#thermify-development-version"></a></h2>
+<div class="section level3">
+<h3 id="changes-development-version">Changes<a class="anchor" aria-label="anchor" href="#changes-development-version"></a></h3>
+<ul><li>
+<code>terra</code> is now a dependency (<code>Depends</code>): <code><a href="https://github.com/djwillichile/thermify" class="external-link">library(thermify)</a></code> attaches it, so <code><a href="https://rspatial.github.io/terra/reference/vect.html" class="external-link">vect()</a></code>, <code><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">rast()</a></code>, <code><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot()</a></code> and the other <code>terra</code> functions are available without <code>terra::</code>. Installing thermify now installs terra.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="new-features-development-version">New features<a class="anchor" aria-label="anchor" href="#new-features-development-version"></a></h3>
+<ul><li>
+<code>cauquenes</code> dataset: official DPA 2023 boundaries of the Cauquenes commune and province (packed <code>SpatVector</code>, EPSG:5360), replacing the undocumented <code>cauquenes.gpkg</code> referenced in earlier documentation.</li>
+<li>
+<code><a href="../reference/cauquenes_boundary.html">cauquenes_boundary()</a></code> returns one or both levels as a <code>SpatVector</code>, optionally projected (<code>crs</code>).</li>
+</ul></div>
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.1.0" id="thermify-010">thermify 0.1.0<a class="anchor" aria-label="anchor" href="#thermify-010"></a></h2>

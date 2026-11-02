@@ -3,6 +3,8 @@
 ``` r
 
 library(thermify)
+#> Loading required package: terra
+#> terra 1.9.50
 ```
 
 ## Architecture

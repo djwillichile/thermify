@@ -107,7 +107,7 @@
 </tr>
 <tr>
 <td>Spatial</td>
-<td>block-wise processing of <code><a href="https://rspatial.github.io/terra/reference/SpatRaster-class.html" class="external-link">terra::SpatRaster</a></code> stacks, GeoTIFF and NetCDF output</td>
+<td>block-wise processing of <code><a href="https://rspatial.github.io/terra/reference/SpatRaster-class.html" class="external-link">terra::SpatRaster</a></code> stacks, GeoTIFF and NetCDF output; regional WorldClim 2.1 reads; official DPA 2023 boundaries of Cauquenes (<code><a href="reference/cauquenes_boundary.html">cauquenes_boundary()</a></code>)</td>
 </tr>
 </tbody>
 </table>
@@ -121,7 +121,7 @@
 <code class="sourceCode R"><span><span class="co"># install.packages("remotes")</span></span>
 <span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"djwillichile/thermify@v0.1.0"</span><span class="op">)</span>   <span class="co"># release</span></span>
 <span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"djwillichile/thermify"</span><span class="op">)</span>          <span class="co"># development</span></span></code></pre></div>
-<p><code>terra</code> is needed for raster workflows. The optional <a href="https://github.com/djwillichile/tempify" class="external-link">tempify</a> backend needs Python and <code>reticulate</code>; without it <code>thermify</code> uses an equivalent native R engine.</p>
+<p><code><a href="https://github.com/djwillichile/thermify" class="external-link">library(thermify)</a></code> also attaches <code>terra</code>, so <code><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">rast()</a></code>, <code><a href="https://rspatial.github.io/terra/reference/vect.html" class="external-link">vect()</a></code>, <code><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot()</a></code> and the other <code>terra</code> functions are available directly. The optional <a href="https://github.com/djwillichile/tempify" class="external-link">tempify</a> backend needs Python and <code>reticulate</code>; without it <code>thermify</code> uses an equivalent native R engine.</p>
 </div>
 <div class="section level2">
 <h2 id="quick-start">Quick start<a class="anchor" aria-label="anchor" href="#quick-start"></a>
@@ -158,7 +158,11 @@
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">win</span>  <span class="op">&lt;-</span> <span class="fu"><a href="reference/study_window.html">study_window</a></span><span class="op">(</span>lon <span class="op">=</span> <span class="op">-</span><span class="fl">72.3225</span>, lat <span class="op">=</span> <span class="op">-</span><span class="fl">35.9671</span>, size_km <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span>
 <span><span class="va">tmin</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/worldclim_region.html">worldclim_region</a></span><span class="op">(</span><span class="st">"tmin"</span>, <span class="va">win</span>, path <span class="op">=</span> <span class="st">"data"</span><span class="op">)</span></span>
-<span><span class="va">tmax</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/worldclim_region.html">worldclim_region</a></span><span class="op">(</span><span class="st">"tmax"</span>, <span class="va">win</span>, path <span class="op">=</span> <span class="st">"data"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="va">tmax</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/worldclim_region.html">worldclim_region</a></span><span class="op">(</span><span class="st">"tmax"</span>, <span class="va">win</span>, path <span class="op">=</span> <span class="st">"data"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Official DPA 2023 boundary of the Cauquenes commune, as a mask</span></span>
+<span><span class="va">comuna</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/cauquenes_boundary.html">cauquenes_boundary</a></span><span class="op">(</span><span class="st">"comuna"</span><span class="op">)</span>        <span class="co"># or "provincia"</span></span>
+<span><span class="va">tmin_c</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/worldclim_region.html">worldclim_region</a></span><span class="op">(</span><span class="st">"tmin"</span>, <span class="va">comuna</span>, path <span class="op">=</span> <span class="st">"data"</span>, mask <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <p>When does a crop reach its degree-day requirement, or a cultivar its chill requirement?</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># station: data frame with daily date, tmin, tmax from 1 Sep to 30 Apr</span></span>

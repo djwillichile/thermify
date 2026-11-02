@@ -2,6 +2,26 @@
 
 ## thermify (development version)
 
+### Changes
+
+- `terra` is now a dependency (`Depends`):
+  [`library(thermify)`](https://github.com/djwillichile/thermify)
+  attaches it, so
+  [`vect()`](https://rspatial.github.io/terra/reference/vect.html),
+  [`rast()`](https://rspatial.github.io/terra/reference/rast.html),
+  [`plot()`](https://rspatial.github.io/terra/reference/plot.html) and
+  the other `terra` functions are available without `terra::`.
+  Installing thermify now installs terra.
+
+### New features
+
+- `cauquenes` dataset: official DPA 2023 boundaries of the Cauquenes
+  commune and province (packed `SpatVector`, EPSG:5360), replacing the
+  undocumented `cauquenes.gpkg` referenced in earlier documentation.
+- [`cauquenes_boundary()`](https://djwillichile.github.io/thermify/reference/cauquenes_boundary.md)
+  returns one or both levels as a `SpatVector`, optionally projected
+  (`crs`).
+
 ## thermify 0.1.0
 
 First release. Functional, documented and tested package for

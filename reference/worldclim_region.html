@@ -153,9 +153,13 @@ of Climatology</em>, 37(12), 4302-4315.</p>
 <span class="r-in"><span><span class="va">win</span> <span class="op">&lt;-</span> <span class="fu"><a href="study_window.html">study_window</a></span><span class="op">(</span><span class="op">-</span><span class="fl">72.3225</span>, <span class="op">-</span><span class="fl">35.9671</span>, size_km <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">tmin</span> <span class="op">&lt;-</span> <span class="fu">worldclim_region</span><span class="op">(</span><span class="st">"tmin"</span>, <span class="va">win</span>, path <span class="op">=</span> <span class="st">"data"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Mask with a polygon (for example a commune boundary)</span></span></span>
-<span class="r-in"><span><span class="co"># comuna &lt;- terra::vect("cauquenes.gpkg")</span></span></span>
-<span class="r-in"><span><span class="co"># tmax &lt;- worldclim_region("tmax", comuna, path = "data", mask = TRUE)</span></span></span>
+<span class="r-in"><span><span class="co"># Mask with a polygon: the Cauquenes commune boundary (DPA 2023),</span></span></span>
+<span class="r-in"><span><span class="co"># distributed with the package</span></span></span>
+<span class="r-in"><span><span class="va">comuna</span> <span class="op">&lt;-</span> <span class="fu"><a href="cauquenes_boundary.html">cauquenes_boundary</a></span><span class="op">(</span><span class="st">"comuna"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">tmax</span> <span class="op">&lt;-</span> <span class="fu">worldclim_region</span><span class="op">(</span><span class="st">"tmax"</span>, <span class="va">comuna</span>, path <span class="op">=</span> <span class="st">"data"</span>, mask <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Any polygon layer works, for example your own GeoPackage:</span></span></span>
+<span class="r-in"><span><span class="co"># zona &lt;- vect("path/to/area.gpkg")</span></span></span>
 <span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
 </code></pre></div>
     </div>

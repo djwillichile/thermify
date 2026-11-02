@@ -7,8 +7,7 @@ when building the documentation because it downloads WorldClim data.
 
 ``` r
 
-library(thermify)
-library(terra)
+library(thermify)   # also attaches terra
 win <- study_window(lon = -72.3225, lat = -35.9671, size_km = 20)
 win
 ```
@@ -33,14 +32,23 @@ tmax <- worldclim_region("tmax", win, path = "data")
 check_monthly_climate(tmin, tmax)
 ```
 
-A polygon (for example a commune boundary from a GeoPackage) can be used
-both to select and to mask the region:
+A polygon can be used both to select and to mask the region. thermify
+includes the official boundaries of the Cauquenes commune and province
+from the 2023 Political and Administrative Division of Chile (DPA 2023,
+SIRGAS-Chile 2002):
 
 ``` r
 
-comuna <- terra::vect("cauquenes.gpkg")
+comuna    <- cauquenes_boundary("comuna")     # CUT_COM 07201, 2,124.5 km2
+provincia <- cauquenes_boundary("provincia")  # CUT_PROV 072, 3,021.7 km2
 tmin_c <- worldclim_region("tmin", comuna, path = "data", mask = TRUE)
+tmax_c <- worldclim_region("tmax", comuna, path = "data", mask = TRUE)
 ```
+
+Cells outside the commune are `NA` and stay `NA` in every output of
+[`thermify_rast()`](https://djwillichile.github.io/thermify/reference/thermify_rast.md).
+Any other polygon layer can be used instead, for example
+`vect("path/to/area.gpkg")`.
 
 The coarser official products (2.5, 5 and 10 arc-minutes) are
 distributed only as global compressed archives;

@@ -29,8 +29,6 @@ code used).
 ## Examples
 
 ``` r
-if (requireNamespace("terra", quietly = TRUE)) {
-  study_window(-72.3225, -35.9671, 20)
-}
+study_window(-72.3225, -35.9671, 20)
 #> SpatExtent : -72.436203822487983, -72.208545100818711, -36.059590989047777, -35.874521561573218 (xmin, xmax, ymin, ymax)
 ```

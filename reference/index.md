@@ -56,3 +56,7 @@
   : Download (or reuse) WorldClim 2.1 monthly temperature normals
 - [`check_monthly_climate()`](https://djwillichile.github.io/thermify/reference/check_monthly_climate.md)
   : Validate a pair of monthly temperature rasters
+- [`cauquenes`](https://djwillichile.github.io/thermify/reference/cauquenes.md)
+  : Administrative boundaries of Cauquenes (DPA 2023)
+- [`cauquenes_boundary()`](https://djwillichile.github.io/thermify/reference/cauquenes_boundary.md)
+  : Cauquenes boundary at a given administrative level

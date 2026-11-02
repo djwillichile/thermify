@@ -40,24 +40,22 @@ tmax <- worldclim_region("tmax", win, path = "data")
 check_monthly_climate(tmin, tmax)
 ```
 
-A polygon can be used both to select and to mask the region. For example,
-the administrative boundary of the Cauquenes commune from GADM (level 3,
-about 2,124 km^2; `geodata` downloads it from the same server as
-WorldClim):
+A polygon can be used both to select and to mask the region. thermify
+includes the official boundaries of the Cauquenes commune and province from
+the 2023 Political and Administrative Division of Chile (DPA 2023,
+SIRGAS-Chile 2002):
 
 ```{r}
-chl <- geodata::gadm("CHL", level = 3, path = "data")
-comuna <- chl[chl$NAME_3 == "Cauquenes", ]
+f <- system.file("extdata", "cauquenes.gpkg", package = "thermify")
+comuna <- vect(f, layer = "comuna")        # CUT_COM 07201, 2,124.5 km2
+provincia <- vect(f, layer = "provincia")  # CUT_PROV 072, 3,021.7 km2
 tmin_c <- worldclim_region("tmin", comuna, path = "data", mask = TRUE)
 tmax_c <- worldclim_region("tmax", comuna, path = "data", mask = TRUE)
 ```
 
 Cells outside the commune are `NA` and stay `NA` in every output of
 `thermify_rast()`. Any other polygon layer can be used instead, for example
-`terra::vect("path/to/area.gpkg")`. Note that GADM boundaries are a
-convenient approximation; for official work use the official administrative
-boundaries (in Chile, for example, those published by the Biblioteca del
-Congreso Nacional or IDE Chile).
+`vect("path/to/area.gpkg")`.
 
 The coarser official products (2.5, 5 and 10 arc-minutes) are distributed
 only as global compressed archives; `worldclim_monthly()` downloads and

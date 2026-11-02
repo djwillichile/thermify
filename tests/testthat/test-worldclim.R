@@ -42,3 +42,36 @@ test_that("worldclim_region reads a window remotely and caches it", {
   m <- worldclim_region("tmax", p, dir, mask = TRUE)
   expect_true(anyNA(terra::values(m[[1]])))
 })
+
+test_that("the packaged DPA 2023 boundaries of Cauquenes are valid", {
+  skip_if_not_installed("terra")
+  f <- system.file("extdata", "cauquenes.gpkg", package = "thermify")
+  expect_true(nzchar(f))
+  expect_setequal(terra::vector_layers(f), c("comuna", "provincia"))
+  comuna <- terra::vect(f, layer = "comuna")
+  provincia <- terra::vect(f, layer = "provincia")
+  expect_equal(nrow(comuna), 1)
+  expect_equal(comuna$CUT_COM, "07201")
+  expect_equal(provincia$CUT_PROV, "072")
+  expect_equal(terra::crs(comuna, describe = TRUE)$code, "5360")
+  expect_true(all(terra::is.valid(comuna)))
+  # Computed area matches the DPA SUPERFICIE attribute (km2).
+  expect_equal(terra::expanse(comuna, unit = "km"), comuna$SUPERFICIE,
+               tolerance = 1e-3)
+  expect_equal(terra::expanse(provincia, unit = "km"), provincia$SUPERFICIE,
+               tolerance = 1e-3)
+})
+
+test_that("worldclim_region masks WorldClim with the commune polygon", {
+  skip_on_cran()
+  skip_if_not_installed("terra")
+  skip_if_not(identical(Sys.getenv("THERMIFY_ONLINE_TESTS"), "true"),
+              "set THERMIFY_ONLINE_TESTS=true to run network tests")
+  f <- system.file("extdata", "cauquenes.gpkg", package = "thermify")
+  comuna <- terra::vect(f, layer = "comuna")
+  r <- worldclim_region("tmin", comuna, tempfile(), mask = TRUE)
+  inside <- sum(!is.na(terra::values(r[[1]], mat = FALSE)))
+  # 30 arc-second cells are about 0.68 km2 at this latitude.
+  expect_equal(inside * 0.68, 2124.5, tolerance = 0.1)
+  expect_lt(inside, terra::ncell(r))
+})

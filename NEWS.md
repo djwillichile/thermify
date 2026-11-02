@@ -13,6 +13,13 @@
   undocumented `cauquenes.gpkg` referenced in earlier documentation.
 * `cauquenes_boundary()` returns one or both levels as a `SpatVector`,
   optionally projected (`crs`).
+* Station validation (#3): `prepare_station_hourly()` regularises hourly
+  records, fills short gaps and flags incomplete days; `validate_station()`
+  compares indices observed on hourly data with estimates from daily
+  extremes, from the station's densified monthly climatology and,
+  optionally, from a gridded climatology; `validation_metrics()` returns
+  bias, MAE, RMSE, relative bias and correlation. The protocol is tested on
+  synthetic records; results with real stations are pending.
 
 # thermify 0.1.0
 

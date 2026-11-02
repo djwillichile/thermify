@@ -17,8 +17,7 @@ building the documentation because it downloads WorldClim data.
 ## 1. Study window
 
 ```{r}
-library(thermify)
-library(terra)
+library(thermify)   # also attaches terra
 win <- study_window(lon = -72.3225, lat = -35.9671, size_km = 20)
 win
 ```
@@ -46,9 +45,8 @@ the 2023 Political and Administrative Division of Chile (DPA 2023,
 SIRGAS-Chile 2002):
 
 ```{r}
-cq <- vect(cauquenes)                      # data(cauquenes), DPA 2023
-comuna <- cq[cq$nivel == "comuna", ]       # CUT_COM 07201, 2,124.5 km2
-provincia <- cq[cq$nivel == "provincia", ] # CUT_PROV 072, 3,021.7 km2
+comuna    <- cauquenes_boundary("comuna")     # CUT_COM 07201, 2,124.5 km2
+provincia <- cauquenes_boundary("provincia")  # CUT_PROV 072, 3,021.7 km2
 tmin_c <- worldclim_region("tmin", comuna, path = "data", mask = TRUE)
 tmax_c <- worldclim_region("tmax", comuna, path = "data", mask = TRUE)
 ```

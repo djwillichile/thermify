@@ -32,16 +32,17 @@ Chile) from the 2023 Political and Administrative Division of Chile
 \code{\link[=worldclim_region]{worldclim_region()}}.
 }
 \details{
-The object is a packed \code{terra} vector (see \code{\link[terra:wrap]{terra::wrap()}}): convert it
-with \code{terra::vect(cauquenes)} before use. Geometry and attributes are those
-of the DPA 2023 layers, not simplified.
+The object is a packed \code{terra} vector (see \code{\link[terra:wrap]{terra::wrap()}}). Use
+\code{\link[=cauquenes_boundary]{cauquenes_boundary()}} to get one level as a ready-to-use \code{SpatVector}, or
+\code{vect(cauquenes)} for both. Geometry and attributes are those of the
+DPA 2023 layers, not simplified.
 }
 \examples{
-if (requireNamespace("terra", quietly = TRUE)) {
-  cq <- terra::vect(cauquenes)
-  comuna <- cq[cq$nivel == "comuna", ]
-  terra::expanse(comuna, unit = "km")
-  terra::plot(cq, "nivel")
+cq <- vect(cauquenes)
+cq
+plot(cq, "nivel")
 }
+\seealso{
+\code{\link[=cauquenes_boundary]{cauquenes_boundary()}}
 }
 \keyword{datasets}

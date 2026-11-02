@@ -64,8 +64,7 @@ test_that("worldclim_region masks WorldClim with the commune polygon", {
   skip_if_not_installed("terra")
   skip_if_not(identical(Sys.getenv("THERMIFY_ONLINE_TESTS"), "true"),
               "set THERMIFY_ONLINE_TESTS=true to run network tests")
-  cq <- terra::vect(cauquenes)
-  comuna <- cq[cq$nivel == "comuna", ]
+  comuna <- cauquenes_boundary("comuna")
   r <- worldclim_region("tmin", comuna, tempfile(), mask = TRUE)
   inside <- sum(!is.na(terra::values(r[[1]], mat = FALSE)))
   # 30 arc-second cells are about 0.68 km2 at this latitude.

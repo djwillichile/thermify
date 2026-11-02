@@ -10,14 +10,9 @@
 #' @return A `SpatExtent` in longitude/latitude, with attribute `"utm"` (the
 #'   EPSG code used).
 #' @examples
-#' if (requireNamespace("terra", quietly = TRUE)) {
-#'   study_window(-72.3225, -35.9671, 20)
-#' }
+#' study_window(-72.3225, -35.9671, 20)
 #' @export
 study_window <- function(lon, lat, size_km = 20) {
-  if (!requireNamespace("terra", quietly = TRUE)) {
-    stop("study_window() requires the 'terra' package.", call. = FALSE)
-  }
   check_scalar(lon, "lon")
   check_scalar(lat, "lat")
   check_scalar(size_km, "size_km")
@@ -65,9 +60,6 @@ worldclim_monthly <- function(var = c("tmin", "tmax"), res = 2.5, path,
                               progress = getOption("thermify.progress",
                                                    interactive())) {
   var <- match.arg(var)
-  if (!requireNamespace("terra", quietly = TRUE)) {
-    stop("worldclim_monthly() requires the 'terra' package.", call. = FALSE)
-  }
   if (!res %in% c(10, 5, 2.5, 0.5)) {
     stop("`res` must be one of 10, 5, 2.5 or 0.5.", call. = FALSE)
   }
@@ -165,12 +157,11 @@ worldclim_monthly <- function(var = c("tmin", "tmax"), res = 2.5, path,
 #'
 #' # Mask with a polygon: the Cauquenes commune boundary (DPA 2023),
 #' # distributed with the package
-#' cq <- terra::vect(cauquenes)
-#' comuna <- cq[cq$nivel == "comuna", ]
+#' comuna <- cauquenes_boundary("comuna")
 #' tmax <- worldclim_region("tmax", comuna, path = "data", mask = TRUE)
 #'
 #' # Any polygon layer works, for example your own GeoPackage:
-#' # zona <- terra::vect("path/to/area.gpkg")
+#' # zona <- vect("path/to/area.gpkg")
 #' }
 #' @export
 worldclim_region <- function(var = c("tmin", "tmax", "tavg", "prec", "srad",
@@ -178,9 +169,6 @@ worldclim_region <- function(var = c("tmin", "tmax", "tavg", "prec", "srad",
                              region, path, mask = TRUE, touches = TRUE,
                              overwrite = FALSE) {
   var <- match.arg(var)
-  if (!requireNamespace("terra", quietly = TRUE)) {
-    stop("worldclim_region() requires the 'terra' package.", call. = FALSE)
-  }
   polygons <- NULL
   if (inherits(region, "SpatVector")) {
     region_ll <- terra::project(region, "EPSG:4326")
@@ -312,10 +300,6 @@ download <- function(url, dest, timeout, progress = FALSE) {
 #' @return A data frame with columns `check`, `value` and `ok`.
 #' @export
 check_monthly_climate <- function(tmin, tmax) {
-  if (!requireNamespace("terra", quietly = TRUE)) {
-    stop("check_monthly_climate() requires the 'terra' package.",
-         call. = FALSE)
-  }
   vmin <- terra::values(tmin)
   vmax <- terra::values(tmax)
   na_min <- !stats::complete.cases(vmin)

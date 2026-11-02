@@ -36,7 +36,8 @@ remotes::install_github("djwillichile/thermify@v0.1.0")   # release
 remotes::install_github("djwillichile/thermify")          # development
 ```
 
-`terra` is needed for raster workflows. The optional
+`library(thermify)` also attaches `terra`, so `rast()`, `vect()`, `plot()`
+and the other `terra` functions are available directly. The optional
 [tempify](https://github.com/djwillichile/tempify) backend needs Python and
 `reticulate`; without it `thermify` uses an equivalent native R engine.
 
@@ -82,6 +83,10 @@ just the bytes of that window (optionally masked by a polygon):
 win  <- study_window(lon = -72.3225, lat = -35.9671, size_km = 20)
 tmin <- worldclim_region("tmin", win, path = "data")
 tmax <- worldclim_region("tmax", win, path = "data")
+
+# Official DPA 2023 boundary of the Cauquenes commune, as a mask
+comuna <- cauquenes_boundary("comuna")        # or "provincia"
+tmin_c <- worldclim_region("tmin", comuna, path = "data", mask = TRUE)
 ```
 
 When does a crop reach its degree-day requirement, or a cultivar its chill

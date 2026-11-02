@@ -69,12 +69,11 @@ tmin <- worldclim_region("tmin", win, path = "data")
 
 # Mask with a polygon: the Cauquenes commune boundary (DPA 2023),
 # distributed with the package
-cq <- terra::vect(cauquenes)
-comuna <- cq[cq$nivel == "comuna", ]
+comuna <- cauquenes_boundary("comuna")
 tmax <- worldclim_region("tmax", comuna, path = "data", mask = TRUE)
 
 # Any polygon layer works, for example your own GeoPackage:
-# zona <- terra::vect("path/to/area.gpkg")
+# zona <- vect("path/to/area.gpkg")
 }
 }
 \references{

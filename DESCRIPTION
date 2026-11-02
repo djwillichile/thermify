@@ -15,7 +15,9 @@ License: MIT + file LICENSE
 URL: https://github.com/djwillichile/thermify,
     https://djwillichile.github.io/thermify/
 BugReports: https://github.com/djwillichile/thermify/issues
-Depends: R (>= 4.1.0)
+Depends:
+    R (>= 4.1.0),
+    terra (>= 1.7-0)
 Imports: stats, utils
 Suggests: 
     bench,
@@ -25,7 +27,6 @@ Suggests:
     ncdf4,
     reticulate (>= 1.30),
     rmarkdown,
-    terra (>= 1.7-0),
     testthat (>= 3.0.0),
     withr
 VignetteBuilder: knitr

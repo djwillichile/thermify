@@ -1,10 +1,17 @@
-# thermify (development version)
+# thermify 0.2.0
 
-## Changes
+Adds the tools for empirical validation against station records, the
+official DPA 2023 boundaries of Cauquenes, and attaches `terra` with the
+package. Validation results with real stations (#3) are not part of this
+release.
 
-* `terra` is now a dependency (`Depends`): `library(thermify)` attaches it,
+## Breaking changes
+
+* `terra` is now a dependency (`Depends`) instead of a suggested package:
+  installing thermify installs terra, and `library(thermify)` attaches it,
   so `vect()`, `rast()`, `plot()` and the other `terra` functions are
-  available without `terra::`. Installing thermify now installs terra.
+  available without `terra::`. On Linux, terra needs the GDAL, GEOS and PROJ
+  system libraries.
 
 ## New features
 
@@ -20,6 +27,15 @@
   optionally, from a gridded climatology; `validation_metrics()` returns
   bias, MAE, RMSE, relative bias and correlation. The protocol is tested on
   synthetic records; results with real stations are pending.
+
+## Documentation
+
+* The `cauquenes` dataset cites its source (SUBDERE, DPA 2023) and carries
+  the DIFROL circulation notice (Resolución Nº 87 de 2023).
+* `vignette("validation")` documents the implementation; examples, the
+  Cauquenes tutorial and the README use `cauquenes_boundary()` and bare
+  `terra` calls.
+* Release and development version badges in the README and the site.
 
 # thermify 0.1.0
 

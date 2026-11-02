@@ -67,9 +67,13 @@ up to about 0.9 degrees C.
 win <- study_window(-72.3225, -35.9671, size_km = 20)
 tmin <- worldclim_region("tmin", win, path = "data")
 
-# Mask with a polygon (for example a commune boundary)
-# comuna <- terra::vect("cauquenes.gpkg")
-# tmax <- worldclim_region("tmax", comuna, path = "data", mask = TRUE)
+# Mask with a polygon: the Cauquenes commune boundary (DPA 2023),
+# distributed with the package
+comuna <- cauquenes_boundary("comuna")
+tmax <- worldclim_region("tmax", comuna, path = "data", mask = TRUE)
+
+# Any polygon layer works, for example your own GeoPackage:
+# zona <- vect("path/to/area.gpkg")
 }
 }
 \references{

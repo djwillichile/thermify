@@ -45,18 +45,16 @@
 #'   key, with attribute `"provenance"`.
 #' @examples
 #' \donttest{
-#' if (requireNamespace("terra", quietly = TRUE)) {
-#'   r <- terra::rast(nrows = 3, ncols = 3, nlyrs = 12,
-#'                    xmin = -72.4, xmax = -72.3, ymin = -36, ymax = -35.9)
-#'   base_min <- c(11, 11, 9, 7, 5, 4, 3, 4, 5, 6, 8, 10)
-#'   base_max <- c(29, 29, 26, 22, 17, 14, 13, 15, 18, 21, 25, 28)
-#'   tmin <- terra::setValues(r, rep(base_min, each = 9))
-#'   tmax <- terra::setValues(r, rep(base_max, each = 9))
-#'   out <- thermify_rast(tmin, tmax, output_dir = tempfile(),
-#'                        temporal = "native", indices = c("gdd", "cp"),
-#'                        gdd_methods = "single_sine", base = 10)
-#'   out$gdd_single_sine_b10
-#' }
+#' r <- rast(nrows = 3, ncols = 3, nlyrs = 12,
+#'           xmin = -72.4, xmax = -72.3, ymin = -36, ymax = -35.9)
+#' base_min <- c(11, 11, 9, 7, 5, 4, 3, 4, 5, 6, 8, 10)
+#' base_max <- c(29, 29, 26, 22, 17, 14, 13, 15, 18, 21, 25, 28)
+#' tmin <- setValues(r, rep(base_min, each = 9))
+#' tmax <- setValues(r, rep(base_max, each = 9))
+#' out <- thermify_rast(tmin, tmax, output_dir = tempfile(),
+#'                      temporal = "native", indices = c("gdd", "cp"),
+#'                      gdd_methods = "single_sine", base = 10)
+#' out$gdd_single_sine_b10
 #' }
 #' @export
 thermify_rast <- function(tmin, tmax, output_dir, year = 2023,
@@ -78,9 +76,6 @@ thermify_rast <- function(tmin, tmax, output_dir, year = 2023,
                           keep_daily = FALSE, overwrite = FALSE,
                           progress = getOption("thermify.progress",
                                                interactive())) {
-  if (!requireNamespace("terra", quietly = TRUE)) {
-    stop("thermify_rast() requires the 'terra' package.", call. = FALSE)
-  }
   temporal <- match.arg(temporal)
   consistency <- match.arg(consistency)
   hourly_method <- match.arg(hourly_method)

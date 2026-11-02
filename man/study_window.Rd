@@ -22,7 +22,5 @@ enclosing longitude/latitude extent, so that its size does not depend on
 latitude.
 }
 \examples{
-if (requireNamespace("terra", quietly = TRUE)) {
-  study_window(-72.3225, -35.9671, 20)
-}
+study_window(-72.3225, -35.9671, 20)
 }

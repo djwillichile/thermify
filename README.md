@@ -1,6 +1,8 @@
 # thermify <img src="man/figures/logo.png" align="right" height="139" alt="thermify logo" />
 
 <!-- badges: start -->
+[![GitHub release](https://img.shields.io/github/v/release/djwillichile/thermify?label=release)](https://github.com/djwillichile/thermify/releases/latest)
+[![Development version](https://img.shields.io/github/r-package/v/djwillichile/thermify?label=devel)](https://github.com/djwillichile/thermify/blob/main/DESCRIPTION)
 [![R-CMD-check](https://github.com/djwillichile/thermify/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/djwillichile/thermify/actions/workflows/R-CMD-check.yaml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)

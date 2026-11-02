@@ -33,9 +33,9 @@ keywords:
 license: MIT
 repository-code: "https://github.com/djwillichile/thermify"
 url: "https://djwillichile.github.io/thermify/"
-version: "0.1.0"
+version: "0.2.0"
 doi: 10.5281/zenodo.23841857
-date-released: "2026-10-31"
+date-released: "2026-11-02"
 identifiers:
   - type: doi
     value: 10.5281/zenodo.23841857

@@ -21,7 +21,7 @@ mean-preserving temporal densification.
 | Chill units | Utah model (Richardson et al. 1974) |
 | Chill portions | Dynamic model (Fishman et al. 1987; Erez et al. 1990), resumable across blocks |
 | Temporal reconstruction | monthly to daily (`pchip_mp`, natively or via [tempify](https://github.com/djwillichile/tempify)); daily to hourly (sine or Linvill) |
-| Spatial | block-wise processing of `terra::SpatRaster` stacks, GeoTIFF and NetCDF output |
+| Spatial | block-wise processing of `terra::SpatRaster` stacks, GeoTIFF and NetCDF output; regional WorldClim 2.1 reads; official DPA 2023 boundaries of Cauquenes (`cauquenes_boundary()`) |
 
 > [!IMPORTANT]
 > Monthly climate normals are not daily or hourly observations. Indices

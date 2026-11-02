@@ -7,7 +7,7 @@ processing, file output and provenance.
 
 | Level | Files | What it shows |
 |---|---|---|
-| Unit | `test-degree-days.R`, `test-chill-*.R`, `test-hourly.R`, `test-densify.R`, `test-periods.R`, `test-thermify.R`, `test-rast.R`, `test-worldclim.R` | Each method reproduces closed forms, numerical integration or an independent transcription of the published equations; edge cases and missing values. |
+| Unit | `test-degree-days.R`, `test-chill-*.R`, `test-hourly.R`, `test-densify.R`, `test-periods.R`, `test-thermify.R`, `test-rast.R`, `test-worldclim.R`, `test-cauquenes-boundary.R` | Each method reproduces closed forms, numerical integration or an independent transcription of the published equations; edge cases and missing values. |
 | Acceptance | `test-story-01.R` ... `test-story-10.R` | Each user story in [`USER_STORIES.md`](USER_STORIES.md) meets its acceptance criteria. |
 | Integration | `test-integration.R` | The stages fit together: layers on disk add up (months to year and season), NetCDF equals GeoTIFF, block size does not change results, tempify and native engines agree on rasters, multi-season series restart the Dynamic model, and the case-study script runs end to end. |
 | Error paths | `test-errors.R` | Invalid input is rejected with informative messages instead of producing numbers. |
@@ -31,7 +31,7 @@ are skipped with an explicit message:
 
 The CI job `full tests` sets all of them and fails if any test is skipped.
 
-## Current status
+## Status at v0.1.0
 
 With every group enabled: 397 expectations, 0 failures, 0 warnings,
 0 skipped; line coverage 93.6 % (`covr::package_coverage()`).

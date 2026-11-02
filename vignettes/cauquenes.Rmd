@@ -40,13 +40,24 @@ tmax <- worldclim_region("tmax", win, path = "data")
 check_monthly_climate(tmin, tmax)
 ```
 
-A polygon (for example a commune boundary from a GeoPackage) can be used
-both to select and to mask the region:
+A polygon can be used both to select and to mask the region. For example,
+the administrative boundary of the Cauquenes commune from GADM (level 3,
+about 2,124 km^2; `geodata` downloads it from the same server as
+WorldClim):
 
 ```{r}
-comuna <- terra::vect("cauquenes.gpkg")
+chl <- geodata::gadm("CHL", level = 3, path = "data")
+comuna <- chl[chl$NAME_3 == "Cauquenes", ]
 tmin_c <- worldclim_region("tmin", comuna, path = "data", mask = TRUE)
+tmax_c <- worldclim_region("tmax", comuna, path = "data", mask = TRUE)
 ```
+
+Cells outside the commune are `NA` and stay `NA` in every output of
+`thermify_rast()`. Any other polygon layer can be used instead, for example
+`terra::vect("path/to/area.gpkg")`. Note that GADM boundaries are a
+convenient approximation; for official work use the official administrative
+boundaries (in Chile, for example, those published by the Biblioteca del
+Congreso Nacional or IDE Chile).
 
 The coarser official products (2.5, 5 and 10 arc-minutes) are distributed
 only as global compressed archives; `worldclim_monthly()` downloads and

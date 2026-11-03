@@ -77,80 +77,255 @@
 
     
     
-<p>This tutorial follows <code>examples/cauquenes/run.R</code>. Code is
-not evaluated when building the documentation because it downloads
-WorldClim data.</p>
+<p>This tutorial computes heat and chill indices for the province of
+Cauquenes (Maule Region, Chile) from the WorldClim 2.1 monthly
+climatology (1970-2000) at 30 arc-seconds (about 0.9 x 0.75 km). The
+province spans the Coastal Range from the coast to the central valley,
+so the indices vary widely over short distances. The steps follow
+<code>examples/cauquenes/run.R</code>, which uses a 20 x 20 km window
+around the town instead.</p>
 <div class="section level2">
-<h2 id="study-window">1. Study window<a class="anchor" aria-label="anchor" href="#study-window"></a>
+<h2 id="study-area">1. Study area<a class="anchor" aria-label="anchor" href="#study-area"></a>
 </h2>
+<p>thermify includes the official boundaries of the commune and province
+of Cauquenes from the 2023 Political and Administrative Division of
+Chile (DPA 2023, SUBDERE).</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/djwillichile/thermify" class="external-link">thermify</a></span><span class="op">)</span>   <span class="co"># also attaches terra</span></span>
-<span><span class="va">win</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/study_window.html">study_window</a></span><span class="op">(</span>lon <span class="op">=</span> <span class="op">-</span><span class="fl">72.3225</span>, lat <span class="op">=</span> <span class="op">-</span><span class="fl">35.9671</span>, size_km <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span>
-<span><span class="va">win</span></span></code></pre></div>
-<p>A 20 x 20 km square in UTM zone 18S around the town. It is an
-experimental domain, not the commune boundary.</p>
+<span><span class="va">comuna</span>    <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cauquenes_boundary.html">cauquenes_boundary</a></span><span class="op">(</span><span class="st">"comuna"</span>, crs <span class="op">=</span> <span class="st">"EPSG:4326"</span><span class="op">)</span></span>
+<span><span class="va">provincia</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cauquenes_boundary.html">cauquenes_boundary</a></span><span class="op">(</span><span class="st">"provincia"</span>, crs <span class="op">=</span> <span class="st">"EPSG:4326"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>level <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">comuna</span><span class="op">$</span><span class="va">nivel</span>, <span class="va">provincia</span><span class="op">$</span><span class="va">nivel</span><span class="op">)</span>,</span>
+<span>           name <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">comuna</span><span class="op">$</span><span class="va">COMUNA</span>, <span class="va">provincia</span><span class="op">$</span><span class="va">PROVINCIA</span><span class="op">)</span>,</span>
+<span>           area_km2 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">comuna</span><span class="op">$</span><span class="va">SUPERFICIE</span>, <span class="va">provincia</span><span class="op">$</span><span class="va">SUPERFICIE</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;       level      name area_km2</span></span>
+<span><span class="co">#&gt; 1    comuna Cauquenes  2124.54</span></span>
+<span><span class="co">#&gt; 2 provincia Cauquenes  3021.67</span></span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="worldclim-2-1-for-the-window-only">2. WorldClim 2.1 for the window only<a class="anchor" aria-label="anchor" href="#worldclim-2-1-for-the-window-only"></a>
+<h2 id="worldclim-2-1-for-the-province-only">2. WorldClim 2.1 for the province only<a class="anchor" aria-label="anchor" href="#worldclim-2-1-for-the-province-only"></a>
 </h2>
-<p>A 2.5 arc-minute grid has only 36 cells (about 3.8 x 4.6 km) in this
-window, too few to represent the Coastal Range and the Cauquenes valley,
-so the 30 arc-second product is used. <code><a href="../reference/worldclim_region.html">worldclim_region()</a></code>
-opens the remote 30x30 degree tiles with GDAL <code>/vsicurl/</code> and
-transfers only the strips covering the window (about 0.3 MB per
-variable), caching the result:</p>
+<p><code><a href="../reference/worldclim_region.html">worldclim_region()</a></code> reads only the part of the global 30”
+tiles that covers the polygon (GDAL <code>/vsicurl/</code> range
+requests, under 1 MB here), caches it and masks the cells outside the
+province:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">tmin</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/worldclim_region.html">worldclim_region</a></span><span class="op">(</span><span class="st">"tmin"</span>, <span class="va">win</span>, path <span class="op">=</span> <span class="st">"data"</span><span class="op">)</span></span>
-<span><span class="va">tmax</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/worldclim_region.html">worldclim_region</a></span><span class="op">(</span><span class="st">"tmax"</span>, <span class="va">win</span>, path <span class="op">=</span> <span class="st">"data"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/check_monthly_climate.html">check_monthly_climate</a></span><span class="op">(</span><span class="va">tmin</span>, <span class="va">tmax</span><span class="op">)</span></span></code></pre></div>
-<p>A polygon can be used both to select and to mask the region. thermify
-includes the official boundaries of the Cauquenes commune and province
-from the 2023 Political and Administrative Division of Chile (DPA 2023,
-SIRGAS-Chile 2002):</p>
+<code class="sourceCode R"><span><span class="va">tmin</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/worldclim_region.html">worldclim_region</a></span><span class="op">(</span><span class="st">"tmin"</span>, <span class="va">provincia</span>, path <span class="op">=</span> <span class="st">"data"</span>, mask <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">tmax</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/worldclim_region.html">worldclim_region</a></span><span class="op">(</span><span class="st">"tmax"</span>, <span class="va">provincia</span>, path <span class="op">=</span> <span class="st">"data"</span>, mask <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">comuna</span>    <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cauquenes_boundary.html">cauquenes_boundary</a></span><span class="op">(</span><span class="st">"comuna"</span><span class="op">)</span>     <span class="co"># CUT_COM 07201, 2,124.5 km2</span></span>
-<span><span class="va">provincia</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cauquenes_boundary.html">cauquenes_boundary</a></span><span class="op">(</span><span class="st">"provincia"</span><span class="op">)</span>  <span class="co"># CUT_PROV 072, 3,021.7 km2</span></span>
-<span><span class="va">tmin_c</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/worldclim_region.html">worldclim_region</a></span><span class="op">(</span><span class="st">"tmin"</span>, <span class="va">comuna</span>, path <span class="op">=</span> <span class="st">"data"</span>, mask <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="va">tmax_c</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/worldclim_region.html">worldclim_region</a></span><span class="op">(</span><span class="st">"tmax"</span>, <span class="va">comuna</span>, path <span class="op">=</span> <span class="st">"data"</span>, mask <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
-<p>Cells outside the commune are <code>NA</code> and stay
-<code>NA</code> in every output of <code><a href="../reference/thermify_rast.html">thermify_rast()</a></code>. Any
-other polygon layer can be used instead, for example
-<code>vect("path/to/area.gpkg")</code>.</p>
-<p>The coarser official products (2.5, 5 and 10 arc-minutes) are
-distributed only as global compressed archives;
-<code><a href="../reference/worldclim_monthly.html">worldclim_monthly()</a></code> downloads and caches them.</p>
-</div>
-<div class="section level2">
-<h2 id="indices-for-every-cell">3. Indices for every cell<a class="anchor" aria-label="anchor" href="#indices-for-every-cell"></a>
-</h2>
+<code class="sourceCode R"><span><span class="va">tmin</span></span>
+<span><span class="co">#&gt; class       : SpatRaster</span></span>
+<span><span class="co">#&gt; size        : 88, 98, 12  (nrow, ncol, nlyr)</span></span>
+<span><span class="co">#&gt; resolution  : 0.008333333, 0.008333333  (x, y)</span></span>
+<span><span class="co">#&gt; extent      : -72.79167, -71.975, -36.26667, -35.53333  (xmin, xmax, ymin, ymax)</span></span>
+<span><span class="co">#&gt; coord. ref. : lon/lat WGS 84 (EPSG:4326)</span></span>
+<span><span class="co">#&gt; source      : wc2.1_30s_tmin_region_51b8bba0.tif</span></span>
+<span><span class="co">#&gt; names       :  m01,  m02, m03, m04, m05, m06, ...</span></span>
+<span><span class="co">#&gt; min values  :  8.8,  8.1, 6.9, 5.3,   4, 2.7, ...</span></span>
+<span><span class="co">#&gt; max values  : 12.3, 11.5,  10, 8.9, 7.9, 7.2, ...</span></span>
+<span><span class="fu"><a href="../reference/check_monthly_climate.html">check_monthly_climate</a></span><span class="op">(</span><span class="va">tmin</span>, <span class="va">tmax</span><span class="op">)</span></span>
+<span><span class="co">#&gt;                        check                                           value</span></span>
+<span><span class="co">#&gt; 1         layers tmin / tmax                                         12 / 12</span></span>
+<span><span class="co">#&gt; 2  layer names (month order) m01,m02,m03,m04,m05,m06,m07,m08,m09,m10,m11,m12</span></span>
+<span><span class="co">#&gt; 3                        CRS                                            4326</span></span>
+<span><span class="co">#&gt; 4                 resolution                         0.00833333 x 0.00833333</span></span>
+<span><span class="co">#&gt; 5                     extent        -72.79167, -71.975, -36.26667, -35.53333</span></span>
+<span><span class="co">#&gt; 6              same geometry                                            TRUE</span></span>
+<span><span class="co">#&gt; 7         value range (degC)                                       2 to 29.5</span></span>
+<span><span class="co">#&gt; 8        cells / valid cells                                     8624 / 4554</span></span>
+<span><span class="co">#&gt; 9          identical NA mask                                            TRUE</span></span>
+<span><span class="co">#&gt; 10 tmin &gt; tmax (cell-months)                                               0</span></span>
+<span><span class="co">#&gt;      ok</span></span>
+<span><span class="co">#&gt; 1  TRUE</span></span>
+<span><span class="co">#&gt; 2  TRUE</span></span>
+<span><span class="co">#&gt; 3  TRUE</span></span>
+<span><span class="co">#&gt; 4  TRUE</span></span>
+<span><span class="co">#&gt; 5  TRUE</span></span>
+<span><span class="co">#&gt; 6  TRUE</span></span>
+<span><span class="co">#&gt; 7  TRUE</span></span>
+<span><span class="co">#&gt; 8  TRUE</span></span>
+<span><span class="co">#&gt; 9  TRUE</span></span>
+<span><span class="co">#&gt; 10 TRUE</span></span></code></pre></div>
+<p>The province is covered by 4554 valid 30” cells. With
+<code>touches = TRUE</code> (the default) every cell touching the
+boundary is kept, so the cells add up to slightly more than the official
+area; use <code>touches = FALSE</code> when cell areas matter. The mean
+monthly climatology of the province:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">maps</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/thermify_rast.html">thermify_rast</a></span><span class="op">(</span></span>
-<span>  <span class="va">tmin</span>, <span class="va">tmax</span>, output_dir <span class="op">=</span> <span class="st">"output/rasters"</span>, year <span class="op">=</span> <span class="fl">2023</span>,</span>
-<span>  temporal <span class="op">=</span> <span class="st">"auto"</span>, interpolation <span class="op">=</span> <span class="st">"pchip_mp"</span>,</span>
-<span>  indices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gdd"</span>, <span class="st">"ch"</span>, <span class="st">"cu"</span>, <span class="st">"cp"</span><span class="op">)</span>,</span>
-<span>  gdd_methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"average"</span>, <span class="st">"single_sine"</span>, <span class="st">"double_sine"</span><span class="op">)</span>,</span>
-<span>  base <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">10</span><span class="op">)</span>, ch_methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sine"</span>, <span class="st">"hourly"</span><span class="op">)</span>,</span>
-<span>  chill_period <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"05-01"</span>, <span class="st">"08-31"</span><span class="op">)</span>, heat_period <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"09-01"</span>, <span class="st">"04-30"</span><span class="op">)</span>,</span>
-<span>  format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"GTiff"</span>, <span class="st">"netCDF"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">maps</span><span class="op">$</span><span class="va">cp_dynamic</span><span class="op">$</span><span class="va">season</span>, main <span class="op">=</span> <span class="st">"Chill portions, 1 May - 31 Aug"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="va">clim</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  month <span class="op">=</span> <span class="va">month.abb</span>,</span>
+<span>  tmin <span class="op">=</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/math-generics.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/global.html" class="external-link">global</a></span><span class="op">(</span><span class="va">tmin</span>, <span class="st">"mean"</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>, <span class="fl">1</span><span class="op">)</span>,</span>
+<span>  tmax <span class="op">=</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/math-generics.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/global.html" class="external-link">global</a></span><span class="op">(</span><span class="va">tmax</span>, <span class="st">"mean"</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span>, <span class="fl">1</span><span class="op">)</span>,</span>
+<span>  row.names <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+<span><span class="va">clim</span></span>
+<span><span class="co">#&gt;    month tmin tmax</span></span>
+<span><span class="co">#&gt; 1    Jan 11.2 26.2</span></span>
+<span><span class="co">#&gt; 2    Feb 10.5 25.5</span></span>
+<span><span class="co">#&gt; 3    Mar  9.2 22.6</span></span>
+<span><span class="co">#&gt; 4    Apr  7.6 18.7</span></span>
+<span><span class="co">#&gt; 5    May  6.3 15.0</span></span>
+<span><span class="co">#&gt; 6    Jun  5.3 12.6</span></span>
+<span><span class="co">#&gt; 7    Jul  4.6 12.4</span></span>
+<span><span class="co">#&gt; 8    Aug  4.7 13.5</span></span>
+<span><span class="co">#&gt; 9    Sep  5.5 15.6</span></span>
+<span><span class="co">#&gt; 10   Oct  7.1 18.1</span></span>
+<span><span class="co">#&gt; 11   Nov  8.7 21.1</span></span>
+<span><span class="co">#&gt; 12   Dec 10.5 24.2</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/matplot.html" class="external-link">matplot</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">12</span>, <span class="va">clim</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"tmin"</span>, <span class="st">"tmax"</span><span class="op">)</span><span class="op">]</span>, type <span class="op">=</span> <span class="st">"b"</span>, pch <span class="op">=</span> <span class="fl">19</span>, lty <span class="op">=</span> <span class="fl">1</span>,</span>
+<span>        col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#2c7bb6"</span>, <span class="st">"#d7191c"</span><span class="op">)</span>, xaxt <span class="op">=</span> <span class="st">"n"</span>, xlab <span class="op">=</span> <span class="st">""</span>,</span>
+<span>        ylab <span class="op">=</span> <span class="st">"Temperature (degC)"</span>,</span>
+<span>        main <span class="op">=</span> <span class="st">"Cauquenes province, WorldClim 2.1 (1970-2000)"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/axis.html" class="external-link">axis</a></span><span class="op">(</span><span class="fl">1</span>, at <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">12</span>, labels <span class="op">=</span> <span class="va">month.abb</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"top"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"tmin"</span>, <span class="st">"tmax"</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"#2c7bb6"</span>, <span class="st">"#d7191c"</span><span class="op">)</span>, pch <span class="op">=</span> <span class="fl">19</span>,</span>
+<span>       horiz <span class="op">=</span> <span class="cn">TRUE</span>, bty <span class="op">=</span> <span class="st">"n"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="cauquenes_files/figure-html/climatology-plot-1.png" class="r-plt" alt="" width="100%"></p>
 </div>
 <div class="section level2">
-<h2 id="method-differences">4. Method differences<a class="anchor" aria-label="anchor" href="#method-differences"></a>
+<h2 id="one-location-the-town-of-cauquenes">3. One location: the town of Cauquenes<a class="anchor" aria-label="anchor" href="#one-location-the-town-of-cauquenes"></a>
 </h2>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">d</span> <span class="op">&lt;-</span> <span class="va">maps</span><span class="op">$</span><span class="va">gdd_single_sine_b10</span><span class="op">$</span><span class="va">season</span> <span class="op">-</span> <span class="va">maps</span><span class="op">$</span><span class="va">gdd_average_b10</span><span class="op">$</span><span class="va">season</span></span>
-<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">d</span>, main <span class="op">=</span> <span class="st">"GDD base 10: single sine minus average (degC day)"</span><span class="op">)</span></span></code></pre></div>
+<p><code><a href="../reference/thermify.html">thermify()</a></code> densifies the 12 monthly values of a cell to
+daily values with a mean-preserving interpolation
+(<code>pchip_mp</code>), reconstructs hourly temperatures (Linvill
+model) and accumulates the indices over the heat season (1 September -
+30 April) and the chill season (1 May - 31 August).</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">town</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/vect.html" class="external-link">vect</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="op">-</span><span class="fl">72.3225</span>, <span class="op">-</span><span class="fl">35.9671</span><span class="op">)</span>, crs <span class="op">=</span> <span class="st">"EPSG:4326"</span><span class="op">)</span></span>
+<span><span class="va">tmin_town</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/extract.html" class="external-link">extract</a></span><span class="op">(</span><span class="va">tmin</span>, <span class="va">town</span>, ID <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">tmax_town</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/extract.html" class="external-link">extract</a></span><span class="op">(</span><span class="va">tmax</span>, <span class="va">town</span>, ID <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/thermify.html">thermify</a></span><span class="op">(</span><span class="va">tmin_town</span>, <span class="va">tmax_town</span>, input <span class="op">=</span> <span class="st">"monthly"</span>, latitude <span class="op">=</span> <span class="op">-</span><span class="fl">35.97</span>,</span>
+<span>                temporal <span class="op">=</span> <span class="st">"native"</span>, interpolation <span class="op">=</span> <span class="st">"pchip_mp"</span>,</span>
+<span>                indices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gdd"</span>, <span class="st">"ch"</span>, <span class="st">"cu"</span>, <span class="st">"cp"</span><span class="op">)</span>,</span>
+<span>                gdd_methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"average"</span>, <span class="st">"single_sine"</span>, <span class="st">"double_sine"</span><span class="op">)</span>,</span>
+<span>                base <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">10</span><span class="op">)</span>, ch_methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sine"</span>, <span class="st">"hourly"</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">season</span> <span class="op">&lt;-</span> <span class="va">res</span><span class="op">$</span><span class="va">summary</span><span class="op">[</span><span class="va">res</span><span class="op">$</span><span class="va">summary</span><span class="op">$</span><span class="va">aggregation</span> <span class="op">==</span> <span class="st">"season"</span>,</span>
+<span>                      <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"key"</span>, <span class="st">"value"</span>, <span class="st">"units"</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="va">season</span><span class="op">$</span><span class="va">value</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/math-generics.html" class="external-link">round</a></span><span class="op">(</span><span class="va">season</span><span class="op">$</span><span class="va">value</span>, <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html" class="external-link">rownames</a></span><span class="op">(</span><span class="va">season</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="cn">NULL</span></span>
+<span><span class="va">season</span></span>
+<span><span class="co">#&gt;                    key  value       units</span></span>
+<span><span class="co">#&gt; 1       gdd_average_b5 2690.4    degC day</span></span>
+<span><span class="co">#&gt; 2      gdd_average_b10 1480.4    degC day</span></span>
+<span><span class="co">#&gt; 3   gdd_single_sine_b5 2690.4    degC day</span></span>
+<span><span class="co">#&gt; 4  gdd_single_sine_b10 1542.0    degC day</span></span>
+<span><span class="co">#&gt; 5   gdd_double_sine_b5 2690.9    degC day</span></span>
+<span><span class="co">#&gt; 6  gdd_double_sine_b10 1542.1    degC day</span></span>
+<span><span class="co">#&gt; 7              ch_sine  827.3           h</span></span>
+<span><span class="co">#&gt; 8            ch_hourly  970.0           h</span></span>
+<span><span class="co">#&gt; 9              cu_utah 1944.5 chill units</span></span>
+<span><span class="co">#&gt; 10          cp_dynamic   92.7    portions</span></span></code></pre></div>
+<p>Growing degree-days (base 10 degC) by month:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">gdd</span> <span class="op">&lt;-</span> <span class="va">res</span><span class="op">$</span><span class="va">summary</span><span class="op">[</span><span class="va">res</span><span class="op">$</span><span class="va">summary</span><span class="op">$</span><span class="va">key</span> <span class="op">==</span> <span class="st">"gdd_single_sine_b10"</span> <span class="op">&amp;</span></span>
+<span>                     <span class="va">res</span><span class="op">$</span><span class="va">summary</span><span class="op">$</span><span class="va">aggregation</span> <span class="op"><a href="https://rspatial.github.io/terra/reference/match.html" class="external-link">%in%</a></span> <span class="fu"><a href="https://rdrr.io/r/base/sprintf.html" class="external-link">sprintf</a></span><span class="op">(</span><span class="st">"m%02d"</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">12</span><span class="op">)</span>, <span class="op">]</span></span>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/barplot.html" class="external-link">barplot</a></span><span class="op">(</span><span class="va">gdd</span><span class="op">$</span><span class="va">value</span>, names.arg <span class="op">=</span> <span class="va">month.abb</span>, col <span class="op">=</span> <span class="st">"#fdae61"</span>,</span>
+<span>        ylab <span class="op">=</span> <span class="st">"degC day"</span>, main <span class="op">=</span> <span class="st">"GDD base 10 (single sine), by month"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="cauquenes_files/figure-html/town-monthly-1.png" class="r-plt" alt="" width="100%"></p>
+<p>Chill accumulation during the chill season:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">d</span> <span class="op">&lt;-</span> <span class="va">res</span><span class="op">$</span><span class="va">daily</span></span>
+<span><span class="va">chill</span> <span class="op">&lt;-</span> <span class="va">d</span><span class="op">$</span><span class="va">month</span> <span class="op"><a href="https://rspatial.github.io/terra/reference/match.html" class="external-link">%in%</a></span> <span class="fl">5</span><span class="op">:</span><span class="fl">8</span></span>
+<span><span class="va">op</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">3</span><span class="op">)</span>, mar <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">4</span>, <span class="fl">3</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">d</span><span class="op">$</span><span class="va">date</span><span class="op">[</span><span class="va">chill</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/cumsum.html" class="external-link">cumsum</a></span><span class="op">(</span><span class="va">d</span><span class="op">$</span><span class="va">ch_hourly</span><span class="op">[</span><span class="va">chill</span><span class="op">]</span><span class="op">)</span>, type <span class="op">=</span> <span class="st">"l"</span>, lwd <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>     xlab <span class="op">=</span> <span class="st">""</span>, ylab <span class="op">=</span> <span class="st">"h"</span>, main <span class="op">=</span> <span class="st">"Chilling hours (0-7.2 degC)"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">d</span><span class="op">$</span><span class="va">date</span><span class="op">[</span><span class="va">chill</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/cumsum.html" class="external-link">cumsum</a></span><span class="op">(</span><span class="va">d</span><span class="op">$</span><span class="va">cu_utah</span><span class="op">[</span><span class="va">chill</span><span class="op">]</span><span class="op">)</span>, type <span class="op">=</span> <span class="st">"l"</span>, lwd <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>     xlab <span class="op">=</span> <span class="st">""</span>, ylab <span class="op">=</span> <span class="st">"chill units"</span>, main <span class="op">=</span> <span class="st">"Utah model"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">d</span><span class="op">$</span><span class="va">date</span><span class="op">[</span><span class="va">chill</span><span class="op">]</span>, <span class="fu"><a href="https://rdrr.io/r/base/cumsum.html" class="external-link">cumsum</a></span><span class="op">(</span><span class="va">d</span><span class="op">$</span><span class="va">cp_dynamic</span><span class="op">[</span><span class="va">chill</span><span class="op">]</span><span class="op">)</span>, type <span class="op">=</span> <span class="st">"l"</span>, lwd <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>     xlab <span class="op">=</span> <span class="st">""</span>, ylab <span class="op">=</span> <span class="st">"portions"</span>, main <span class="op">=</span> <span class="st">"Dynamic model"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="cauquenes_files/figure-html/town-chill-1.png" class="r-plt" alt="" width="100%"></p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="va">op</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="indices-for-every-cell">4. Indices for every cell<a class="anchor" aria-label="anchor" href="#indices-for-every-cell"></a>
+</h2>
+<p><code><a href="../reference/thermify_rast.html">thermify_rast()</a></code> applies the same workflow to every cell,
+block by block, and writes one file per index with layers
+<code>season</code>, <code>annual</code> and <code>m01</code> to
+<code>m12</code>. Latitude is taken from each cell. The maps show the
+province (solid line) and the commune of Cauquenes (dashed).</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">maps</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/thermify_rast.html">thermify_rast</a></span><span class="op">(</span></span>
+<span>  <span class="va">tmin</span>, <span class="va">tmax</span>, output_dir <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html" class="external-link">file.path</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"cauquenes-rasters"</span><span class="op">)</span>,</span>
+<span>  temporal <span class="op">=</span> <span class="st">"native"</span>, interpolation <span class="op">=</span> <span class="st">"pchip_mp"</span>,</span>
+<span>  indices <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"gdd"</span>, <span class="st">"ch"</span>, <span class="st">"cu"</span>, <span class="st">"cp"</span><span class="op">)</span>,</span>
+<span>  gdd_methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"average"</span>, <span class="st">"single_sine"</span><span class="op">)</span>, base <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  ch_methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"sine"</span>, <span class="st">"hourly"</span><span class="op">)</span>, progress <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">maps</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "gdd_average_b10"     "gdd_single_sine_b10" "ch_sine"            </span></span>
+<span><span class="co">#&gt; [4] "ch_hourly"           "cu_utah"             "cp_dynamic"</span></span></code></pre></div>
+<p>Spatial summary of the seasonal totals over the province:</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">stats</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">maps</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">k</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">v</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/values.html" class="external-link">values</a></span><span class="op">(</span><span class="va">maps</span><span class="op">[[</span><span class="va">k</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">season</span>, mat <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span>  <span class="va">v</span> <span class="op">&lt;-</span> <span class="va">v</span><span class="op">[</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">v</span><span class="op">)</span><span class="op">]</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>index <span class="op">=</span> <span class="va">k</span>, cells <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">v</span><span class="op">)</span>,</span>
+<span>             mean <span class="op">=</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/summarize-generics.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">v</span><span class="op">)</span>, min <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">min</a></span><span class="op">(</span><span class="va">v</span><span class="op">)</span>,</span>
+<span>             p05 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unname.html" class="external-link">unname</a></span><span class="op">(</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/quantile.html" class="external-link">quantile</a></span><span class="op">(</span><span class="va">v</span>, <span class="fl">0.05</span><span class="op">)</span><span class="op">)</span>, median <span class="op">=</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/median.html" class="external-link">median</a></span><span class="op">(</span><span class="va">v</span><span class="op">)</span>,</span>
+<span>             p95 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/unname.html" class="external-link">unname</a></span><span class="op">(</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/quantile.html" class="external-link">quantile</a></span><span class="op">(</span><span class="va">v</span>, <span class="fl">0.95</span><span class="op">)</span><span class="op">)</span>, max <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html" class="external-link">max</a></span><span class="op">(</span><span class="va">v</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">stats</span><span class="op">[</span>, <span class="op">-</span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">)</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/math-generics.html" class="external-link">round</a></span><span class="op">(</span><span class="va">stats</span><span class="op">[</span>, <span class="op">-</span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span><span class="op">)</span><span class="op">]</span>, <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="va">stats</span></span>
+<span><span class="co">#&gt;                 index cells   mean    min    p05 median    p95    max</span></span>
+<span><span class="co">#&gt; 1     gdd_average_b10  4554 1247.1  573.3  800.0 1280.9 1546.9 1583.4</span></span>
+<span><span class="co">#&gt; 2 gdd_single_sine_b10  4554 1331.1  747.1  935.8 1360.1 1613.1 1653.9</span></span>
+<span><span class="co">#&gt; 3             ch_sine  4554  942.9  305.5  553.3  934.8 1301.6 1624.2</span></span>
+<span><span class="co">#&gt; 4           ch_hourly  4554 1117.1  254.0  558.0 1117.0 1599.0 1901.0</span></span>
+<span><span class="co">#&gt; 5             cu_utah  4554 2087.3 1695.5 1789.0 2044.0 2414.5 2594.5</span></span>
+<span><span class="co">#&gt; 6          cp_dynamic  4554   92.9   86.6   89.6   93.0   95.6   97.5</span></span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">op</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">maps</span><span class="op">$</span><span class="va">gdd_single_sine_b10</span><span class="op">$</span><span class="va">season</span>, main <span class="op">=</span> <span class="st">"GDD base 10 (degC day)"</span>,</span>
+<span>     col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/palettes.html" class="external-link">hcl.colors</a></span><span class="op">(</span><span class="fl">50</span>, <span class="st">"YlOrRd"</span>, rev <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">provincia</span><span class="op">)</span>; <span class="fu"><a href="https://rspatial.github.io/terra/reference/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">comuna</span>, lty <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">maps</span><span class="op">$</span><span class="va">ch_hourly</span><span class="op">$</span><span class="va">season</span>, main <span class="op">=</span> <span class="st">"Chilling hours (h)"</span>,</span>
+<span>     col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/palettes.html" class="external-link">hcl.colors</a></span><span class="op">(</span><span class="fl">50</span>, <span class="st">"Blues"</span>, rev <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">provincia</span><span class="op">)</span>; <span class="fu"><a href="https://rspatial.github.io/terra/reference/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">comuna</span>, lty <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">maps</span><span class="op">$</span><span class="va">cu_utah</span><span class="op">$</span><span class="va">season</span>, main <span class="op">=</span> <span class="st">"Utah chill units"</span>,</span>
+<span>     col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/palettes.html" class="external-link">hcl.colors</a></span><span class="op">(</span><span class="fl">50</span>, <span class="st">"Purples"</span>, rev <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">provincia</span><span class="op">)</span>; <span class="fu"><a href="https://rspatial.github.io/terra/reference/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">comuna</span>, lty <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">maps</span><span class="op">$</span><span class="va">cp_dynamic</span><span class="op">$</span><span class="va">season</span>, main <span class="op">=</span> <span class="st">"Chill portions (Dynamic)"</span>,</span>
+<span>     col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/palettes.html" class="external-link">hcl.colors</a></span><span class="op">(</span><span class="fl">50</span>, <span class="st">"Greens"</span>, rev <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">provincia</span><span class="op">)</span>; <span class="fu"><a href="https://rspatial.github.io/terra/reference/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">comuna</span>, lty <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<p><img src="cauquenes_files/figure-html/maps-1.png" class="r-plt" alt="" width="100%"></p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="va">op</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="method-differences">5. Method differences<a class="anchor" aria-label="anchor" href="#method-differences"></a>
+</h2>
+<p>Estimating degree-days from the daily mean ignores the hours above
+the base on days whose mean is below it. The difference with the single
+sine method is largest where the nights are cold:</p>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">d_gdd</span> <span class="op">&lt;-</span> <span class="va">maps</span><span class="op">$</span><span class="va">gdd_single_sine_b10</span><span class="op">$</span><span class="va">season</span> <span class="op">-</span> <span class="va">maps</span><span class="op">$</span><span class="va">gdd_average_b10</span><span class="op">$</span><span class="va">season</span></span>
+<span><span class="va">d_ch</span>  <span class="op">&lt;-</span> <span class="va">maps</span><span class="op">$</span><span class="va">ch_hourly</span><span class="op">$</span><span class="va">season</span> <span class="op">-</span> <span class="va">maps</span><span class="op">$</span><span class="va">ch_sine</span><span class="op">$</span><span class="va">season</span></span>
+<span><span class="va">op</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">d_gdd</span>, main <span class="op">=</span> <span class="st">"GDD b10: single sine - average"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">provincia</span><span class="op">)</span>; <span class="fu"><a href="https://rspatial.github.io/terra/reference/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">comuna</span>, lty <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">d_ch</span>, main <span class="op">=</span> <span class="st">"Chilling hours: hourly - sine"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">provincia</span><span class="op">)</span>; <span class="fu"><a href="https://rspatial.github.io/terra/reference/lines.html" class="external-link">lines</a></span><span class="op">(</span><span class="va">comuna</span>, lty <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
+<p><img src="cauquenes_files/figure-html/differences-1.png" class="r-plt" alt="" width="100%"></p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span><span class="va">op</span><span class="op">)</span></span>
+<span><span class="va">valid</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">r</span><span class="op">)</span> <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/na.fail.html" class="external-link">na.omit</a></span><span class="op">(</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/values.html" class="external-link">values</a></span><span class="op">(</span><span class="va">r</span>, mat <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/math-generics.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">rbind</a></span><span class="op">(</span>gdd_sine_minus_average <span class="op">=</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="fu">valid</span><span class="op">(</span><span class="va">d_gdd</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>            ch_hourly_minus_sine <span class="op">=</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="fu">valid</span><span class="op">(</span><span class="va">d_ch</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>, <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="co">#&gt;                         Min. 1st Qu. Median  Mean 3rd Qu.  Max.</span></span>
+<span><span class="co">#&gt; gdd_sine_minus_average  46.5    67.8   74.2  84.0    94.2 173.8</span></span>
+<span><span class="co">#&gt; ch_hourly_minus_sine   -55.2   148.2  182.1 174.2   212.4 304.1</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="interpretation">Interpretation<a class="anchor" aria-label="anchor" href="#interpretation"></a>
 </h2>
 <ul>
-<li>Values are climatological estimates for a reference 365-day calendar
-(2023), not observations of that year.</li>
+<li>Values are climatological estimates for a reference 365-day
+calendar, not observations of any particular year.</li>
 <li>Two modelling layers (monthly to daily, daily to hourly) add
-uncertainty, especially to non-linear chill indices.</li>
-<li>The experiment checks computation and quantifies method differences;
-it does not validate any method (see
+uncertainty, especially to the non-linear chill indices.</li>
+<li>The tutorial checks computation and quantifies method differences;
+it does not validate any method against observations (see
 <code><a href="../articles/validation.html">vignette("validation")</a></code>).</li>
 </ul>
 </div>

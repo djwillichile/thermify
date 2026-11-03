@@ -28,6 +28,8 @@
   : Diagnostics of a monthly-to-daily densification
 - [`tempify_available()`](https://djwillichile.github.io/thermify/reference/tempify_available.md)
   : Is the tempify Python package available?
+- [`install_tempify()`](https://djwillichile.github.io/thermify/reference/install_tempify.md)
+  : Install the tempify Python backend
 - [`tempify_version()`](https://djwillichile.github.io/thermify/reference/tempify_version.md)
   : Version information of the tempify backend
 - [`hourly_temperatures()`](https://djwillichile.github.io/thermify/reference/hourly_temperatures.md)

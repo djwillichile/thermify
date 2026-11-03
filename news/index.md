@@ -22,6 +22,19 @@
   zero, and `col` accepts any
   [`hcl.colors()`](https://rdrr.io/r/grDevices/palettes.html) palette
   name such as `"Spectral"`.
+- tempify is set up automatically. With `reticulate` (\>= 1.41) thermify
+  declares it with
+  [`reticulate::py_require()`](https://rstudio.github.io/reticulate/reference/py_require.html)
+  on load, and the first use of the tempify engine builds and caches a
+  Python environment with it.
+  [`install_tempify()`](https://djwillichile.github.io/thermify/reference/install_tempify.md)
+  creates a persistent environment `"r-thermify"` instead, which is then
+  used on load. A Python chosen by the user is respected;
+  `options(thermify.tempify_auto = FALSE)` or
+  `THERMIFY_TEMPIFY_AUTO=false` disables the setup.
+- [`tempify_version()`](https://djwillichile.github.io/thermify/reference/tempify_version.md)
+  records the tempify git commit also when tempify was installed from a
+  git URL (PEP 610 `direct_url.json`).
 
 ## thermify 0.2.0
 

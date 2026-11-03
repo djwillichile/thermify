@@ -188,6 +188,13 @@ daily values with a mean-preserving interpolation
 (<code>pchip_mp</code>), reconstructs hourly temperatures (Linvill
 model) and accumulates the indices over the heat season (1 September -
 30 April) and the chill season (1 May - 31 August).</p>
+<p>The tutorial uses the native R engine
+(<code>temporal = "native"</code>), which reproduces tempify to within
+1e-13 degC. With <code>reticulate</code> installed,
+<code>temporal = "auto"</code> uses the <a href="https://github.com/djwillichile/tempify" class="external-link">tempify</a> Python
+package instead; it is set up automatically the first time (see
+<code><a href="../reference/install_tempify.html">install_tempify()</a></code> and
+<code><a href="../articles/tempify-integration.html">vignette("tempify-integration")</a></code>).</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">town</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/vect.html" class="external-link">vect</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/cbind.html" class="external-link">cbind</a></span><span class="op">(</span><span class="op">-</span><span class="fl">72.3225</span>, <span class="op">-</span><span class="fl">35.9671</span><span class="op">)</span>, crs <span class="op">=</span> <span class="st">"EPSG:4326"</span><span class="op">)</span></span>
 <span><span class="va">tmin_town</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/unlist.html" class="external-link">unlist</a></span><span class="op">(</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/extract.html" class="external-link">extract</a></span><span class="op">(</span><span class="va">tmin</span>, <span class="va">town</span>, ID <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span></span>
@@ -261,7 +268,7 @@ summarises the indices, their units and layers:</p>
 <span><span class="co">#&gt;   ch_hourly                [h]            season annual m01 m02 m03 m04 m05 m06 m07 m08 m09 m10 m11 m12</span></span>
 <span><span class="co">#&gt;   cu_utah                  [chill units]  season m01 m02 m03 m04 m05 m06 m07 m08 m09 m10 m11 m12</span></span>
 <span><span class="co">#&gt;   cp_dynamic               [portions]     season m01 m02 m03 m04 m05 m06 m07 m08 m09 m10 m11 m12</span></span>
-<span><span class="co">#&gt; files in: /tmp/RtmpoLkPw7/cauquenes-rasters</span></span></code></pre></div>
+<span><span class="co">#&gt; files in: /tmp/Rtmp98mnum/cauquenes-rasters</span></span></code></pre></div>
 <p>Spatial summary of the seasonal totals over the province:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">stats</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">maps</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">k</span><span class="op">)</span> <span class="op">{</span></span>

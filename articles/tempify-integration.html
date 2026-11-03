@@ -101,13 +101,43 @@ git commit are stored in the provenance.</li>
 <code>"pchip"</code> and <code>"pchip_mp"</code> that reproduces tempify
 to within 1e-13 degC (tested for 365 and 366 days).</li>
 </ul>
+<div class="section level3">
+<h3 id="installing-tempify">Installing tempify<a class="anchor" aria-label="anchor" href="#installing-tempify"></a>
+</h3>
+<p>tempify is a Python package, so R cannot install it as a dependency.
+thermify sets it up for you in one of three ways, tried in this order
+when the package is loaded:</p>
+<ol style="list-style-type: decimal">
+<li>
+<strong>Your own Python.</strong> If you chose one
+(<code>RETICULATE_PYTHON</code>,
+<code><a href="https://rstudio.github.io/reticulate/reference/use_python.html" class="external-link">reticulate::use_virtualenv()</a></code> and similar), it is used as
+is.</li>
+<li>
+<strong>A persistent environment.</strong>
+<code><a href="../reference/install_tempify.html">install_tempify()</a></code> creates the virtual environment
+<code>"r-thermify"</code> once; thermify uses it in every later
+session.</li>
+<li>
+<strong>Automatic.</strong> With <code>reticulate</code> (&gt;=
+1.41), thermify declares tempify with
+<code><a href="https://rstudio.github.io/reticulate/reference/py_require.html" class="external-link">reticulate::py_require()</a></code>. The first time the tempify engine
+is needed, reticulate builds and caches a Python environment with it
+(about one minute and 100 MB, once); later sessions reuse the
+cache.</li>
+</ol>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># One-time Python setup (outside R)</span></span>
-<span><span class="co"># python -m venv ~/.virtualenvs/thermify</span></span>
-<span><span class="co"># ~/.virtualenvs/thermify/bin/pip install git+https://github.com/djwillichile/tempify</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/Sys.setenv.html" class="external-link">Sys.setenv</a></span><span class="op">(</span>RETICULATE_PYTHON <span class="op">=</span> <span class="st">"~/.virtualenvs/thermify/bin/python"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/tempify_available.html">tempify_available</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="fu"><a href="../reference/tempify_version.html">tempify_version</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"reticulate"</span><span class="op">)</span>   <span class="co"># &gt;= 1.41 for the automatic route</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/djwillichile/thermify" class="external-link">thermify</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/tempify_available.html">tempify_available</a></span><span class="op">(</span><span class="op">)</span>              <span class="co"># first call prepares the environment</span></span>
+<span><span class="fu"><a href="../reference/tempify_version.html">tempify_version</a></span><span class="op">(</span><span class="op">)</span>                <span class="co"># version and git commit, for provenance</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/install_tempify.html">install_tempify</a></span><span class="op">(</span><span class="op">)</span>                <span class="co"># alternative: persistent "r-thermify" env</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>thermify.tempify_auto <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>   <span class="co"># opt out, before library(thermify)</span></span></code></pre></div>
+<p>Installing tempify from GitHub needs <code>git</code>. Without Python
+or tempify, <code>temporal = "auto"</code> falls back to the native
+engine.</p>
+</div>
 </div>
 <div class="section level2">
 <h2 id="the-pchip_mp-algorithm">The <code>pchip_mp</code> algorithm<a class="anchor" aria-label="anchor" href="#the-pchip_mp-algorithm"></a>

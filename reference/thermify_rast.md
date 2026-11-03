@@ -147,8 +147,11 @@ thermify_rast(
 
 ## Value
 
-A named list of file-backed `SpatRaster` objects, one per index key,
-with attribute `"provenance"`.
+An object of class `"thermify_rast"`: a named list of file-backed
+`SpatRaster` objects, one per index key, with attribute `"provenance"`.
+It has
+[plot()](https://djwillichile.github.io/thermify/reference/plot.thermify_rast.md)
+and [`print()`](https://rdrr.io/r/base/print.html) methods.
 
 ## Outputs
 

@@ -196,8 +196,8 @@ par(op)
 [`thermify_rast()`](https://djwillichile.github.io/thermify/reference/thermify_rast.md)
 applies the same workflow to every cell, block by block, and writes one
 file per index with layers `season`, `annual` and `m01` to `m12`.
-Latitude is taken from each cell. The maps show the province (solid
-line) and the commune of Cauquenes (dashed).
+Latitude is taken from each cell. Printing the result summarises the
+indices, their units and layers:
 
 ``` r
 
@@ -207,9 +207,16 @@ maps <- thermify_rast(
   indices = c("gdd", "ch", "cu", "cp"),
   gdd_methods = c("average", "single_sine"), base = 10,
   ch_methods = c("sine", "hourly"), progress = FALSE)
-names(maps)
-#> [1] "gdd_average_b10"     "gdd_single_sine_b10" "ch_sine"            
-#> [4] "ch_hourly"           "cu_utah"             "cp_dynamic"
+maps
+#> <thermify_rast> 6 indices, 88 x 98 cells, 4554 valid
+#> engine: native | interpolation: pchip_mp | reference year: 2023 
+#>   gdd_average_b10          [degC day]     season annual m01 m02 m03 m04 m05 m06 m07 m08 m09 m10 m11 m12
+#>   gdd_single_sine_b10      [degC day]     season annual m01 m02 m03 m04 m05 m06 m07 m08 m09 m10 m11 m12
+#>   ch_sine                  [h]            season annual m01 m02 m03 m04 m05 m06 m07 m08 m09 m10 m11 m12
+#>   ch_hourly                [h]            season annual m01 m02 m03 m04 m05 m06 m07 m08 m09 m10 m11 m12
+#>   cu_utah                  [chill units]  season m01 m02 m03 m04 m05 m06 m07 m08 m09 m10 m11 m12
+#>   cp_dynamic               [portions]     season m01 m02 m03 m04 m05 m06 m07 m08 m09 m10 m11 m12
+#> files in: /tmp/RtmpoLkPw7/cauquenes-rasters
 ```
 
 Spatial summary of the seasonal totals over the province:
@@ -235,29 +242,40 @@ stats
 #> 6          cp_dynamic  4554   92.9   86.6   89.6   93.0   95.6   97.5
 ```
 
+[`plot()`](https://rspatial.github.io/terra/reference/plot.html) draws
+every index for the season, with titles, units and one palette per
+family; `boundary` adds the province outline:
+
 ``` r
 
-op <- par(mfrow = c(2, 2))
-plot(maps$gdd_single_sine_b10$season, main = "GDD base 10 (degC day)",
-     col = hcl.colors(50, "YlOrRd", rev = TRUE))
-lines(provincia); lines(comuna, lty = 2)
-plot(maps$ch_hourly$season, main = "Chilling hours (h)",
-     col = hcl.colors(50, "Blues", rev = TRUE))
-lines(provincia); lines(comuna, lty = 2)
-plot(maps$cu_utah$season, main = "Utah chill units",
-     col = hcl.colors(50, "Purples", rev = TRUE))
-lines(provincia); lines(comuna, lty = 2)
-plot(maps$cp_dynamic$season, main = "Chill portions (Dynamic)",
-     col = hcl.colors(50, "Greens", rev = TRUE))
-lines(provincia); lines(comuna, lty = 2)
+plot(maps, boundary = provincia)
 ```
 
 ![](cauquenes_files/figure-html/maps-1.png)
 
+### The annual cycle
+
+`type = "monthly"` shows the twelve monthly layers of an index on a
+common colour scale, here in a 3 x 4 grid with the commune outline:
+
 ``` r
 
-par(op)
+plot(maps, variable = "gdd_single_sine_b10", type = "monthly",
+     nrow = 3, ncol = 4, boundary = comuna)
 ```
+
+![](cauquenes_files/figure-html/monthly-1.png)
+
+and `variable` also accepts index families, for example the chill
+indices in the coldest months:
+
+``` r
+
+plot(maps, variable = c("ch_hourly", "cu", "cp"), type = c("m06", "m07"),
+     nrow = 2, ncol = 3, boundary = provincia)
+```
+
+![](cauquenes_files/figure-html/winter-1.png)
 
 ## 5. Method differences
 

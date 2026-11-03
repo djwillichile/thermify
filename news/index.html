@@ -46,6 +46,11 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="thermify-development-version">thermify (development version)<a class="anchor" aria-label="anchor" href="#thermify-development-version"></a></h2>
+<div class="section level3">
+<h3 id="new-features-development-version">New features<a class="anchor" aria-label="anchor" href="#new-features-development-version"></a></h3>
+<ul><li>
+<code><a href="../reference/thermify_rast.html">thermify_rast()</a></code> returns an object of class <code>"thermify_rast"</code> (still a named list of <code>SpatRaster</code>) with a <code><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot()</a></code> method: <code>variable</code> selects indices or families, <code>type</code> the layer (<code>"season"</code>, <code>"annual"</code>, <code>"monthly"</code> or months such as <code>"m07"</code>), <code>nrow</code>/<code>ncol</code> the layout, plus <code>col</code>, <code>boundary</code>, a common or per-panel colour scale and <code>titles</code>; and a <code><a href="https://rdrr.io/r/base/print.html" class="external-link">print()</a></code> method that summarises indices, units, layers and files. Titles that do not fit in a panel are wrapped onto several lines; a single index shown month by month gets short titles (month and units) with the index name above the panels; months without data (outside the chill period) are left out. Default palettes are multi-hue sequential (<code>YlOrRd</code>, <code>YlGnBu</code>, <code>BuPu</code>, <code>YlGn</code>), Utah units crossing zero use a diverging palette centred on zero, and <code>col</code> accepts any <code><a href="https://rdrr.io/r/grDevices/palettes.html" class="external-link">hcl.colors()</a></code> palette name such as <code>"Spectral"</code>.</li>
+</ul></div>
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.2.0" id="thermify-020">thermify 0.2.0<a class="anchor" aria-label="anchor" href="#thermify-020"></a></h2>

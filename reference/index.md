@@ -41,6 +41,9 @@
   : Compute several thermal indices for one location
 - [`thermify_rast()`](https://djwillichile.github.io/thermify/reference/thermify_rast.md)
   : Thermal indices from monthly climatology rasters
+- [`plot(`*`<thermify_rast>`*`)`](https://djwillichile.github.io/thermify/reference/plot.thermify_rast.md)
+  [`print(`*`<thermify_rast>`*`)`](https://djwillichile.github.io/thermify/reference/plot.thermify_rast.md)
+  : Plot and print the maps produced by thermify_rast()
 - [`season_days()`](https://djwillichile.github.io/thermify/reference/season_days.md)
   : Select the days of an accumulation period
 - [`threshold_date()`](https://djwillichile.github.io/thermify/reference/threshold_date.md)

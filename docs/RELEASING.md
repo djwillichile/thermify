@@ -34,7 +34,13 @@ Steps:
    release) checks that the tag matches `DESCRIPTION`, builds and checks the
    package, and creates or updates the GitHub Release with the `NEWS.md`
    section as notes and the source tarball attached.
-4. On `main`, bump to the next development version (`X.Y.Z.9000`) and add a
+4. Zenodo archives the published release automatically (GitHub integration
+   enabled for the repository) and mints a version DOI. The citation files,
+   the README badge and `inst/CITATION` use the concept DOI
+   10.5281/zenodo.23841856, which always resolves to the latest version, so
+   they need no change. Add the version DOI to the `NEWS.md` section and to
+   `identifiers` in `CITATION.cff`.
+5. On `main`, bump to the next development version (`X.Y.Z.9000`) and add a
    `# thermify (development version)` heading to `NEWS.md`.
 
 The package is not submitted to CRAN without explicit authorisation of the

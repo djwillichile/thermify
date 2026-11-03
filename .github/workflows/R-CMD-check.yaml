@@ -22,6 +22,8 @@ jobs:
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       R_KEEP_PKG_SOURCE: yes
+      # The automatic tempify setup is tested in its own job.
+      THERMIFY_TEMPIFY_AUTO: false
     steps:
       - uses: actions/checkout@v4
       - uses: r-lib/actions/setup-pandoc@v2
@@ -36,6 +38,42 @@ jobs:
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
+
+  tempify-auto:
+    # End-to-end check of the automatic tempify setup on a clean runner:
+    # no Python configured, reticulate builds the environment on first use.
+    name: tempify auto-install (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          use-public-rspm: true
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: any::reticulate, local::.
+          needs: check
+      - name: Provision tempify automatically and compare engines
+        shell: Rscript {0}
+        run: |
+          library(thermify)
+          stopifnot(identical(thermify:::the$tempify_route, "py_require"))
+          stopifnot(tempify_available())
+          print(tempify_version())
+          tmin <- c(11.4, 11.1, 9.2, 6.8, 5.3, 3.9, 3.1, 3.6, 4.6, 6.3, 8.4, 10.3)
+          tmax <- c(29.6, 29.2, 26.5, 21.9, 17.2, 13.9, 13.6, 15.3, 17.9,
+                    21.2, 24.9, 28.2)
+          a <- densify_monthly(tmin, tmax, engine = "tempify")
+          b <- densify_monthly(tmin, tmax, engine = "native")
+          d <- max(abs(a$tmin - b$tmin), abs(a$tmax - b$tmax))
+          cat("max |tempify - native| =", d, "\n")
+          stopifnot(d < 1e-10)
 
   full-tests:
     # Complete battery: tempify backend, network reads of WorldClim,

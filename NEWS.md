@@ -1,5 +1,17 @@
 # thermify (development version)
 
+## New features
+
+* tempify is set up automatically. With `reticulate` (>= 1.41) thermify
+  declares it with `reticulate::py_require()` on load, and the first use of
+  the tempify engine builds and caches a Python environment with it.
+  `install_tempify()` creates a persistent environment `"r-thermify"`
+  instead, which is then used on load. A Python chosen by the user is
+  respected; `options(thermify.tempify_auto = FALSE)` or
+  `THERMIFY_TEMPIFY_AUTO=false` disables the setup.
+* `tempify_version()` records the tempify git commit also when tempify was
+  installed from a git URL (PEP 610 `direct_url.json`).
+
 # thermify 0.2.0
 
 Adds the tools for empirical validation against station records, the

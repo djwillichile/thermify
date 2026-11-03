@@ -1,8 +1,11 @@
+# thermify (development version)
+
 # thermify 0.3.0
 
 Adds plot() and print() methods for raster results, sets up the tempify
 backend automatically, and turns the Cauquenes tutorial into a worked
-example with computed results for the whole province.
+example with computed results for the whole province. Archived on Zenodo:
+<https://doi.org/10.5281/zenodo.23922611>.
 
 ## Breaking changes
 

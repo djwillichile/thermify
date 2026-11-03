@@ -41,6 +41,9 @@ identifiers:
     value: 10.5281/zenodo.23841856
     description: "All versions on Zenodo (concept DOI, resolves to the latest)"
   - type: doi
+    value: 10.5281/zenodo.23922611
+    description: "Archived release v0.3.0 on Zenodo"
+  - type: doi
     value: 10.5281/zenodo.23905378
     description: "Archived release v0.2.0 on Zenodo"
   - type: doi

@@ -34,7 +34,7 @@ mean-preserving temporal densification.
 
 ```r
 # install.packages("remotes")
-remotes::install_github("djwillichile/thermify@v0.2.0")   # release
+remotes::install_github("djwillichile/thermify@v0.3.0")   # release
 remotes::install_github("djwillichile/thermify")          # development
 ```
 

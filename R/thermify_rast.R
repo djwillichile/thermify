@@ -41,8 +41,9 @@
 #'   or `TRUE` in interactive sessions. In non-interactive runs a status line
 #'   is written at most every 10 seconds, so logs show the process is alive.
 #' @inheritParams thermify
-#' @return A named list of file-backed `SpatRaster` objects, one per index
-#'   key, with attribute `"provenance"`.
+#' @return An object of class `"thermify_rast"`: a named list of file-backed
+#'   `SpatRaster` objects, one per index key, with attribute `"provenance"`.
+#'   It has [plot()][plot.thermify_rast] and `print()` methods.
 #' @examples
 #' \donttest{
 #' r <- rast(nrows = 3, ncols = 3, nlyrs = 12,
@@ -221,6 +222,7 @@ thermify_rast <- function(tmin, tmax, output_dir, year = 2023,
     elapsed_seconds = elapsed, outputs = unname(basename(files)))
   write_provenance(provenance, output_dir)
   attr(result, "provenance") <- provenance
+  class(result) <- c("thermify_rast", "list")
   result
 }
 

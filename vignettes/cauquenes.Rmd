@@ -151,8 +151,8 @@ par(op)
 
 `thermify_rast()` applies the same workflow to every cell, block by block,
 and writes one file per index with layers `season`, `annual` and `m01` to
-`m12`. Latitude is taken from each cell. The maps show the province (solid
-line) and the commune of Cauquenes (dashed).
+`m12`. Latitude is taken from each cell. Printing the result summarises the
+indices, their units and layers:
 
 ```{r rasters}
 maps <- thermify_rast(
@@ -161,7 +161,7 @@ maps <- thermify_rast(
   indices = c("gdd", "ch", "cu", "cp"),
   gdd_methods = c("average", "single_sine"), base = 10,
   ch_methods = c("sine", "hourly"), progress = FALSE)
-names(maps)
+maps
 ```
 
 Spatial summary of the seasonal totals over the province:
@@ -179,21 +179,29 @@ stats[, -(1:2)] <- round(stats[, -(1:2)], 1)
 stats
 ```
 
-```{r maps, fig.height = 7}
-op <- par(mfrow = c(2, 2))
-plot(maps$gdd_single_sine_b10$season, main = "GDD base 10 (degC day)",
-     col = hcl.colors(50, "YlOrRd", rev = TRUE))
-lines(provincia); lines(comuna, lty = 2)
-plot(maps$ch_hourly$season, main = "Chilling hours (h)",
-     col = hcl.colors(50, "Blues", rev = TRUE))
-lines(provincia); lines(comuna, lty = 2)
-plot(maps$cu_utah$season, main = "Utah chill units",
-     col = hcl.colors(50, "Purples", rev = TRUE))
-lines(provincia); lines(comuna, lty = 2)
-plot(maps$cp_dynamic$season, main = "Chill portions (Dynamic)",
-     col = hcl.colors(50, "Greens", rev = TRUE))
-lines(provincia); lines(comuna, lty = 2)
-par(op)
+`plot()` draws every index for the season, with titles, units and one
+palette per family; `boundary` adds the province outline:
+
+```{r maps, fig.width = 9, fig.height = 6.5}
+plot(maps, boundary = provincia)
+```
+
+### The annual cycle
+
+`type = "monthly"` shows the twelve monthly layers of an index on a common
+colour scale, here in a 3 x 4 grid with the commune outline:
+
+```{r monthly, fig.width = 9, fig.height = 7.5}
+plot(maps, variable = "gdd_single_sine_b10", type = "monthly",
+     nrow = 3, ncol = 4, boundary = comuna)
+```
+
+and `variable` also accepts index families, for example the chill indices in
+the coldest months:
+
+```{r winter, fig.width = 9, fig.height = 6}
+plot(maps, variable = c("ch_hourly", "cu", "cp"), type = c("m06", "m07"),
+     nrow = 2, ncol = 3, boundary = provincia)
 ```
 
 ## 5. Method differences

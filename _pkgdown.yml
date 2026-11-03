@@ -39,6 +39,7 @@ reference:
     contents:
       - thermify
       - thermify_rast
+      - plot.thermify_rast
       - season_days
       - threshold_date
   - title: Validation

@@ -1,5 +1,21 @@
 # thermify (development version)
 
+## New features
+
+* `thermify_rast()` returns an object of class `"thermify_rast"` (still a
+  named list of `SpatRaster`) with a `plot()` method: `variable` selects
+  indices or families, `type` the layer (`"season"`, `"annual"`,
+  `"monthly"` or months such as `"m07"`), `nrow`/`ncol` the layout, plus
+  `col`, `boundary`, a common or per-panel colour scale and `titles`; and a
+  `print()` method that summarises indices, units, layers and files. Titles
+  that do not fit in a panel are wrapped onto several lines; a single index
+  shown month by month gets short titles (month and units) with the index
+  name above the panels; months without data (outside the chill period)
+  are left out. Default palettes are multi-hue sequential (`YlOrRd`,
+  `YlGnBu`, `BuPu`, `YlGn`), Utah units crossing zero use a diverging
+  palette centred on zero, and `col` accepts any `hcl.colors()` palette
+  name such as `"Spectral"`.
+
 # thermify 0.2.0
 
 Adds the tools for empirical validation against station records, the

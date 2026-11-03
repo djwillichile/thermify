@@ -14,6 +14,7 @@
   col = NULL,
   boundary = NULL,
   range = c("variable", "panel"),
+  titles = c("auto", "full", "short"),
   ...
 )
 
@@ -28,8 +29,9 @@
 
 \item{type}{Layer to plot: \code{"season"} (default), \code{"annual"}, \code{"monthly"}
 (the 12 monthly layers), or one or more month layers such as \code{"m07"}.
-Utah units and chill portions have no \code{"annual"} layer; they are skipped
-with a message.}
+Utah units and chill portions have no \code{"annual"} layer, and their months
+outside the chill period hold no data; such layers are left out with a
+message.}
 
 \item{nrow, ncol}{Panel layout. When both are \code{NULL} the layout is chosen
 from the number of panels; when one is given the other is derived.}
@@ -46,9 +48,21 @@ Utah units and green for chill portions.}
 panels of the same index, so that months are comparable; \code{"panel"}
 scales each panel on its own.}
 
-\item{...}{Further arguments passed to \code{\link[terra:plot]{terra::plot()}}. With three or more
-columns the titles are reduced (\code{cex.main} 0.85 or 0.75) unless
-\code{cex.main} is given.}
+\item{titles}{Panel titles: \code{"auto"} (default) writes the index and method,
+period and units in each panel, except when a single index is shown
+month by month, where panels show only the month and units and the
+index name is written once above them; \code{"full"} always writes the index
+and method in each panel; \code{"short"} writes only the period or month and
+the units (and the index name once above, when there is a single index).}
+
+\item{...}{Further arguments passed to \code{\link[terra:plot]{terra::plot()}}. Titles that do
+not fit in the width of a panel are wrapped onto several lines, breaking
+preferably between method, period and units, and the top margin grows
+to make room for them; \code{cex.main} changes their size. Only in very small
+panels, where the lines would take too much of the height, is the title
+reduced. A \code{main}
+given here (one title, or one per panel) replaces the automatic titles
+and is not wrapped.}
 }
 \value{
 \code{x}, invisibly.
@@ -56,6 +70,8 @@ columns the titles are reduced (\code{cex.main} 0.85 or 0.75) unless
 \description{
 \code{plot()} draws the index maps returned by \code{\link[=thermify_rast]{thermify_rast()}}, one panel per
 index and layer, with titles, units and a colour palette per index family.
+When a single index is shown month by month, each panel is titled with the
+month and units and the index name is written once above the panels.
 \code{print()} summarises the object.
 }
 \examples{
@@ -73,6 +89,7 @@ maps
 plot(maps)
 plot(maps, variable = "gdd", type = "monthly", nrow = 3, ncol = 4)
 plot(maps, variable = "cp_dynamic", type = c("m06", "m07"))
+plot(maps, variable = "gdd", type = "monthly", titles = "full")
 }
 \seealso{
 \code{\link[=thermify_rast]{thermify_rast()}}

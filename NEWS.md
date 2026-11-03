@@ -6,8 +6,12 @@
   named list of `SpatRaster`) with a `plot()` method: `variable` selects
   indices or families, `type` the layer (`"season"`, `"annual"`,
   `"monthly"` or months such as `"m07"`), `nrow`/`ncol` the layout, plus
-  `col`, `boundary` and a common or per-panel colour scale; and a `print()`
-  method that summarises indices, units, layers and files.
+  `col`, `boundary`, a common or per-panel colour scale and `titles`; and a
+  `print()` method that summarises indices, units, layers and files. Titles
+  that do not fit in a panel are wrapped onto several lines; a single index
+  shown month by month gets short titles (month and units) with the index
+  name above the panels; months without data (outside the chill period)
+  are left out.
 
 # thermify 0.2.0
 

@@ -23,7 +23,8 @@ draw <- function(expr) {
     draw_panel = function(...) {
       assign("n", get("n", trace_env) + 1L, trace_env)
       invisible(NULL)
-    })
+    },
+    draw_overall_title = function(...) invisible(NULL))
   force(expr)
   n
 }
@@ -51,7 +52,8 @@ test_that("plot() draws one panel per index and layer", {
   m <- plot_maps()
   expect_equal(draw(plot(m)), 6L)
   expect_equal(draw(plot(m, variable = "gdd")), 2L)
-  expect_equal(draw(plot(m, variable = "cp_dynamic", type = "monthly")), 12L)
+  expect_equal(draw(plot(m, variable = "gdd_average_b10",
+                         type = "monthly")), 12L)
   expect_equal(draw(plot(m, variable = c("ch_hourly", "cu"),
                          type = c("m06", "m07"))), 4L)
   draw(expect_invisible(plot(m, variable = "cp")))
@@ -60,11 +62,18 @@ test_that("plot() draws one panel per index and layer", {
 test_that("plot() really draws with terra", {
   m <- plot_maps(c("gdd", "cp"))
   f <- tempfile(fileext = ".png")
-  grDevices::png(f)
-  expect_silent(plot(m, type = "monthly", nrow = 6, ncol = 6,
-                     boundary = terra::as.polygons(terra::ext(m[[1]]),
-                                                   crs = "EPSG:4326")))
+  grDevices::png(f, width = 1400, height = 1400)
+  # The months of the Dynamic model outside the chill period are left out.
+  expect_message(plot(m, type = "monthly", nrow = 4, ncol = 7,
+                      boundary = terra::as.polygons(terra::ext(m[[1]]),
+                                                    crs = "EPSG:4326")),
+                 "No data outside the accumulation period")
   plot(m, range = "panel", col = grDevices::terrain.colors)
+  # Tiny panels do not fail.
+  grDevices::png(tempfile(fileext = ".png"))
+  expect_no_error(suppressMessages(plot(m, type = "monthly", nrow = 6,
+                                        ncol = 6)))
+  grDevices::dev.off()
   # The graphical parameters are restored.
   expect_identical(graphics::par("mfrow"), c(1L, 1L))
   grDevices::dev.off()
@@ -80,27 +89,93 @@ test_that("annual layers missing for Utah and Dynamic are reported", {
                "Nothing to plot")
 })
 
-test_that("titles shrink in wide layouts unless cex.main is given", {
+test_that("long titles are wrapped to the panel width", {
+  f <- tempfile(fileext = ".pdf")
+  grDevices::pdf(f, width = 7, height = 7)
+  on.exit(grDevices::dev.off())
+  title <- "GDD single sine, base 10, 1 Sep - 30 Apr [degC day]"
+  # Wide enough: unchanged.
+  expect_identical(wrap_title(title, 10), title)
+  # Narrow: broken at the commas first, every line fits.
+  w <- graphics::strwidth("GDD single sine, base 10,", units = "inches",
+                          cex = 1.2, font = 2) + 0.05
+  wrapped <- wrap_title(title, w)
+  lines <- strsplit(wrapped, "\n")[[1]]
+  expect_identical(lines[1], "GDD single sine, base 10,")
+  expect_true(all(graphics::strwidth(lines, units = "inches", cex = 1.2,
+                                     font = 2) <= w))
+  expect_identical(gsub("\n", " ", wrapped), title)
+  # Very narrow: long parts are also split at spaces.
+  tiny <- strsplit(wrap_title(title, 0.8), "\n")[[1]]
+  expect_gt(length(tiny), 3)
+  expect_identical(paste(tiny, collapse = " "), title)
+})
+
+test_that("wrapped titles enlarge the top margin; user titles are kept", {
   m <- plot_maps()
   seen <- list()
-  local_mocked_bindings(draw_panel = function(..., cex.main = NULL) {
-    seen[[length(seen) + 1L]] <<- cex.main
+  local_mocked_bindings(draw_panel = function(..., main, mar = NULL) {
+    seen[[length(seen) + 1L]] <<- list(main = main, mar = mar)
     invisible(NULL)
   })
   f <- tempfile(fileext = ".pdf")
-  grDevices::pdf(f)
+  grDevices::pdf(f, width = 4, height = 4)
   on.exit(grDevices::dev.off())
-  plot(m, variable = "gdd", ncol = 2)
-  expect_length(unlist(seen), 0L)
+  plot(m, variable = "gdd_single_sine_b10")
+  expect_match(seen[[1]]$main, "\n")
+  n <- length(strsplit(seen[[1]]$main, "\n")[[1]])
+  expect_equal(seen[[1]]$mar[3], 2 + 1.1 * (n - 1))
   seen <- list()
-  plot(m, ncol = 3)
-  expect_true(all(unlist(seen) == 0.85))
-  seen <- list()
-  plot(m, variable = "cp", type = "monthly")
-  expect_true(all(unlist(seen) == 0.75))
-  seen <- list()
-  plot(m, variable = "cp", type = "monthly", cex.main = 1)
-  expect_true(all(unlist(seen) == 1))
+  plot(m, variable = "gdd", main = c("A", "B"))
+  expect_identical(vapply(seen, `[[`, "", "main"), c("A", "B"))
+  expect_null(seen[[1]]$mar)
+})
+
+test_that("one index month by month gets short titles and an overall title", {
+  m <- plot_maps()
+  seen <- character()
+  local_mocked_bindings(draw_panel = function(..., main) {
+    seen <<- c(seen, main)
+    invisible(NULL)
+  })
+  outer <- NULL
+  local_mocked_bindings(draw_overall_title = function(text) outer <<- text)
+  f <- tempfile(fileext = ".pdf")
+  grDevices::pdf(f, width = 12, height = 9)
+  on.exit(grDevices::dev.off())
+  plot(m, variable = "gdd_single_sine_b10", type = "monthly")
+  expect_identical(seen, paste(month.abb, "[degC day]"))
+  expect_identical(outer, "GDD single sine, base 10")
+  # Several indices keep the index name in every panel.
+  seen <- character()
+  outer <- NULL
+  plot(m, variable = c("ch_hourly", "cp_dynamic"), type = "m07")
+  expect_identical(gsub("\n", " ", seen),
+                   c("Chilling hours (hourly), Jul [h]",
+                     "Chill portions (Dynamic), Jul [portions]"))
+  expect_null(outer)
+  # titles = "full" keeps the index and method in every monthly panel.
+  seen <- character()
+  plot(m, variable = "gdd_average_b10", type = c("m01", "m02"),
+       titles = "full")
+  expect_identical(gsub("\n", " ", seen),
+                   paste0("GDD average, base 10, ", c("Jan", "Feb"),
+                          " [degC day]"))
+  expect_null(outer)
+  # titles = "short" also for seasons, with the index name above.
+  seen <- character()
+  plot(m, variable = "cp_dynamic", type = c("season", "m07"),
+       titles = "short")
+  expect_identical(seen, c("1 May - 31 Aug [portions]", "Jul [portions]"))
+  expect_identical(outer, "Chill portions (Dynamic)")
+  expect_error(plot(m, titles = "none"), "should be one of")
+})
+
+test_that("monthly layers without data are left out", {
+  m <- plot_maps()
+  expect_message(n <- draw(plot(m, variable = "cu_utah", type = "monthly")),
+                 "cu_utah \\(Jan, Feb, Mar, Apr, Sep, Oct, Nov, Dec\\)")
+  expect_equal(n, 4L)
 })
 
 test_that("layouts are derived from the number of panels", {

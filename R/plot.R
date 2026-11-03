@@ -2,6 +2,8 @@
 #'
 #' `plot()` draws the index maps returned by [thermify_rast()], one panel per
 #' index and layer, with titles, units and a colour palette per index family.
+#' When a single index is shown month by month, each panel is titled with the
+#' month and units and the index name is written once above the panels.
 #' `print()` summarises the object.
 #'
 #' @param x An object returned by [thermify_rast()].
@@ -10,8 +12,9 @@
 #'   `NULL` (default) plots every index.
 #' @param type Layer to plot: `"season"` (default), `"annual"`, `"monthly"`
 #'   (the 12 monthly layers), or one or more month layers such as `"m07"`.
-#'   Utah units and chill portions have no `"annual"` layer; they are skipped
-#'   with a message.
+#'   Utah units and chill portions have no `"annual"` layer, and their months
+#'   outside the chill period hold no data; such layers are left out with a
+#'   message.
 #' @param nrow,ncol Panel layout. When both are `NULL` the layout is chosen
 #'   from the number of panels; when one is given the other is derived.
 #' @param col Colours for the maps, as a vector of colours or a function of
@@ -23,9 +26,20 @@
 #' @param range `"variable"` (default) uses a common colour scale for all
 #'   panels of the same index, so that months are comparable; `"panel"`
 #'   scales each panel on its own.
-#' @param ... Further arguments passed to [terra::plot()]. With three or more
-#'   columns the titles are reduced (`cex.main` 0.85 or 0.75) unless
-#'   `cex.main` is given.
+#' @param titles Panel titles: `"auto"` (default) writes the index and method,
+#'   period and units in each panel, except when a single index is shown
+#'   month by month, where panels show only the month and units and the
+#'   index name is written once above them; `"full"` always writes the index
+#'   and method in each panel; `"short"` writes only the period or month and
+#'   the units (and the index name once above, when there is a single index).
+#' @param ... Further arguments passed to [terra::plot()]. Titles that do
+#'   not fit in the width of a panel are wrapped onto several lines, breaking
+#'   preferably between method, period and units, and the top margin grows
+#'   to make room for them; `cex.main` changes their size. Only in very small
+#'   panels, where the lines would take too much of the height, is the title
+#'   reduced. A `main`
+#'   given here (one title, or one per panel) replaces the automatic titles
+#'   and is not wrapped.
 #' @return `x`, invisibly.
 #' @seealso [thermify_rast()]
 #' @examples
@@ -43,13 +57,16 @@
 #' plot(maps)
 #' plot(maps, variable = "gdd", type = "monthly", nrow = 3, ncol = 4)
 #' plot(maps, variable = "cp_dynamic", type = c("m06", "m07"))
+#' plot(maps, variable = "gdd", type = "monthly", titles = "full")
 #' @name plot.thermify_rast
 #' @export
 plot.thermify_rast <- function(x, variable = NULL, type = "season",
                                nrow = NULL, ncol = NULL, col = NULL,
                                boundary = NULL,
-                               range = c("variable", "panel"), ...) {
+                               range = c("variable", "panel"),
+                               titles = c("auto", "full", "short"), ...) {
   range <- match.arg(range)
+  titles <- match.arg(titles)
   keys <- select_keys(names(x), variable)
   layers <- select_layers(type)
   if (!is.null(boundary) && !inherits(boundary, "SpatVector")) {
@@ -58,13 +75,30 @@ plot.thermify_rast <- function(x, variable = NULL, type = "season",
 
   panels <- list()
   skipped <- character()
+  empty <- character()
   for (k in keys) {
     available <- intersect(layers, names(x[[k]]))
     if (length(available) == 0L) {
       skipped <- c(skipped, k)
       next
     }
-    for (l in available) panels[[length(panels) + 1L]] <- c(key = k, layer = l)
+    for (l in available) {
+      # Months outside the accumulation period hold no data (for example
+      # Utah units in January): leave them out instead of drawing blanks.
+      if (has_no_data(x[[k]][[l]])) {
+        empty <- c(empty, stats::setNames(l, k))
+        next
+      }
+      panels[[length(panels) + 1L]] <- c(key = k, layer = l)
+    }
+  }
+  if (length(empty) > 0L) {
+    by_key <- split(unname(empty), names(empty))
+    message("No data outside the accumulation period, left out: ",
+            paste(vapply(names(by_key), function(k) {
+              paste0(k, " (", paste(layer_label(by_key[[k]]), collapse = ", "),
+                     ")")
+            }, ""), collapse = "; "), ".")
   }
   if (length(skipped) > 0L) {
     message("No ", paste(type, collapse = ", "), " layer for: ",
@@ -76,8 +110,23 @@ plot.thermify_rast <- function(x, variable = NULL, type = "season",
   }
 
   layout <- panel_layout(length(panels), nrow, ncol)
+  # One index shown month by month: short panel titles (month and units)
+  # and the index name once, as a title over all panels.
+  panel_keys <- unique(vapply(panels, `[[`, "", "key"))
+  user_main <- list(...)$main
+  short <- switch(titles,
+    full = FALSE,
+    short = TRUE,
+    auto = length(panels) > 1L && length(panel_keys) == 1L &&
+      all(vapply(panels, `[[`, "", "layer") %in% sprintf("m%02d", 1:12)))
+  # The index name goes once above the panels when every panel shows the
+  # same index with short titles.
+  overall <- short && length(panels) > 1L && length(panel_keys) == 1L &&
+    is.null(user_main)
   if (length(panels) > 1L) {
-    op <- graphics::par(mfrow = layout)
+    op <- graphics::par(mfrow = layout,
+                        oma = if (overall) c(0, 0, 2, 0)
+                        else graphics::par("oma"))
     on.exit(graphics::par(op), add = TRUE)
   }
   if (!is.null(boundary)) {
@@ -85,7 +134,8 @@ plot.thermify_rast <- function(x, variable = NULL, type = "season",
   }
   config <- attr(x, "provenance")$config
   scales <- list()
-  for (p in panels) {
+  for (i in seq_along(panels)) {
+    p <- panels[[i]]
     k <- p[["key"]]
     r <- x[[k]][[p[["layer"]]]]
     zlim <- if (range == "variable") {
@@ -97,18 +147,44 @@ plot.thermify_rast <- function(x, variable = NULL, type = "season",
       scales[[k]]
     }
     pal <- index_palette(k, col)
-    args <- list(r, col = pal, main = panel_title(k, p[["layer"]], config))
+    dots <- list(...)
+    title <- if (is.null(user_main)) {
+      if (short) {
+        short_title(k, p[["layer"]], config)
+      } else {
+        panel_title(k, p[["layer"]], config)
+      }
+    } else {
+      rep_len(user_main, length(panels))[i]
+    }
+    if (is.null(user_main)) {
+      # Wrap the title to the width of the panel and make room for it.
+      mar <- if (is.null(dots$mar)) c(2, 2, 2, 4) else dots$mar
+      cex <- if (is.null(dots$cex.main)) 1.2 else dots$cex.main
+      fitted <- fit_title(title, mar, cex)
+      title <- fitted$title
+      if (fitted$cex != cex) dots$cex.main <- fitted$cex
+      n_lines <- length(strsplit(title, "\n")[[1]])
+      if (is.null(dots$mar) && n_lines > 1L) {
+        mar[3] <- mar[3] + 1.1 * (n_lines - 1L)
+        # Only when the panel can take the larger margin; otherwise leave
+        # the margins to terra (tiny panels).
+        csi <- graphics::par("csi")
+        fin <- graphics::par("fin")
+        if (fin[2] > (mar[1] + mar[3]) * csi + 0.5 &&
+            fin[1] > (mar[2] + mar[4]) * csi + 0.5) {
+          dots$mar <- mar
+        }
+      }
+    }
+    args <- list(r, col = pal, main = title)
     if (!is.null(zlim) && all(is.finite(zlim)) && diff(zlim) > 0) {
       args$range <- zlim
     }
-    dots <- list(...)
-    if (is.null(dots$cex.main) && layout[2] >= 3L) {
-      # Smaller titles so that they fit in narrow panels.
-      dots$cex.main <- if (layout[2] == 3L) 0.85 else 0.75
-    }
-    do.call(draw_panel, c(args, dots))
+    do.call(draw_panel, c(args, dots[setdiff(names(dots), "main")]))
     if (!is.null(boundary)) terra::lines(boundary)
   }
+  if (overall) draw_overall_title(index_label(panel_keys))
   invisible(x)
 }
 
@@ -134,6 +210,80 @@ print.thermify_rast <- function(x, ...) {
     cat("files in:", dirname(files[1]), "\n")
   }
   invisible(x)
+}
+
+# Width (inches) available for a title over one panel: the width of the
+# plot region, since the title is centred on the map and must not run into
+# the legend on its right.
+panel_width <- function(mar) {
+  fin <- graphics::par("fin")[1]
+  csi <- graphics::par("csi")
+  max(fin - (mar[2] + mar[4]) * csi, 0.5)
+}
+
+# Wrap a title to the panel width. When the lines would take too much of
+# the panel height (very small panels), reduce the size step by step.
+fit_title <- function(title, mar, cex) {
+  width <- panel_width(mar)
+  csi <- graphics::par("csi")
+  # Keep at least about half of the panel height for the map.
+  max_lines <- max(1L, floor(0.5 * graphics::par("fin")[2] / csi / 1.1))
+  repeat {
+    wrapped <- wrap_title(title, width, cex = cex)
+    n <- length(strsplit(wrapped, "\n")[[1]])
+    if (n <= max_lines || cex <= 0.6) break
+    cex <- round(cex - 0.1, 1)
+  }
+  list(title = wrapped, cex = cex)
+}
+
+# Break a title into lines that fit in `width` inches. Breaks prefer the
+# commas between method, period and units; long parts are split at spaces.
+wrap_title <- function(title, width, cex = 1.2, font = 2L) {
+  fits <- function(txt) {
+    graphics::strwidth(txt, units = "inches", cex = cex, font = font) <=
+      width
+  }
+  if (fits(title)) return(title)
+  parts <- strsplit(title, "(?<=,) ", perl = TRUE)[[1]]
+  pieces <- unlist(lapply(parts, function(part) {
+    if (fits(part)) return(part)
+    words <- strsplit(part, " ", fixed = TRUE)[[1]]
+    out <- character()
+    line <- ""
+    for (w in words) {
+      cand <- if (nzchar(line)) paste(line, w) else w
+      if (fits(cand) || !nzchar(line)) {
+        line <- cand
+      } else {
+        out <- c(out, line)
+        line <- w
+      }
+    }
+    c(out, line)
+  }))
+  lines <- character()
+  line <- ""
+  for (pc in pieces) {
+    cand <- if (nzchar(line)) paste(line, pc) else pc
+    if (fits(cand) || !nzchar(line)) {
+      line <- cand
+    } else {
+      lines <- c(lines, line)
+      line <- pc
+    }
+  }
+  paste(c(lines, line), collapse = "\n")
+}
+
+has_no_data <- function(r) {
+  isTRUE(terra::global(r, "notNA")[1, 1] == 0)
+}
+
+# Index name above all panels (or above the single panel).
+draw_overall_title <- function(text) {
+  graphics::mtext(text, side = 3, line = 0.5, outer = TRUE, font = 2,
+                  cex = 1.2)
 }
 
 # Wrapper so that tests can count panels without drawing them.
@@ -204,6 +354,26 @@ index_palette <- function(key, col, n = 50) {
   pal <- switch(sub("_.*", "", key), gdd = "YlOrRd", ch = "Blues",
                 cu = "Purples", cp = "Greens", "viridis")
   grDevices::hcl.colors(n, pal, rev = pal != "viridis")
+}
+
+layer_label <- function(layer) {
+  out <- layer
+  m <- layer %in% sprintf("m%02d", 1:12)
+  out[m] <- month.abb[as.integer(sub("m", "", layer[m]))]
+  out
+}
+
+# Period or month and units only, for example "Jul [portions]" or
+# "1 May - 31 Aug [portions]".
+short_title <- function(key, layer, config = NULL) {
+  period <- if (layer == "season") {
+    p <- if (startsWith(key, "gdd_")) config$heat_period else
+      config$chill_period
+    if (is.null(p)) "season" else format_period(p)
+  } else {
+    layer_label(layer)
+  }
+  sprintf("%s [%s]", period, index_units(key))
 }
 
 panel_title <- function(key, layer, config = NULL) {

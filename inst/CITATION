@@ -6,10 +6,10 @@ bibentry(
   year = "2026",
   note = paste("R package version", meta$Version),
   url = "https://github.com/djwillichile/thermify",
-  doi = "10.5281/zenodo.23841857",
+  doi = "10.5281/zenodo.23841856",
   textVersion = paste0(
     "Fuentes-Jaque, G. (2026). thermify: Efficient Agroclimatic Thermal ",
     "Indices. R package version ", meta$Version, ". ",
-    "https://doi.org/10.5281/zenodo.23841857"
+    "https://doi.org/10.5281/zenodo.23841856"
   )
 )

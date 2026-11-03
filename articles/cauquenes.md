@@ -225,7 +225,7 @@ maps
 #>   ch_hourly                [h]            season annual m01 m02 m03 m04 m05 m06 m07 m08 m09 m10 m11 m12
 #>   cu_utah                  [chill units]  season m01 m02 m03 m04 m05 m06 m07 m08 m09 m10 m11 m12
 #>   cp_dynamic               [portions]     season m01 m02 m03 m04 m05 m06 m07 m08 m09 m10 m11 m12
-#> files in: /tmp/Rtmpvma6H4/cauquenes-rasters
+#> files in: /tmp/RtmpgZcA6D/cauquenes-rasters
 ```
 
 Spatial summary of the seasonal totals over the province:

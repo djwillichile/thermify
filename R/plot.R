@@ -17,10 +17,16 @@
 #'   message.
 #' @param nrow,ncol Panel layout. When both are `NULL` the layout is chosen
 #'   from the number of panels; when one is given the other is derived.
-#' @param col Colours for the maps, as a vector of colours or a function of
-#'   the number of colours. `NULL` (default) uses one sequential palette per
-#'   family: orange-red for degree-days, blue for chilling hours, purple for
-#'   Utah units and green for chill portions.
+#' @param col Colours for the maps: the name of a palette of
+#'   [grDevices::hcl.colors()] (which includes the ColorBrewer palettes, for
+#'   example `"Spectral"`, `"RdYlBu"`, `"viridis"`), a vector of colours, or
+#'   a function of the number of colours. `NULL` (default) uses multi-hue
+#'   sequential palettes, light for low values: `"YlOrRd"` for degree-days,
+#'   `"YlGnBu"` for chilling hours, `"BuPu"` for Utah units and `"YlGn"` for
+#'   chill portions. Utah units with negative values (warm places) use the
+#'   diverging `"RdBu"` centred on zero. Diverging palettes are oriented so
+#'   that warm colours mean many degree-days and cold colours much chill, and
+#'   are centred on zero with a symmetric scale when the values cross zero.
 #' @param boundary Optional `SpatVector` drawn over every panel, for example
 #'   [cauquenes_boundary()]. It is projected to the raster CRS when needed.
 #' @param range `"variable"` (default) uses a common colour scale for all
@@ -145,8 +151,14 @@ plot.thermify_rast <- function(x, variable = NULL, type = "season",
         scales[[k]] <- c(min(v[1, ], na.rm = TRUE), max(v[2, ], na.rm = TRUE))
       }
       scales[[k]]
+    } else {
+      as.vector(terra::minmax(r, compute = TRUE))
     }
-    pal <- index_palette(k, col)
+    pal <- index_palette(k, col, zlim)
+    # Diverging palettes are centred on zero, with a symmetric scale.
+    if (isTRUE(attr(pal, "centre")) && all(is.finite(zlim))) {
+      zlim <- c(-1, 1) * max(abs(zlim))
+    }
     dots <- list(...)
     title <- if (is.null(user_main)) {
       if (short) {
@@ -245,6 +257,11 @@ wrap_title <- function(title, width, cex = 1.2, font = 2L) {
       width
   }
   if (fits(title)) return(title)
+  # Units in brackets are never split: protect their spaces.
+  keep <- "\u00a0"
+  m <- gregexpr("\\[[^]]*\\]", title)
+  regmatches(title, m) <- lapply(regmatches(title, m), gsub,
+                                 pattern = " ", replacement = keep)
   parts <- strsplit(title, "(?<=,) ", perl = TRUE)[[1]]
   pieces <- unlist(lapply(parts, function(part) {
     if (fits(part)) return(part)
@@ -273,7 +290,7 @@ wrap_title <- function(title, width, cex = 1.2, font = 2L) {
       line <- pc
     }
   }
-  paste(c(lines, line), collapse = "\n")
+  gsub(keep, " ", paste(c(lines, line), collapse = "\n"), fixed = TRUE)
 }
 
 has_no_data <- function(r) {
@@ -348,12 +365,45 @@ panel_layout <- function(n, nrow, ncol) {
   as.integer(c(nrow, ncol))
 }
 
-index_palette <- function(key, col, n = 50) {
+# Default palettes: multi-hue sequential, light for low and dark for high
+# values, with a different hue per family. Utah units can be negative in
+# warm places: then a diverging palette centred on zero is used.
+default_palettes <- c(gdd = "YlOrRd", ch = "YlGnBu", cu = "BuPu",
+                      cp = "YlGn")
+
+index_palette <- function(key, col, zlim = NULL, n = 50) {
   if (is.function(col)) return(col(n))
-  if (!is.null(col)) return(col)
-  pal <- switch(sub("_.*", "", key), gdd = "YlOrRd", ch = "Blues",
-                cu = "Purples", cp = "Greens", "viridis")
-  grDevices::hcl.colors(n, pal, rev = pal != "viridis")
+  family <- sub("_.*", "", key)
+  crosses_zero <- length(zlim) == 2L && all(is.finite(zlim)) &&
+    zlim[1] < 0 && zlim[2] > 0
+  if (is.null(col)) {
+    if (family == "cu" && crosses_zero) {
+      col <- "RdBu"
+    } else {
+      col <- default_palettes[[family]]
+    }
+  }
+  if (length(col) != 1L || !is.character(col)) return(col)
+  name <- match_palette(col)
+  if (is.na(name)) return(col)   # a single colour
+  diverging <- name %in% c(grDevices::hcl.pals("diverging"),
+                           grDevices::hcl.pals("divergingx"))
+  # Sequential palettes: light for low values. Diverging palettes: warm
+  # colours for many degree-days, cold colours for much chill.
+  rev <- if (diverging) family == "gdd" else TRUE
+  structure(grDevices::hcl.colors(n, name, rev = rev),
+            centre = diverging && crosses_zero)
+}
+
+# Palette name as listed by hcl.colors(), ignoring case; NA otherwise.
+match_palette <- function(name) {
+  pals <- grDevices::hcl.pals()
+  hit <- pals[tolower(pals) == tolower(name)]
+  if (length(hit) == 0L) {
+    hit <- pals[gsub("[- ]", "", tolower(pals)) ==
+                  gsub("[- ]", "", tolower(name))]
+  }
+  if (length(hit) == 0L) NA_character_ else hit[1]
 }
 
 layer_label <- function(layer) {

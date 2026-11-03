@@ -109,6 +109,10 @@ test_that("long titles are wrapped to the panel width", {
   tiny <- strsplit(wrap_title(title, 0.8), "\n")[[1]]
   expect_gt(length(tiny), 3)
   expect_identical(paste(tiny, collapse = " "), title)
+  # Bracketed units stay on one line.
+  u <- strsplit(wrap_title("Utah chill units, 1 May - 31 Aug [chill units]",
+                           0.9), "\n")[[1]]
+  expect_true("[chill units]" %in% u)
 })
 
 test_that("wrapped titles enlarge the top margin; user titles are kept", {
@@ -176,6 +180,58 @@ test_that("monthly layers without data are left out", {
   expect_message(n <- draw(plot(m, variable = "cu_utah", type = "monthly")),
                  "cu_utah \\(Jan, Feb, Mar, Apr, Sep, Oct, Nov, Dec\\)")
   expect_equal(n, 4L)
+})
+
+test_that("palettes: defaults, names, orientation and centring", {
+  seq_gdd <- index_palette("gdd_average_b10", NULL, c(500, 1500))
+  expect_identical(as.vector(seq_gdd),
+                   grDevices::hcl.colors(50, "YlOrRd", rev = TRUE))
+  expect_false(isTRUE(attr(seq_gdd, "centre")))
+  expect_identical(as.vector(index_palette("ch_hourly", NULL, c(0, 9))),
+                   grDevices::hcl.colors(50, "YlGnBu", rev = TRUE))
+  expect_identical(as.vector(index_palette("cp_dynamic", NULL, c(80, 95))),
+                   grDevices::hcl.colors(50, "YlGn", rev = TRUE))
+  # Utah: sequential when positive, diverging centred on 0 when not.
+  expect_identical(as.vector(index_palette("cu_utah", NULL, c(10, 900))),
+                   grDevices::hcl.colors(50, "BuPu", rev = TRUE))
+  neg <- index_palette("cu_utah", NULL, c(-200, 900))
+  expect_identical(as.vector(neg), grDevices::hcl.colors(50, "RdBu"))
+  expect_true(attr(neg, "centre"))
+  # Named palettes, ignoring case; warm colours for many degree-days.
+  sp <- index_palette("gdd_average_b10", "spectral", c(500, 1500))
+  expect_identical(as.vector(sp),
+                   grDevices::hcl.colors(50, "Spectral", rev = TRUE))
+  expect_false(attr(sp, "centre"))     # positive data: not centred
+  expect_identical(as.vector(index_palette("cp_dynamic", "Spectral",
+                                           c(80, 95))),
+                   grDevices::hcl.colors(50, "Spectral"))
+  expect_identical(index_palette("cp_dynamic", "viridis", c(1, 2))[1],
+                   grDevices::hcl.colors(50, "viridis", rev = TRUE)[1])
+  # Colours and functions are used as given.
+  expect_identical(index_palette("ch_sine", c("white", "blue")),
+                   c("white", "blue"))
+  expect_identical(index_palette("ch_sine", "red"), "red")
+  expect_length(index_palette("ch_sine", grDevices::terrain.colors), 50)
+})
+
+test_that("a centred palette gets a symmetric scale", {
+  m <- plot_maps("cu")
+  seen <- list()
+  local_mocked_bindings(draw_panel = function(..., range = NULL) {
+    seen[[length(seen) + 1L]] <<- range
+    invisible(NULL)
+  })
+  f <- tempfile(fileext = ".pdf")
+  grDevices::pdf(f)
+  on.exit(grDevices::dev.off())
+  plot(m, col = "RdBu")
+  r <- seen[[1]]
+  v <- terra::minmax(m$cu_utah$season)
+  if (v[1] < 0) {
+    expect_equal(r, c(-1, 1) * max(abs(v)))
+  } else {
+    expect_equal(r, as.vector(v))
+  }
 })
 
 test_that("layouts are derived from the number of panels", {

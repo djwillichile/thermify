@@ -11,7 +11,10 @@
   that do not fit in a panel are wrapped onto several lines; a single index
   shown month by month gets short titles (month and units) with the index
   name above the panels; months without data (outside the chill period)
-  are left out.
+  are left out. Default palettes are multi-hue sequential (`YlOrRd`,
+  `YlGnBu`, `BuPu`, `YlGn`), Utah units crossing zero use a diverging
+  palette centred on zero, and `col` accepts any `hcl.colors()` palette
+  name such as `"Spectral"`.
 
 # thermify 0.2.0
 

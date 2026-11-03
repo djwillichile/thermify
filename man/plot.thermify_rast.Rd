@@ -36,10 +36,16 @@ message.}
 \item{nrow, ncol}{Panel layout. When both are \code{NULL} the layout is chosen
 from the number of panels; when one is given the other is derived.}
 
-\item{col}{Colours for the maps, as a vector of colours or a function of
-the number of colours. \code{NULL} (default) uses one sequential palette per
-family: orange-red for degree-days, blue for chilling hours, purple for
-Utah units and green for chill portions.}
+\item{col}{Colours for the maps: the name of a palette of
+\code{\link[grDevices:palettes]{grDevices::hcl.colors()}} (which includes the ColorBrewer palettes, for
+example \code{"Spectral"}, \code{"RdYlBu"}, \code{"viridis"}), a vector of colours, or
+a function of the number of colours. \code{NULL} (default) uses multi-hue
+sequential palettes, light for low values: \code{"YlOrRd"} for degree-days,
+\code{"YlGnBu"} for chilling hours, \code{"BuPu"} for Utah units and \code{"YlGn"} for
+chill portions. Utah units with negative values (warm places) use the
+diverging \code{"RdBu"} centred on zero. Diverging palettes are oriented so
+that warm colours mean many degree-days and cold colours much chill, and
+are centred on zero with a symmetric scale when the values cross zero.}
 
 \item{boundary}{Optional \code{SpatVector} drawn over every panel, for example
 \code{\link[=cauquenes_boundary]{cauquenes_boundary()}}. It is projected to the raster CRS when needed.}

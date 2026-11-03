@@ -1,5 +1,14 @@
 # thermify (development version)
 
+## New features
+
+* `thermify_rast()` returns an object of class `"thermify_rast"` (still a
+  named list of `SpatRaster`) with a `plot()` method: `variable` selects
+  indices or families, `type` the layer (`"season"`, `"annual"`,
+  `"monthly"` or months such as `"m07"`), `nrow`/`ncol` the layout, plus
+  `col`, `boundary` and a common or per-panel colour scale; and a `print()`
+  method that summarises indices, units, layers and files.
+
 # thermify 0.2.0
 
 Adds the tools for empirical validation against station records, the

@@ -88,8 +88,9 @@ or \code{TRUE} in interactive sessions. In non-interactive runs a status line
 is written at most every 10 seconds, so logs show the process is alive.}
 }
 \value{
-A named list of file-backed \code{SpatRaster} objects, one per index
-key, with attribute \code{"provenance"}.
+An object of class \code{"thermify_rast"}: a named list of file-backed
+\code{SpatRaster} objects, one per index key, with attribute \code{"provenance"}.
+It has \link[=plot.thermify_rast]{plot()} and \code{print()} methods.
 }
 \description{
 Spatial version of \code{\link[=thermify]{thermify()}} for 12-layer monthly \code{SpatRaster} stacks

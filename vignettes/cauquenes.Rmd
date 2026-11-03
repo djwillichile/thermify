@@ -105,6 +105,13 @@ mean-preserving interpolation (`pchip_mp`), reconstructs hourly temperatures
 (Linvill model) and accumulates the indices over the heat season
 (1 September - 30 April) and the chill season (1 May - 31 August).
 
+The tutorial uses the native R engine (`temporal = "native"`), which
+reproduces tempify to within 1e-13 degC. With `reticulate` installed,
+`temporal = "auto"` uses the
+[tempify](https://github.com/djwillichile/tempify) Python package instead;
+it is set up automatically the first time (see `install_tempify()` and
+`vignette("tempify-integration")`).
+
 ```{r town}
 town <- vect(cbind(-72.3225, -35.9671), crs = "EPSG:4326")
 tmin_town <- unlist(extract(tmin, town, ID = FALSE))

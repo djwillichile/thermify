@@ -32,6 +32,7 @@ reference:
       - densify_monthly
       - densify_diagnostics
       - tempify_available
+      - install_tempify
       - tempify_version
       - hourly_temperatures
       - daylength

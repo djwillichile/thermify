@@ -33,14 +33,33 @@ variability is still absent.
 * `engine = "native"`: a pure R implementation of `"pchip"` and `"pchip_mp"`
   that reproduces tempify to within 1e-13 degC (tested for 365 and 366 days).
 
+### Installing tempify
+
+tempify is a Python package, so R cannot install it as a dependency. thermify
+sets it up for you in one of three ways, tried in this order when the package
+is loaded:
+
+1. **Your own Python.** If you chose one (`RETICULATE_PYTHON`,
+   `reticulate::use_virtualenv()` and similar), it is used as is.
+2. **A persistent environment.** `install_tempify()` creates the virtual
+   environment `"r-thermify"` once; thermify uses it in every later session.
+3. **Automatic.** With `reticulate` (>= 1.41), thermify declares tempify with
+   `reticulate::py_require()`. The first time the tempify engine is needed,
+   reticulate builds and caches a Python environment with it (about one
+   minute and 100 MB, once); later sessions reuse the cache.
+
 ```r
-# One-time Python setup (outside R)
-# python -m venv ~/.virtualenvs/thermify
-# ~/.virtualenvs/thermify/bin/pip install git+https://github.com/djwillichile/tempify
-Sys.setenv(RETICULATE_PYTHON = "~/.virtualenvs/thermify/bin/python")
-tempify_available()
-tempify_version()
+install.packages("reticulate")   # >= 1.41 for the automatic route
+library(thermify)
+tempify_available()              # first call prepares the environment
+tempify_version()                # version and git commit, for provenance
+
+install_tempify()                # alternative: persistent "r-thermify" env
+options(thermify.tempify_auto = FALSE)   # opt out, before library(thermify)
 ```
+
+Installing tempify from GitHub needs `git`. Without Python or tempify,
+`temporal = "auto"` falls back to the native engine.
 
 ## The `pchip_mp` algorithm
 

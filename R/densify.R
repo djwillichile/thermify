@@ -260,15 +260,24 @@ densify_native <- function(m, year, method) {
 #' Is the tempify Python package available?
 #'
 #' Checks that `reticulate` is installed and that the active Python
-#' environment can import `tempify`. Use `reticulate::use_virtualenv()` or the
-#' `RETICULATE_PYTHON` environment variable to select the environment.
+#' environment can import `tempify`. With `reticulate` (>= 1.41), thermify
+#' declares tempify when it is loaded, so the first call builds and caches a
+#' Python environment with it; see [install_tempify()] for the alternatives
+#' and how to disable this. A Python chosen with `RETICULATE_PYTHON` or
+#' `reticulate::use_virtualenv()` is respected.
 #'
 #' @return `TRUE` or `FALSE`.
 #' @export
 tempify_available <- function() {
-  requireNamespace("reticulate", quietly = TRUE) &&
-    isTRUE(tryCatch(reticulate::py_module_available("tempify"),
-                    error = function(e) FALSE))
+  if (!requireNamespace("reticulate", quietly = TRUE)) return(FALSE)
+  if (identical(the$tempify_route, "py_require") && !python_initialized() &&
+      !isTRUE(the$tempify_announced)) {
+    the$tempify_announced <- TRUE
+    message("Preparing the Python environment for tempify (the first ",
+            "time it is downloaded, which can take a few minutes)...")
+  }
+  isTRUE(tryCatch(reticulate::py_module_available("tempify"),
+                  error = function(e) FALSE))
 }
 
 #' Version information of the tempify backend
@@ -285,8 +294,9 @@ tempify_version <- function() {
   np <- reticulate::import("numpy", convert = FALSE)
   xr <- reticulate::import("xarray", convert = FALSE)
   src <- dirname(dirname(dirname(reticulate::py_to_r(tf$`__file__`))))
-  commit <- NA_character_
-  if (nzchar(Sys.which("git")) && dir.exists(file.path(src, ".git"))) {
+  commit <- tempify_installed_commit()
+  if (is.na(commit) && nzchar(Sys.which("git")) &&
+      dir.exists(file.path(src, ".git"))) {
     commit <- tryCatch(
       system2("git", c("-C", shQuote(src), "rev-parse", "HEAD"),
               stdout = TRUE, stderr = FALSE),
@@ -299,6 +309,19 @@ tempify_version <- function() {
     numpy = reticulate::py_to_r(np$`__version__`),
     xarray = reticulate::py_to_r(xr$`__version__`)
   )
+}
+
+# Commit recorded by pip/uv when tempify was installed from a git URL
+# (PEP 610 direct_url.json); NA otherwise.
+tempify_installed_commit <- function() {
+  txt <- tryCatch({
+    md <- reticulate::import("importlib.metadata", convert = TRUE)
+    md$distribution("tempify")$read_text("direct_url.json")
+  }, error = function(e) NULL)
+  if (is.null(txt) || !nzchar(txt)) return(NA_character_)
+  m <- regmatches(txt, regexpr('"commit_id" *: *"[0-9a-f]+"', txt))
+  if (length(m) == 0L) return(NA_character_)
+  sub('.*"([0-9a-f]+)"$', "\\1", m)
 }
 
 densify_tempify <- function(m, year, method) {

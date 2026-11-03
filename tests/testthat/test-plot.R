@@ -80,6 +80,29 @@ test_that("annual layers missing for Utah and Dynamic are reported", {
                "Nothing to plot")
 })
 
+test_that("titles shrink in wide layouts unless cex.main is given", {
+  m <- plot_maps()
+  seen <- list()
+  local_mocked_bindings(draw_panel = function(..., cex.main = NULL) {
+    seen[[length(seen) + 1L]] <<- cex.main
+    invisible(NULL)
+  })
+  f <- tempfile(fileext = ".pdf")
+  grDevices::pdf(f)
+  on.exit(grDevices::dev.off())
+  plot(m, variable = "gdd", ncol = 2)
+  expect_length(unlist(seen), 0L)
+  seen <- list()
+  plot(m, ncol = 3)
+  expect_true(all(unlist(seen) == 0.85))
+  seen <- list()
+  plot(m, variable = "cp", type = "monthly")
+  expect_true(all(unlist(seen) == 0.75))
+  seen <- list()
+  plot(m, variable = "cp", type = "monthly", cex.main = 1)
+  expect_true(all(unlist(seen) == 1))
+})
+
 test_that("layouts are derived from the number of panels", {
   expect_identical(panel_layout(6, NULL, NULL), c(2L, 3L))
   expect_identical(panel_layout(12, 3, NULL), c(3L, 4L))

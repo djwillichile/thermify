@@ -23,7 +23,9 @@
 #' @param range `"variable"` (default) uses a common colour scale for all
 #'   panels of the same index, so that months are comparable; `"panel"`
 #'   scales each panel on its own.
-#' @param ... Further arguments passed to [terra::plot()].
+#' @param ... Further arguments passed to [terra::plot()]. With three or more
+#'   columns the titles are reduced (`cex.main` 0.85 or 0.75) unless
+#'   `cex.main` is given.
 #' @return `x`, invisibly.
 #' @seealso [thermify_rast()]
 #' @examples
@@ -99,7 +101,12 @@ plot.thermify_rast <- function(x, variable = NULL, type = "season",
     if (!is.null(zlim) && all(is.finite(zlim)) && diff(zlim) > 0) {
       args$range <- zlim
     }
-    do.call(draw_panel, c(args, list(...)))
+    dots <- list(...)
+    if (is.null(dots$cex.main) && layout[2] >= 3L) {
+      # Smaller titles so that they fit in narrow panels.
+      dots$cex.main <- if (layout[2] == 3L) 0.85 else 0.75
+    }
+    do.call(draw_panel, c(args, dots))
     if (!is.null(boundary)) terra::lines(boundary)
   }
   invisible(x)

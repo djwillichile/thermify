@@ -46,7 +46,9 @@ Utah units and green for chill portions.}
 panels of the same index, so that months are comparable; \code{"panel"}
 scales each panel on its own.}
 
-\item{...}{Further arguments passed to \code{\link[terra:plot]{terra::plot()}}.}
+\item{...}{Further arguments passed to \code{\link[terra:plot]{terra::plot()}}. With three or more
+columns the titles are reduced (\code{cex.main} 0.85 or 0.75) unless
+\code{cex.main} is given.}
 }
 \value{
 \code{x}, invisibly.

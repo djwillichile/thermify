@@ -1,12 +1,15 @@
 # Changelog
 
+## thermify (development version)
+
 ## thermify 0.2.0
 
 Adds the tools for empirical validation against station records, the
 official DPA 2023 boundaries of Cauquenes, and attaches `terra` with the
 package. Validation results with real stations
 ([\#3](https://github.com/djwillichile/thermify/issues/3)) are not part
-of this release.
+of this release. Archived on Zenodo:
+<https://doi.org/10.5281/zenodo.23905378>.
 
 ### Breaking changes
 
@@ -54,6 +57,8 @@ of this release.
 - Release and development version badges in the README and the site.
 
 ## thermify 0.1.0
+
+Archived on Zenodo: <https://doi.org/10.5281/zenodo.23841857>.
 
 First release. Functional, documented and tested package for
 agroclimatic thermal indices: growing degree-days, chilling hours, Utah

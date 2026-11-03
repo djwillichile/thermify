@@ -152,8 +152,14 @@ citation("thermify")
 ```
 
 > Fuentes-Jaque, G. (2026). *thermify: Efficient Agroclimatic Thermal
-> Indices* (v0.1.0) \[R package\]. Zenodo.
-> <https://doi.org/10.5281/zenodo.23841857>
+> Indices* \[R package\]. Zenodo.
+> <https://doi.org/10.5281/zenodo.23841856>
+
+This DOI always resolves to the latest version. To cite a specific
+version, use its own DOI from the [Zenodo
+record](https://doi.org/10.5281/zenodo.23841856) (for example v0.2.0:
+10.5281/zenodo.23905378) and the version reported by
+`packageVersion("thermify")`.
 
 Please also cite the original publications of the methods you use; they
 are listed in each function’s help page.

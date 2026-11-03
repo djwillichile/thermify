@@ -17,9 +17,9 @@ data_dir <- file.path(tempdir(), "thermify-cauquenes")
 if (online) {
   library(thermify)
   online <- tryCatch({
-    comuna <- cauquenes_boundary("comuna")
-    tmin <- worldclim_region("tmin", comuna, path = data_dir, mask = TRUE)
-    tmax <- worldclim_region("tmax", comuna, path = data_dir, mask = TRUE)
+    provincia <- cauquenes_boundary("provincia")
+    tmin <- worldclim_region("tmin", provincia, path = data_dir, mask = TRUE)
+    tmax <- worldclim_region("tmax", provincia, path = data_dir, mask = TRUE)
     TRUE
   }, error = function(e) FALSE)
 }
@@ -35,10 +35,12 @@ cat("> **Note.** This copy shows the code only: the results are computed",
     "<https://djwillichile.github.io/thermify/articles/cauquenes.html>.\n")
 ```
 
-This tutorial computes heat and chill indices for the commune of Cauquenes
+This tutorial computes heat and chill indices for the province of Cauquenes
 (Maule Region, Chile) from the WorldClim 2.1 monthly climatology
-(1970-2000) at 30 arc-seconds (about 0.9 x 0.8 km). It follows the steps of
-`examples/cauquenes/run.R`, restricted to the commune boundary.
+(1970-2000) at 30 arc-seconds (about 0.9 x 0.75 km). The province spans the
+Coastal Range from the coast to the central valley, so the indices vary
+widely over short distances. The steps follow `examples/cauquenes/run.R`,
+which uses a 20 x 20 km window around the town instead.
 
 ## 1. Study area
 
@@ -48,22 +50,22 @@ Cauquenes from the 2023 Political and Administrative Division of Chile
 
 ```{r area}
 library(thermify)   # also attaches terra
-comuna    <- cauquenes_boundary("comuna")
-provincia <- cauquenes_boundary("provincia")
+comuna    <- cauquenes_boundary("comuna", crs = "EPSG:4326")
+provincia <- cauquenes_boundary("provincia", crs = "EPSG:4326")
 data.frame(level = c(comuna$nivel, provincia$nivel),
            name = c(comuna$COMUNA, provincia$PROVINCIA),
            area_km2 = c(comuna$SUPERFICIE, provincia$SUPERFICIE))
 ```
 
-## 2. WorldClim 2.1 for the commune only
+## 2. WorldClim 2.1 for the province only
 
 `worldclim_region()` reads only the part of the global 30" tiles that covers
-the polygon (GDAL `/vsicurl/` range requests), caches it and masks the cells
-outside the commune:
+the polygon (GDAL `/vsicurl/` range requests, under 1 MB here), caches it
+and masks the cells outside the province:
 
 ```{r worldclim, eval = FALSE}
-tmin <- worldclim_region("tmin", comuna, path = "data", mask = TRUE)
-tmax <- worldclim_region("tmax", comuna, path = "data", mask = TRUE)
+tmin <- worldclim_region("tmin", provincia, path = "data", mask = TRUE)
+tmax <- worldclim_region("tmax", provincia, path = "data", mask = TRUE)
 ```
 
 ```{r grid}
@@ -71,8 +73,11 @@ tmin
 check_monthly_climate(tmin, tmax)
 ```
 
-The commune is covered by `r if (online) sum(!is.na(values(tmin[[1]])))`
-valid 30" cells. Its mean monthly climatology:
+The province is covered by `r if (online) sum(!is.na(values(tmin[[1]])))`
+valid 30" cells. With `touches = TRUE` (the default) every cell touching the
+boundary is kept, so the cells add up to slightly more than the official
+area; use `touches = FALSE` when cell areas matter. The mean monthly
+climatology of the province:
 
 ```{r climatology}
 clim <- data.frame(
@@ -85,9 +90,9 @@ clim
 
 ```{r climatology-plot, fig.height = 3.5}
 matplot(1:12, clim[, c("tmin", "tmax")], type = "b", pch = 19, lty = 1,
-        col = c("#2c7bb6", "#d7191c"), xaxt = "n", xlab = NULL,
+        col = c("#2c7bb6", "#d7191c"), xaxt = "n", xlab = "",
         ylab = "Temperature (degC)",
-        main = "Cauquenes commune, WorldClim 2.1 (1970-2000)")
+        main = "Cauquenes province, WorldClim 2.1 (1970-2000)")
 axis(1, at = 1:12, labels = month.abb)
 legend("top", c("tmin", "tmax"), col = c("#2c7bb6", "#d7191c"), pch = 19,
        horiz = TRUE, bty = "n")
@@ -114,6 +119,7 @@ res <- thermify(tmin_town, tmax_town, input = "monthly", latitude = -35.97,
 season <- res$summary[res$summary$aggregation == "season",
                       c("key", "value", "units")]
 season$value <- round(season$value, 1)
+rownames(season) <- NULL
 season
 ```
 
@@ -133,11 +139,11 @@ d <- res$daily
 chill <- d$month %in% 5:8
 op <- par(mfrow = c(1, 3), mar = c(4, 4, 3, 1))
 plot(d$date[chill], cumsum(d$ch_hourly[chill]), type = "l", lwd = 2,
-     xlab = NULL, ylab = "h", main = "Chilling hours (0-7.2 degC)")
+     xlab = "", ylab = "h", main = "Chilling hours (0-7.2 degC)")
 plot(d$date[chill], cumsum(d$cu_utah[chill]), type = "l", lwd = 2,
-     xlab = NULL, ylab = "chill units", main = "Utah model")
+     xlab = "", ylab = "chill units", main = "Utah model")
 plot(d$date[chill], cumsum(d$cp_dynamic[chill]), type = "l", lwd = 2,
-     xlab = NULL, ylab = "portions", main = "Dynamic model")
+     xlab = "", ylab = "portions", main = "Dynamic model")
 par(op)
 ```
 
@@ -145,7 +151,8 @@ par(op)
 
 `thermify_rast()` applies the same workflow to every cell, block by block,
 and writes one file per index with layers `season`, `annual` and `m01` to
-`m12`. Latitude is taken from each cell.
+`m12`. Latitude is taken from each cell. The maps show the province (solid
+line) and the commune of Cauquenes (dashed).
 
 ```{r rasters}
 maps <- thermify_rast(
@@ -157,7 +164,7 @@ maps <- thermify_rast(
 names(maps)
 ```
 
-Spatial summary of the seasonal totals over the commune:
+Spatial summary of the seasonal totals over the province:
 
 ```{r stats}
 stats <- do.call(rbind, lapply(names(maps), function(k) {
@@ -176,16 +183,16 @@ stats
 op <- par(mfrow = c(2, 2))
 plot(maps$gdd_single_sine_b10$season, main = "GDD base 10 (degC day)",
      col = hcl.colors(50, "YlOrRd", rev = TRUE))
-lines(comuna)
+lines(provincia); lines(comuna, lty = 2)
 plot(maps$ch_hourly$season, main = "Chilling hours (h)",
      col = hcl.colors(50, "Blues", rev = TRUE))
-lines(comuna)
+lines(provincia); lines(comuna, lty = 2)
 plot(maps$cu_utah$season, main = "Utah chill units",
      col = hcl.colors(50, "Purples", rev = TRUE))
-lines(comuna)
+lines(provincia); lines(comuna, lty = 2)
 plot(maps$cp_dynamic$season, main = "Chill portions (Dynamic)",
      col = hcl.colors(50, "Greens", rev = TRUE))
-lines(comuna)
+lines(provincia); lines(comuna, lty = 2)
 par(op)
 ```
 
@@ -200,13 +207,13 @@ d_gdd <- maps$gdd_single_sine_b10$season - maps$gdd_average_b10$season
 d_ch  <- maps$ch_hourly$season - maps$ch_sine$season
 op <- par(mfrow = c(1, 2))
 plot(d_gdd, main = "GDD b10: single sine - average")
-lines(comuna)
+lines(provincia); lines(comuna, lty = 2)
 plot(d_ch, main = "Chilling hours: hourly - sine")
-lines(comuna)
+lines(provincia); lines(comuna, lty = 2)
 par(op)
-round(rbind(
-  gdd_sine_minus_average = summary(values(d_gdd, mat = FALSE)),
-  ch_hourly_minus_sine = summary(values(d_ch, mat = FALSE))), 1)
+valid <- function(r) stats::na.omit(values(r, mat = FALSE))
+round(rbind(gdd_sine_minus_average = summary(valid(d_gdd)),
+            ch_hourly_minus_sine = summary(valid(d_ch))), 1)
 ```
 
 ## Interpretation

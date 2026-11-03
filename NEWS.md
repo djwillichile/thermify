@@ -1,3 +1,5 @@
+# thermify (development version)
+
 # thermify 0.2.0
 
 Adds the tools for empirical validation against station records, the

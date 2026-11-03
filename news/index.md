@@ -1,6 +1,19 @@
 # Changelog
 
-## thermify (development version)
+## thermify 0.3.0
+
+Adds plot() and print() methods for raster results, sets up the tempify
+backend automatically, and turns the Cauquenes tutorial into a worked
+example with computed results for the whole province.
+
+### Breaking changes
+
+- [`thermify_rast()`](https://djwillichile.github.io/thermify/reference/thermify_rast.md)
+  returns an object of class `"thermify_rast"` instead of a plain list.
+  It is still a named list of `SpatRaster`, so `x$cp_dynamic`,
+  `names(x)` and `lapply(x, ...)` work as before; only code that tests
+  the class exactly (for example `identical(class(x), "list")`) is
+  affected.
 
 ### New features
 
@@ -35,6 +48,19 @@
 - [`tempify_version()`](https://djwillichile.github.io/thermify/reference/tempify_version.md)
   records the tempify git commit also when tempify was installed from a
   git URL (PEP 610 `direct_url.json`).
+
+### Documentation
+
+- [`vignette("cauquenes")`](https://djwillichile.github.io/thermify/articles/cauquenes.md)
+  is evaluated when the documentation site is built and shows results
+  for the whole province of Cauquenes (4,554 WorldClim 2.1 cells at 30
+  arc-seconds): climatology, seasonal indices for the town, maps drawn
+  with [`plot()`](https://rspatial.github.io/terra/reference/plot.html),
+  the annual cycle month by month, spatial statistics and method
+  differences. Package checks still show the code only, with a link to
+  the site.
+- [`vignette("tempify-integration")`](https://djwillichile.github.io/thermify/articles/tempify-integration.md)
+  explains how tempify is installed.
 
 ## thermify 0.2.0
 

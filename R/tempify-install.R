@@ -11,7 +11,23 @@
 #
 # Neither route runs when the user has already chosen a Python
 # (RETICULATE_PYTHON, reticulate::use_*()), when Python is already running,
-# or when the option thermify.tempify_auto is FALSE.
+# or when the option thermify.tempify_auto is FALSE, which is the default
+# outside interactive sessions and while a package is being checked.
+
+# Whether the automatic setup is on by default. It downloads Python and
+# writes a cache in the user's home, so it only runs when somebody is there
+# to see it: in interactive sessions, never while a package is being
+# checked. THERMIFY_TEMPIFY_AUTO=true/false forces it either way (for
+# example in CI or in scheduled scripts).
+tempify_auto_default <- function(env = Sys.getenv("THERMIFY_TEMPIFY_AUTO"),
+                                 session = interactive(),
+                                 checking = nzchar(
+                                   Sys.getenv("_R_CHECK_PACKAGE_NAME_"))) {
+  env <- tolower(env)
+  if (env %in% c("true", "1", "yes")) return(TRUE)
+  if (env %in% c("false", "0", "no")) return(FALSE)
+  isTRUE(session) && !isTRUE(checking)
+}
 
 tempify_default_requirement <- function() {
   "tempify @ git+https://github.com/djwillichile/tempify"
@@ -44,12 +60,11 @@ python_initialized <- function() {
 
 # Called from .onLoad(). Returns the route taken, invisibly.
 setup_tempify <- function() {
-  if (!isTRUE(getOption("thermify.tempify_auto", TRUE))) {
-    return(invisible("disabled"))
-  }
   if (!requireNamespace("reticulate", quietly = TRUE)) {
     return(invisible("no_reticulate"))
   }
+  # A Python chosen by the user, or the persistent environment created by
+  # install_tempify(), is always used: neither downloads anything.
   if (python_chosen_by_user() || python_initialized()) {
     return(invisible("user_python"))
   }
@@ -58,6 +73,10 @@ setup_tempify <- function() {
                       error = function(e) FALSE))) {
     reticulate::use_virtualenv(env, required = FALSE)
     return(invisible("virtualenv"))
+  }
+  # Only the automatic route downloads Python, so only it can be disabled.
+  if (!isTRUE(getOption("thermify.tempify_auto", FALSE))) {
+    return(invisible("disabled"))
   }
   if (reticulate_supports_require()) {
     ok <- tryCatch({
@@ -79,17 +98,19 @@ setup_tempify <- function() {
 #' thermify then uses automatically in every session.
 #'
 #' You rarely need this function. With `reticulate` (>= 1.41) installed,
-#' thermify declares tempify when it is loaded, and the first time the
-#' tempify engine is used reticulate builds and caches a Python environment
-#' with it (this takes one or two minutes and downloads about 100 MB once).
+#' thermify declares tempify when it is loaded in an interactive session, and
+#' the first time the tempify engine is used reticulate builds and caches a
+#' Python environment with it (this takes one or two minutes and downloads about 100 MB once).
 #' `install_tempify()` is the alternative when that automatic route is not
 #' available (older `reticulate`) or when you prefer a named, persistent
 #' environment.
 #'
-#' The automatic setup is skipped when you have already chosen a Python
-#' (`RETICULATE_PYTHON`, `reticulate::use_python()` and similar). Disable it
-#' with `options(thermify.tempify_auto = FALSE)` before loading thermify, or
-#' with the environment variable `THERMIFY_TEMPIFY_AUTO=false`.
+#' The automatic setup runs only in interactive sessions, never while a
+#' package is being checked, and is skipped when you have already chosen a
+#' Python (`RETICULATE_PYTHON`, `reticulate::use_python()` and similar). Set
+#' the environment variable `THERMIFY_TEMPIFY_AUTO=true` (or
+#' `options(thermify.tempify_auto = TRUE)` before loading thermify) to enable
+#' it in scripts, or `false` to disable it.
 #'
 #' Installing from GitHub needs `git` on the system path.
 #'

@@ -1,5 +1,21 @@
 # thermify (development version)
 
+## Changes
+
+* The automatic tempify set-up now runs only in interactive sessions and
+  never while a package is being checked; in scripts, enable it with
+  `THERMIFY_TEMPIFY_AUTO=true`. A Python chosen by the user and the
+  `"r-thermify"` environment of `install_tempify()` are always used.
+* `tempify_available()` no longer starts Python when none is configured,
+  so recent versions of 'reticulate' do not download one to answer it.
+
+## Documentation
+
+* `DESCRIPTION` cites the methods with DOIs and includes the maintainer's
+  ORCID; `Language: en-GB` and a word list for spell checks.
+* Network examples write to `tempdir()`; `cran-comments.md` documents the
+  network and Python behaviour for a CRAN submission.
+
 # thermify 0.3.0
 
 Adds plot() and print() methods for raster results, sets up the tempify

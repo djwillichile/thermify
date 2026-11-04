@@ -33,17 +33,19 @@ thermify then uses automatically in every session.
 }
 \details{
 You rarely need this function. With \code{reticulate} (>= 1.41) installed,
-thermify declares tempify when it is loaded, and the first time the
-tempify engine is used reticulate builds and caches a Python environment
-with it (this takes one or two minutes and downloads about 100 MB once).
+thermify declares tempify when it is loaded in an interactive session, and
+the first time the tempify engine is used reticulate builds and caches a
+Python environment with it (this takes one or two minutes and downloads about 100 MB once).
 \code{install_tempify()} is the alternative when that automatic route is not
 available (older \code{reticulate}) or when you prefer a named, persistent
 environment.
 
-The automatic setup is skipped when you have already chosen a Python
-(\code{RETICULATE_PYTHON}, \code{reticulate::use_python()} and similar). Disable it
-with \code{options(thermify.tempify_auto = FALSE)} before loading thermify, or
-with the environment variable \code{THERMIFY_TEMPIFY_AUTO=false}.
+The automatic setup runs only in interactive sessions, never while a
+package is being checked, and is skipped when you have already chosen a
+Python (\code{RETICULATE_PYTHON}, \code{reticulate::use_python()} and similar). Set
+the environment variable \code{THERMIFY_TEMPIFY_AUTO=true} (or
+\code{options(thermify.tempify_auto = TRUE)} before loading thermify) to enable
+it in scripts, or \code{false} to disable it.
 
 Installing from GitHub needs \code{git} on the system path.
 }

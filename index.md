@@ -37,8 +37,9 @@ attaches `terra`, so
 [`plot()`](https://rspatial.github.io/terra/reference/plot.html) and the
 other `terra` functions are available directly. The optional
 [tempify](https://github.com/djwillichile/tempify) backend is set up
-automatically when `reticulate` (\>= 1.41) is installed: the first use
-builds and caches a Python environment with it (see
+automatically in interactive sessions when `reticulate` (\>= 1.41) is
+installed: the first use builds and caches a Python environment with it
+(see
 [`install_tempify()`](https://djwillichile.github.io/thermify/reference/install_tempify.md)
 for a persistent environment). Without it, `thermify` uses an equivalent
 native R engine.

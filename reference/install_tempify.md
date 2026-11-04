@@ -44,19 +44,20 @@ The path of the environment's Python, invisibly.
 ## Details
 
 You rarely need this function. With `reticulate` (\>= 1.41) installed,
-thermify declares tempify when it is loaded, and the first time the
-tempify engine is used reticulate builds and caches a Python environment
-with it (this takes one or two minutes and downloads about 100 MB once).
-`install_tempify()` is the alternative when that automatic route is not
-available (older `reticulate`) or when you prefer a named, persistent
-environment.
+thermify declares tempify when it is loaded in an interactive session,
+and the first time the tempify engine is used reticulate builds and
+caches a Python environment with it (this takes one or two minutes and
+downloads about 100 MB once). `install_tempify()` is the alternative
+when that automatic route is not available (older `reticulate`) or when
+you prefer a named, persistent environment.
 
-The automatic setup is skipped when you have already chosen a Python
-(`RETICULATE_PYTHON`,
+The automatic setup runs only in interactive sessions, never while a
+package is being checked, and is skipped when you have already chosen a
+Python (`RETICULATE_PYTHON`,
 [`reticulate::use_python()`](https://rstudio.github.io/reticulate/reference/use_python.html)
-and similar). Disable it with `options(thermify.tempify_auto = FALSE)`
-before loading thermify, or with the environment variable
-`THERMIFY_TEMPIFY_AUTO=false`.
+and similar). Set the environment variable `THERMIFY_TEMPIFY_AUTO=true`
+(or `options(thermify.tempify_auto = TRUE)` before loading thermify) to
+enable it in scripts, or `false` to disable it.
 
 Installing from GitHub needs `git` on the system path.
 

@@ -27,7 +27,7 @@
 
     <a class="navbar-brand me-2" href="index.html">thermify</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -119,7 +119,7 @@
 </h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("remotes")</span></span>
-<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"djwillichile/thermify@v0.3.0"</span><span class="op">)</span>   <span class="co"># release</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"djwillichile/thermify@v0.3.1"</span><span class="op">)</span>   <span class="co"># release</span></span>
 <span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"djwillichile/thermify"</span><span class="op">)</span>          <span class="co"># development</span></span></code></pre></div>
 <p><code><a href="https://github.com/djwillichile/thermify" class="external-link">library(thermify)</a></code> also attaches <code>terra</code>, so <code><a href="https://rspatial.github.io/terra/reference/rast.html" class="external-link">rast()</a></code>, <code><a href="https://rspatial.github.io/terra/reference/vect.html" class="external-link">vect()</a></code>, <code><a href="https://rspatial.github.io/terra/reference/plot.html" class="external-link">plot()</a></code> and the other <code>terra</code> functions are available directly. The optional <a href="https://github.com/djwillichile/tempify" class="external-link">tempify</a> backend is set up automatically in interactive sessions when <code>reticulate</code> (&gt;= 1.41) is installed: the first use builds and caches a Python environment with it (see <code><a href="reference/install_tempify.html">install_tempify()</a></code> for a persistent environment). Without it, <code>thermify</code> uses an equivalent native R engine.</p>
 </div>

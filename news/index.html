@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">thermify</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -45,15 +45,16 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="development version" id="thermify-development-version">thermify (development version)<a class="anchor" aria-label="anchor" href="#thermify-development-version"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.3.1" id="thermify-031">thermify 0.3.1<a class="anchor" aria-label="anchor" href="#thermify-031"></a></h2>
+<p>Prepares the package for a CRAN submission: no Python is downloaded during package checks or in non-interactive sessions, and the package metadata cite the methods with DOIs. Results are unchanged.</p>
 <div class="section level3">
-<h3 id="changes-development-version">Changes<a class="anchor" aria-label="anchor" href="#changes-development-version"></a></h3>
+<h3 id="changes-0-3-1">Changes<a class="anchor" aria-label="anchor" href="#changes-0-3-1"></a></h3>
 <ul><li>The automatic tempify set-up now runs only in interactive sessions and never while a package is being checked; in scripts, enable it with <code>THERMIFY_TEMPIFY_AUTO=true</code>. A Python chosen by the user and the <code>"r-thermify"</code> environment of <code><a href="../reference/install_tempify.html">install_tempify()</a></code> are always used.</li>
 <li>
 <code><a href="../reference/tempify_available.html">tempify_available()</a></code> no longer starts Python when none is configured, so recent versions of ‘reticulate’ do not download one to answer it.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="documentation-development-version">Documentation<a class="anchor" aria-label="anchor" href="#documentation-development-version"></a></h3>
+<h3 id="documentation-0-3-1">Documentation<a class="anchor" aria-label="anchor" href="#documentation-0-3-1"></a></h3>
 <ul><li>
 <code>DESCRIPTION</code> cites the methods with DOIs and includes the maintainer’s ORCID; <code>Language: en-GB</code> and a word list for spell checks.</li>
 <li>Network examples write to <code><a href="https://rdrr.io/r/base/tempfile.html" class="external-link">tempdir()</a></code>; <code>cran-comments.md</code> documents the network and Python behaviour for a CRAN submission.</li>

@@ -1,6 +1,10 @@
 # Changelog
 
-## thermify (development version)
+## thermify 0.3.1
+
+Prepares the package for a CRAN submission: no Python is downloaded
+during package checks or in non-interactive sessions, and the package
+metadata cite the methods with DOIs. Results are unchanged.
 
 ### Changes
 

@@ -8,7 +8,7 @@
 ## Citation
 
 Source:
-[`inst/CITATION`](https://github.com/djwillichile/thermify/blob/main/inst/CITATION)
+[`inst/CITATION`](https://github.com/djwillichile/thermify/blob/v0.3.1/inst/CITATION)
 
 Fuentes-Jaque, G. (2026). thermify: Efficient Agroclimatic Thermal
 Indices. R package version 0.3.1.

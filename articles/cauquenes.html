@@ -71,7 +71,7 @@
       <img src="../logo.png" class="logo" alt=""><h1>Tutorial: Cauquenes (Maule, Chile) from WorldClim 2.1</h1>
             
       
-      <small class="dont-index">Source: <a href="https://github.com/djwillichile/thermify/blob/main/vignettes/cauquenes.Rmd" class="external-link"><code>vignettes/cauquenes.Rmd</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/djwillichile/thermify/blob/v0.3.1/vignettes/cauquenes.Rmd" class="external-link"><code>vignettes/cauquenes.Rmd</code></a></small>
       <div class="d-none name"><code>cauquenes.Rmd</code></div>
     </div>
 
@@ -268,7 +268,7 @@ summarises the indices, their units and layers:</p>
 <span><span class="co">#&gt;   ch_hourly                [h]            season annual m01 m02 m03 m04 m05 m06 m07 m08 m09 m10 m11 m12</span></span>
 <span><span class="co">#&gt;   cu_utah                  [chill units]  season m01 m02 m03 m04 m05 m06 m07 m08 m09 m10 m11 m12</span></span>
 <span><span class="co">#&gt;   cp_dynamic               [portions]     season m01 m02 m03 m04 m05 m06 m07 m08 m09 m10 m11 m12</span></span>
-<span><span class="co">#&gt; files in: /tmp/Rtmpe47FzC/cauquenes-rasters</span></span></code></pre></div>
+<span><span class="co">#&gt; files in: /tmp/RtmpbZhuUK/cauquenes-rasters</span></span></code></pre></div>
 <p>Spatial summary of the seasonal totals over the province:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">stats</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">maps</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">k</span><span class="op">)</span> <span class="op">{</span></span>

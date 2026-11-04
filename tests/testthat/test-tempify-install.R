@@ -11,9 +11,59 @@ test_that("the default requirement installs tempify from GitHub", {
   expect_identical(tempify_requirement(), tempify_default_requirement())
 })
 
-test_that("the setup can be disabled", {
+test_that("the automatic setup is off unless someone is there to see it", {
+  expect_true(tempify_auto_default("", session = TRUE, checking = FALSE))
+  # Scripts and package checks (CRAN) never download Python by default.
+  expect_false(tempify_auto_default("", session = FALSE,
+                                    checking = FALSE))
+  expect_false(tempify_auto_default("", session = TRUE, checking = TRUE))
+  # The environment variable forces it either way.
+  expect_true(tempify_auto_default("true", session = FALSE,
+                                   checking = TRUE))
+  expect_true(tempify_auto_default("YES", session = FALSE,
+                                   checking = FALSE))
+  expect_false(tempify_auto_default("false", session = TRUE,
+                                    checking = FALSE))
+  expect_false(tempify_auto_default("0", session = TRUE,
+                                    checking = FALSE))
+})
+
+test_that("tempify_available() never starts Python when none is set up", {
+  skip_if_not_installed("reticulate")
+  old <- the$tempify_route
+  withr::defer(the$tempify_route <- old)
+  local_mocked_bindings(python_initialized = function() FALSE)
+  local_mocked_bindings(
+    py_module_available = function(...) stop("Python must not be started"),
+    .package = "reticulate")
+  for (route in c("disabled", "none", "no_reticulate")) {
+    the$tempify_route <- route
+    expect_false(tempify_available())
+  }
+  # With a configured Python it is asked.
+  local_mocked_bindings(py_module_available = function(...) TRUE,
+                        .package = "reticulate")
+  the$tempify_route <- "user_python"
+  expect_true(tempify_available())
+})
+
+test_that("the automatic route can be disabled", {
+  skip_if_not_installed("reticulate")
   withr::local_options(thermify.tempify_auto = FALSE)
+  withr::local_envvar(RETICULATE_PYTHON = "", RETICULATE_PYTHON_ENV = "")
+  local_mocked_bindings(python_initialized = function() FALSE)
+  local_mocked_bindings(
+    virtualenv_exists = function(envname) FALSE,
+    py_require = function(...) stop("should not be called"),
+    .package = "reticulate")
   expect_identical(setup_tempify(), "disabled")
+})
+
+test_that("a chosen Python is used even when the automatic route is off", {
+  skip_if_not_installed("reticulate")
+  withr::local_options(thermify.tempify_auto = FALSE)
+  withr::local_envvar(RETICULATE_PYTHON = "/usr/bin/python3")
+  expect_identical(setup_tempify(), "user_python")
 })
 
 test_that("a Python chosen by the user is respected", {

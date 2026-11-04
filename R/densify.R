@@ -270,6 +270,15 @@ densify_native <- function(m, year, method) {
 #' @export
 tempify_available <- function() {
   if (!requireNamespace("reticulate", quietly = TRUE)) return(FALSE)
+  # Asking reticulate initialises Python, and recent reticulate versions then
+  # download a Python of their own when none is configured. Only ask when a
+  # Python is already running, was chosen by the user, or the automatic
+  # setup is on; otherwise there is no tempify to find.
+  route <- the$tempify_route
+  if (!python_initialized() &&
+      !isTRUE(route %in% c("user_python", "virtualenv", "py_require"))) {
+    return(FALSE)
+  }
   if (identical(the$tempify_route, "py_require") && !python_initialized() &&
       !isTRUE(the$tempify_announced)) {
     the$tempify_announced <- TRUE

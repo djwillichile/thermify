@@ -56,6 +56,8 @@ tempify_version()                # version and git commit, for provenance
 
 install_tempify()                # alternative: persistent "r-thermify" env
 options(thermify.tempify_auto = FALSE)   # opt out, before library(thermify)
+# In scripts (Rscript) the automatic route is off; enable it with
+# Sys.setenv(THERMIFY_TEMPIFY_AUTO = "true") before library(thermify).
 ```
 
 Installing tempify from GitHub needs `git`. Without Python or tempify,

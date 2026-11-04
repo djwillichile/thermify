@@ -65,12 +65,12 @@ up to about 0.9 degrees C.
 \examples{
 \dontrun{
 win <- study_window(-72.3225, -35.9671, size_km = 20)
-tmin <- worldclim_region("tmin", win, path = "data")
+tmin <- worldclim_region("tmin", win, path = tempdir())
 
 # Mask with a polygon: the Cauquenes commune boundary (DPA 2023),
 # distributed with the package
 comuna <- cauquenes_boundary("comuna")
-tmax <- worldclim_region("tmax", comuna, path = "data", mask = TRUE)
+tmax <- worldclim_region("tmax", comuna, path = tempdir(), mask = TRUE)
 
 # Any polygon layer works, for example your own GeoPackage:
 # zona <- vect("path/to/area.gpkg")

@@ -18,3 +18,4 @@
 ^CITATION\.cff$
 ^\.zenodo\.json$
 ^data-raw$
+^cran-comments\.md$

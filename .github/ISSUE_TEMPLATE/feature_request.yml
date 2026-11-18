@@ -1,0 +1,28 @@
+name: Feature request
+description: Propose a new index, method, data source or improvement.
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What do you want to compute or do?
+      description: The question you are trying to answer, the crop or region, and why the current functions are not enough.
+    validations:
+      required: true
+  - type: textarea
+    id: method
+    attributes:
+      label: Method and reference
+      description: The method you propose and the publication or documentation that defines it (with DOI if possible).
+  - type: textarea
+    id: example
+    attributes:
+      label: Example
+      description: How you imagine calling it from R, or a worked example with expected values.
+      render: r
+  - type: checkboxes
+    id: help
+    attributes:
+      label: Contribution
+      options:
+        - label: I would like to help implement or test this.

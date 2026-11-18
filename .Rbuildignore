@@ -19,3 +19,5 @@
 ^\.zenodo\.json$
 ^data-raw$
 ^cran-comments\.md$
+^man/figures/thermify-demo\.gif$
+^man/figures/social-preview\.png$

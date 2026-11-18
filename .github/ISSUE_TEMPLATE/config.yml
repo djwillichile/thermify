@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Question or idea
+    url: https://github.com/djwillichile/thermify/discussions
+    about: Ask how to use thermify or share an idea in Discussions.
+  - name: Documentation
+    url: https://djwillichile.github.io/thermify/
+    about: Reference, tutorials and the Cauquenes worked example.

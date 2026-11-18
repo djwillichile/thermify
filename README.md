@@ -9,8 +9,21 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23841856.svg)](https://doi.org/10.5281/zenodo.23841856)
 <!-- badges: end -->
 
-**Efficient, reproducible and spatially explicit agroclimatic thermal indices
-in R.**
+**Degree-days and winter chill from any temperature data, from a weather
+station to a whole region, in one R call.**
+
+<p align="center">
+  <img src="man/figures/thermify-demo.gif" width="620"
+       alt="Animated map: monthly growing degree-days over the province of Cauquenes, Chile, computed by thermify from WorldClim 2.1">
+</p>
+
+```r
+remotes::install_github("djwillichile/thermify@v0.3.1")
+```
+
+**Live demo:** [worked example for the province of Cauquenes,
+Chile](https://djwillichile.github.io/thermify/articles/cauquenes.html), with
+maps, tables and code, recomputed from WorldClim 2.1 each time the site is built.
 
 `thermify` computes heat and chill accumulation indices from daily or hourly
 temperatures, and from monthly climatologies such as WorldClim after a
@@ -33,10 +46,11 @@ mean-preserving temporal densification.
 ## Installation
 
 ```r
-# install.packages("remotes")
 remotes::install_github("djwillichile/thermify@v0.3.1")   # release
 remotes::install_github("djwillichile/thermify")          # development
 ```
+
+If `remotes` is missing, run `install.packages("remotes")` first.
 
 `library(thermify)` also attaches `terra`, so `rast()`, `vect()`, `plot()`
 and the other `terra` functions are available directly. The optional
@@ -154,6 +168,16 @@ use its own DOI from the [Zenodo record](https://doi.org/10.5281/zenodo.23841856
 
 Please also cite the original publications of the methods you use; they are
 listed in each function's help page.
+
+## Contributing
+
+Bug reports, ideas and pull requests are welcome: see the
+[contributing guide](.github/CONTRIBUTING.md) and the issues labelled
+[`good first issue`](https://github.com/djwillichile/thermify/labels/good%20first%20issue).
+Questions go to [Discussions](https://github.com/djwillichile/thermify/discussions).
+Please note that this project is released with a
+[Contributor Code of Conduct](.github/CODE_OF_CONDUCT.md); by participating
+you agree to abide by its terms.
 
 ## License
 

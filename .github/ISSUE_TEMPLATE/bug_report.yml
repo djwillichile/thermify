@@ -1,0 +1,39 @@
+name: Bug report
+description: Something does not work as documented, or a result looks wrong.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a problem. Please check the
+        [open issues](https://github.com/djwillichile/thermify/issues) first.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you expect, and what did you get instead?
+    validations:
+      required: true
+  - type: textarea
+    id: reprex
+    attributes:
+      label: Reproducible example
+      description: |
+        A few lines of R that reproduce the problem with small or built-in
+        data (see `reprex::reprex()`). Avoid large or private files.
+      render: r
+    validations:
+      required: true
+  - type: textarea
+    id: session
+    attributes:
+      label: Session information
+      description: Paste the output of `sessionInfo()` and `packageVersion("thermify")`.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Data source, region, crop or anything else that helps.

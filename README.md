@@ -9,6 +9,8 @@
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23841856.svg)](https://doi.org/10.5281/zenodo.23841856)
 <!-- badges: end -->
 
+[Español](README.es.md)
+
 **Efficient, reproducible and spatially explicit agroclimatic thermal indices
 in R.**
 

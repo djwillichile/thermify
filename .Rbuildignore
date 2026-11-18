@@ -19,3 +19,4 @@
 ^\.zenodo\.json$
 ^data-raw$
 ^cran-comments\.md$
+^README\.es\.md$

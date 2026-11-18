@@ -231,6 +231,55 @@ round(rbind(gdd_sine_minus_average = summary(valid(d_gdd)),
             ch_hourly_minus_sine = summary(valid(d_ch))), 1)
 ```
 
+## Other climatologies: CHELSA
+
+`thermify_rast()` does not depend on WorldClim: it takes any pair of 12-layer
+monthly `SpatRaster` objects of minimum and maximum temperature in degrees
+Celsius with identical geometry. The monthly climatologies of CHELSA
+(Karger et al. 2017, *Scientific Data* 4, 170122,
+<https://doi.org/10.1038/sdata.2017.122>) can be used in the same way. This
+section is not evaluated, because it downloads data; the file addresses below
+follow the layout of CHELSA V2.1 (1981-2010), so check them, and the units,
+against the version you use.
+
+```{r chelsa, eval = FALSE}
+# 12 monthly files per variable, January to December. /vsicurl/ lets GDAL
+# read only the window that crop() asks for.
+chelsa_url <- function(var, period = "1981-2010") {
+  sprintf(paste0("/vsicurl/https://os.zhdk.ethz.ch/chelsav2/GLOBAL/",
+                 "climatologies/%s/%s/CHELSA_%s_%02d_%s_V.2.1.tif"),
+          period, var, var, 1:12, period)
+}
+provincia <- cauquenes_boundary("provincia", crs = "EPSG:4326")
+
+# Crop to the province (CHELSA is in EPSG:4326 as well)
+tmin <- crop(rast(chelsa_url("tasmin")), provincia, mask = TRUE)
+tmax <- crop(rast(chelsa_url("tasmax")), provincia, mask = TRUE)
+
+# Units: thermify needs degC. terra applies the scale and offset stored in a
+# file when it reads the values; scoff() shows them. Then look at the values.
+scoff(tmin)
+global(tmin, "range", na.rm = TRUE)
+# If they are still in Kelvin (around 270 to 310), convert them:
+# tmin <- tmin - 273.15
+# tmax <- tmax - 273.15
+
+# Layers named m01 ... m12, as thermify_rast() and the checks expect
+names(tmin) <- names(tmax) <- sprintf("m%02d", 1:12)
+check_monthly_climate(tmin, tmax)
+
+maps <- thermify_rast(
+  tmin, tmax, output_dir = file.path(tempdir(), "cauquenes-chelsa"),
+  temporal = "native", indices = c("gdd", "cp"),
+  gdd_methods = "single_sine", base = 10, progress = FALSE)
+```
+
+`check_monthly_climate()` flags values beyond +/-100 (for example Kelvin or
+integers scaled by 10), layers that are not 12 or that differ in geometry,
+cells where `tmin` is above `tmax`, and `tmin` and `tmax` with different
+missing cells. Results from different climatologies differ because their
+periods, resolutions and methods differ, not because of thermify.
+
 ## Interpretation
 
 * Values are climatological estimates for a reference 365-day calendar,

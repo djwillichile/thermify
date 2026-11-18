@@ -1,3 +1,10 @@
+# thermify (development version)
+
+## Documentation
+
+* The Cauquenes tutorial has a section on using CHELSA monthly climatologies
+  with `thermify_rast()`.
+
 # thermify 0.3.1
 
 Prepares the package for a CRAN submission: no Python is downloaded during

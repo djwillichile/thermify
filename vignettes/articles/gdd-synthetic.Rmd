@@ -1,0 +1,231 @@
+---
+title: "Degree-day methods compared on synthetic temperatures"
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", echo = FALSE,
+                      fig.width = 8, fig.height = 4.6, dpi = 96,
+                      out.width = "100%")
+options(knitr.kable.NA = "-")
+season <- read.csv("data/gdd-synthetic-season.csv")
+monthly <- read.csv("data/gdd-synthetic-monthly.csv")
+sites <- c("coast", "dryland", "valley", "foothills")
+method_order <- c("average", "modified_average", "single_triangle",
+                  "double_triangle", "single_sine", "double_sine",
+                  "hourly_linvill")
+method_col <- c(average = "grey45", modified_average = "#8E5BA8",
+                single_triangle = "#E8702A", double_triangle = "#F2A766",
+                single_sine = "#0B5563", double_sine = "#5DA9C9",
+                hourly_linvill = "#2E8B57")
+```
+
+> **These temperatures are synthetic.** They are simulated from real monthly
+> normals (WorldClim 2.1 at 30 arc-seconds) at four sites in the Maule
+> Region, but the daily and hourly values are generated. The experiment
+> measures how much error each method adds under known, controlled
+> conditions. It does not replace validation against observed station
+> records, which is in progress (`vignette("validation")`).
+
+## Question
+
+Most agroclimatic studies do not have hourly temperature. They have daily
+extremes from a station, or monthly climatologies such as WorldClim. How much
+error does each degree-day method add in each case?
+
+## Design
+
+The script `data-raw/gdd-synthetic/run.R` reproduces every number on this
+page (seed 20261119, about 10 seconds).
+
+1. **Sites.** Four WorldClim 2.1 cells in the Maule Region: coast (Chanco
+   area, 69 m), coastal dryland (Cauquenes, 157 m), central valley (Talca
+   area, 98 m) and Andean foothills (480 m).
+2. **Daily extremes.** The monthly normals densified with `pchip_mp`, plus
+   day-to-day anomalies (first-order autoregressive, lag-1 correlation 0.7,
+   standard deviation 2.8 degrees C for the maximum and 2.0 for the minimum,
+   correlated shocks) and a yearly anomaly. 31 years per site.
+3. **Hourly "truth".** The Parton & Logan (1981) diurnal model: a sine by day
+   with the maximum lagging solar noon, an exponential decay at night towards
+   the next minimum, plus autocorrelated hourly noise. This shape is
+   deliberately *not* the sine, triangle or Linvill profile assumed by the
+   methods under test, so none of them matches the generator by
+   construction.
+4. **Reference.** Degree-hours / 24 from the hourly series.
+5. **Estimates at three levels**, as in `vignette("validation")`:
+   * **daily**: the daily minimum and maximum of the hourly series with
+     each daily method, and the Linvill hourly reconstruction;
+   * **monthly**: each year's monthly means of those extremes, densified
+     with `pchip_mp`, then each daily method;
+   * **climatology**: the 30-year mean monthly extremes, densified once and
+     compared with every year.
+6. **Metrics** for the heat season (1 September - 30 April), 30 seasons per
+   site: bias, mean absolute error and relative bias.
+
+The simulated monthly means stay within 0.4 degrees C of the WorldClim
+normals; the daily maximum occurs around 13:00 and the minimum around 06:00.
+
+## Results: base 10 degrees C
+
+```{r bias-b10, fig.height = 5.2}
+plot_bias <- function(base, upper) {
+  d <- season[season$base == base & season$upper == upper, ]
+  levels_ <- c("daily", "monthly", "climatology")
+  op <- par(mfrow = c(1, 3), mar = c(4, 9.5, 2.5, 0.6), oma = c(0, 0, 0, 0))
+  on.exit(par(op))
+  lim <- range(d$rel_bias_pct, 0)
+  for (lv in levels_) {
+    x <- d[d$level == lv, ]
+    ms <- rev(method_order[method_order %in% x$method])
+    plot(NA, xlim = lim, ylim = c(0.5, length(ms) + 0.5), yaxt = "n",
+         xlab = "Relative bias (%)", ylab = "", main = lv)
+    abline(v = 0, col = "grey60")
+    abline(v = c(-2, 2), col = "grey85", lty = 2)
+    axis(2, at = seq_along(ms), labels = ms, las = 1, cex.axis = 0.9)
+    for (i in seq_along(ms)) {
+      v <- x$rel_bias_pct[x$method == ms[i]]
+      points(v, rep(i, length(v)), pch = 19, col = method_col[ms[i]])
+      segments(min(v), i, max(v), i, col = method_col[ms[i]])
+    }
+  }
+}
+plot_bias(10, "none")
+```
+
+Each point is one site; the line spans the four sites. Dashed lines mark
+±2 %.
+
+```{r table-b10}
+tab <- function(base, upper, level) {
+  d <- season[season$base == base & season$upper == upper &
+                season$level == level, ]
+  w <- reshape(d[, c("site", "method", "rel_bias_pct")], idvar = "method",
+               timevar = "site", direction = "wide")
+  names(w) <- sub("rel_bias_pct.", "", names(w), fixed = TRUE)
+  w <- w[match(method_order[method_order %in% w$method], w$method),
+         c("method", sites)]
+  w[sites] <- lapply(w[sites], function(v) sprintf("%+.1f", v))
+  rownames(w) <- NULL
+  knitr::kable(w, caption = sprintf(
+    "Relative bias (%%) of the season total, base %s degrees C, %s level.",
+    base, level))
+}
+tab(10, "none", "daily")
+tab(10, "none", "monthly")
+```
+
+### What the numbers say
+
+* **Daily extremes.** The triangle methods and the Linvill reconstruction stay
+  within about 1 %. The sine methods overestimate by about 2 %, because a
+  symmetric sine spends as much time near the maximum as near the minimum,
+  while real nights are long and cool. The averaging method underestimates by
+  2-6 %, most in the foothills, where the minimum is often below the base
+  (Jensen's inequality). The **modified average overestimates by 7-11 %**:
+  raising the minimum to the base gives the whole cool part of the day the
+  base temperature.
+* **Monthly means.** Densified monthly values have no day-to-day
+  variability, so cool days with the minimum below the base disappear. That
+  lowers every estimate and, for the sine methods, happens to offset their
+  positive shape bias: they end up within about 1 %. **This is a
+  compensation of two errors, not evidence that the sine is the right
+  shape**, and it depends on how variable the real weather is.
+* **Climatology.** One climatological year compared with 30 different years
+  adds interannual variability: the bias is similar to the monthly level,
+  but the mean absolute error grows to about 90 degrees C day for every
+  method (table below), larger than most differences between methods.
+
+```{r mae}
+d <- season[season$base == 10 & season$upper == "none" &
+              season$site == "dryland", ]
+w <- reshape(d[, c("level", "method", "mae")], idvar = "method",
+             timevar = "level", direction = "wide")
+names(w) <- sub("mae.", "", names(w), fixed = TRUE)
+w <- w[match(method_order[method_order %in% w$method], w$method),
+       c("method", "daily", "monthly", "climatology")]
+rownames(w) <- NULL
+knitr::kable(w, digits = 0, caption = paste(
+  "Mean absolute error (degrees C day) of the season total at the dryland",
+  "site, base 10 degrees C. Mean season total: about 1495 degrees C day."))
+```
+
+## Results: base 5 degrees C
+
+```{r bias-b5, fig.height = 5.2}
+plot_bias(5, "none")
+```
+
+With a base of 5 degrees C the minimum is rarely below the base and the
+daily methods differ little. They overestimate by about 1-1.5 % (up to
+2.4 % for the modified average in the foothills), except the Linvill
+reconstruction (0.2-0.3 %): with long cool nights the daily
+mid-range \((T_{min} + T_{max}) / 2\) is above the true daily mean, and only
+an asymmetric diurnal profile corrects it.
+
+## Seasonal pattern
+
+```{r monthly-profile, fig.height = 4.2}
+d <- monthly[monthly$base == 10 & monthly$upper == "none" &
+               monthly$site == "dryland" & monthly$level == "daily", ]
+ms <- method_order[method_order %in% d$method]
+mo <- c(9:12, 1:8)
+mat <- sapply(ms, function(m) {
+  x <- d[d$method == m, ]
+  x$bias[match(mo, x$month)]
+})
+par(mar = c(4, 4.5, 1, 1))
+matplot(seq_along(mo), mat, type = "b", pch = 19, lty = 1, lwd = 1.5,
+        col = method_col[ms], xaxt = "n", xlab = "",
+        ylab = "Mean bias (degrees C day per month)")
+axis(1, at = seq_along(mo), labels = month.abb[mo])
+abline(h = 0, col = "grey60")
+legend("topright", legend = ms, col = method_col[ms], pch = 19, lty = 1,
+       bty = "n", cex = 0.8, ncol = 2)
+```
+
+At the dryland site, with daily extremes and base 10 degrees C, the methods
+agree most in midsummer (December-February), when most of the day is above
+the base. From March to November the minimum is usually below 10 degrees C
+while the maximum is above it, and the methods diverge: the averaging
+method underestimates and the modified average overestimates by 20-30
+degrees C day per month, while the triangle methods stay within about 7 and the
+Linvill reconstruction within 3 degrees C day.
+
+## Practical guidance
+
+* **With daily extremes**, use a triangle method or the hourly
+  reconstruction (`gdd_methods = "hourly"` in `thermify()`). Prefer them
+  over the simple average when minimum temperatures fall below the base.
+* **With monthly climatologies**, the method matters less than the loss of
+  day-to-day variability. Report the method used and treat differences of a
+  few percent between methods as within the uncertainty.
+* **The modified average** reproduces a published convention (for example
+  the "86/50" rule for maize). Use it to match that convention, not as an
+  estimate of the integrated heat of the day.
+
+## Limitations
+
+* The generator is one plausible climate and diurnal shape. Different
+  day-to-day variability, cloudiness or diurnal shapes change the size, and
+  possibly the sign, of the compensations described above.
+* The daily minimum and maximum come from hourly means, as in many station
+  networks; extremes from sub-hourly records are slightly wider.
+* Only the horizontal cutoff and an upper threshold of 30 degrees C were
+  evaluated; results with upper thresholds are in the data file and are
+  similar to those without one at these sites.
+* These conclusions must be confirmed with observed hourly records from
+  station networks (issue #3).
+
+## Data
+
+The tables behind this page are in `vignettes/articles/data/`
+(`gdd-synthetic-season.csv`, `gdd-synthetic-monthly.csv`).
+
+## References
+
+Parton, W. J., & Logan, J. A. (1981). A model for diurnal variation in soil
+and air temperature. *Agricultural Meteorology*, 23, 205-216.
+<https://doi.org/10.1016/0002-1571(81)90105-9>
+
+McMaster, G. S., & Wilhelm, W. W. (1997). Growing degree-days: one equation,
+two interpretations. *Agricultural and Forest Meteorology*, 87(4), 291-300.
+<https://doi.org/10.1016/S0168-1923(97)00027-0>

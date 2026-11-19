@@ -62,6 +62,7 @@ articles:
     navbar: Methods
     contents:
       - gdd-methods
+      - articles/gdd-synthetic
       - chill-models
       - tempify-integration
   - title: Applications

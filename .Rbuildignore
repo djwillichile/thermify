@@ -21,3 +21,4 @@
 ^cran-comments\.md$
 ^man/figures/thermify-demo\.gif$
 ^man/figures/social-preview\.png$
+^vignettes/articles$

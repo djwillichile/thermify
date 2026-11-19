@@ -10,6 +10,13 @@
 
 ## Documentation
 
+* New article "Degree-day methods compared on synthetic temperatures": a
+  controlled experiment with **synthetic** daily and hourly temperatures
+  generated from WorldClim normals at four sites in the Maule Region
+  (Parton & Logan diurnal model), comparing every GDD method at the daily,
+  monthly and climatological levels. Reproducible with
+  `data-raw/gdd-synthetic/run.R`. It complements, and does not replace,
+  validation against observed station data.
 * README with an animated demo, a one-line summary, the install command and a
   link to the live Cauquenes example; social preview image
   (`man/figures/social-preview.png`), rebuilt with `data-raw/readme-figures.R`.

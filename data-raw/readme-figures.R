@@ -40,26 +40,31 @@ gif <- image_animate(image_quantize(frames, max = 64), fps = 2, optimize = TRUE)
 image_write(gif, "man/figures/thermify-demo.gif")
 
 # Social preview: 1280 x 640 ---------------------------------------------------
+# GitHub crops link previews unpredictably and recommends keeping everything
+# important 40 pt (80 px at this size) from every edge: the outer margin
+# below (omi, in inches at 110 dpi) leaves at least 80 px on each side.
 png_file <- tempfile(fileext = ".png")
 grDevices::png(png_file, width = 1280, height = 640, res = 110)
-graphics::layout(matrix(c(1, 2, 3), 1), widths = c(1.45, 1, 1))
-graphics::par(oma = c(0, 0, 0, 0))
+graphics::layout(matrix(c(1, 2, 3), 1), widths = c(1.35, 1, 1))
+graphics::par(omi = rep(80 / 110, 4))
+graphics::par(mar = c(0, 0, 0, 0))
 graphics::plot.new()
-graphics::text(0.04, 0.78, "thermify", adj = 0, cex = 5.4, font = 2,
+graphics::text(0, 0.86, "thermify", adj = 0, cex = 4.6, font = 2,
                col = "#0B5563")
-graphics::text(0.04, 0.54, "Agroclimatic thermal\nindices for R",
-               adj = 0, cex = 2.6, font = 2, col = "grey15")
-graphics::text(0.04, 0.30, "Degree-days | chilling hours\nUtah units | chill portions",
-               adj = 0, cex = 1.9, col = "grey25")
-graphics::text(0.04, 0.10, "github.com/djwillichile/thermify", adj = 0,
-               cex = 1.6, font = 2, col = "#0B5563")
-plot(gdd$season, col = pal, mar = c(1, 1, 3, 4), axes = FALSE,
-     main = "Degree-days", cex.main = 1.9)
+graphics::text(0, 0.58, "Agroclimatic thermal\nindices for R",
+               adj = 0, cex = 2.3, font = 2, col = "grey15")
+graphics::text(0, 0.30, "Degree-days | chilling hours\nUtah units | chill portions",
+               adj = 0, cex = 1.6, col = "grey25")
+graphics::text(0, 0.06, "github.com/djwillichile/thermify", adj = 0,
+               cex = 1.35, font = 2, col = "#0B5563")
+legend_style <- list(cex = 1.6)
+plot(gdd$season, col = pal, mar = c(0.5, 0.5, 2.6, 4.4), axes = FALSE,
+     main = "Degree-days", cex.main = 1.7, plg = legend_style)
 lines(provincia)
 plot(maps$cp_dynamic$season,
      col = grDevices::hcl.colors(50, "YlGn", rev = TRUE),
-     mar = c(1, 1, 3, 4), axes = FALSE, main = "Chill portions",
-     cex.main = 1.9)
+     mar = c(0.5, 0.5, 2.6, 4.4), axes = FALSE, main = "Chill portions",
+     cex.main = 1.7, plg = legend_style)
 lines(provincia)
 grDevices::dev.off()
 image_write(image_read(png_file), "man/figures/social-preview.png")

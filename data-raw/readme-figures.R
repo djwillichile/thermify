@@ -45,18 +45,18 @@ image_write(gif, "man/figures/thermify-demo.gif")
 # below (omi, in inches at 110 dpi) leaves at least 80 px on each side.
 png_file <- tempfile(fileext = ".png")
 grDevices::png(png_file, width = 1280, height = 640, res = 110)
-graphics::layout(matrix(c(1, 2, 3), 1), widths = c(1.35, 1, 1))
+graphics::layout(matrix(c(1, 2, 3), 1), widths = c(1.75, 1, 1))
 graphics::par(omi = rep(80 / 110, 4))
 graphics::par(mar = c(0, 0, 0, 0))
 graphics::plot.new()
-graphics::text(0, 0.86, "thermify", adj = 0, cex = 4.6, font = 2,
+graphics::text(0, 0.88, "thermify", adj = 0, cex = 6, font = 2,
                col = "#0B5563")
-graphics::text(0, 0.58, "Agroclimatic thermal\nindices for R",
-               adj = 0, cex = 2.3, font = 2, col = "grey15")
-graphics::text(0, 0.30, "Degree-days | chilling hours\nUtah units | chill portions",
-               adj = 0, cex = 1.6, col = "grey25")
-graphics::text(0, 0.06, "github.com/djwillichile/thermify", adj = 0,
-               cex = 1.35, font = 2, col = "#0B5563")
+graphics::text(0, 0.57, "Agroclimatic thermal\nindices for R",
+               adj = 0, cex = 3.1, font = 2, col = "grey15")
+graphics::text(0, 0.29, "Degree-days | chilling hours\nUtah units | chill portions",
+               adj = 0, cex = 2.2, col = "grey25")
+graphics::text(0, 0.04, "github.com/djwillichile/thermify", adj = 0,
+               cex = 1.85, font = 2, col = "#0B5563")
 legend_style <- list(cex = 1.6)
 plot(gdd$season, col = pal, mar = c(0.5, 0.5, 2.6, 4.4), axes = FALSE,
      main = "Degree-days", cex.main = 1.7, plg = legend_style)

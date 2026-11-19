@@ -12,7 +12,8 @@
 
 Prepares the package for a CRAN submission: no Python is downloaded during
 package checks or in non-interactive sessions, and the package metadata
-cite the methods with DOIs. Results are unchanged.
+cite the methods with DOIs. Results are unchanged. Archived on Zenodo:
+<https://doi.org/10.5281/zenodo.23937033>.
 
 ## Changes
 

@@ -9,6 +9,7 @@
 
 library(thermify)
 library(magick)
+# Also needs the png package (to read the logo).
 
 data_dir <- Sys.getenv("THERMIFY_DATA", file.path(tempdir(), "readme-data"))
 provincia <- cauquenes_boundary("provincia", crs = "EPSG:4326")
@@ -49,11 +50,18 @@ graphics::layout(matrix(c(1, 2, 3), 1), widths = c(1.75, 1, 1))
 graphics::par(omi = rep(80 / 110, 4))
 graphics::par(mar = c(0, 0, 0, 0))
 graphics::plot.new()
-graphics::text(0, 0.88, "thermify", adj = 0, cex = 6, font = 2,
-               col = "#0B5563")
-graphics::text(0, 0.57, "Agroclimatic thermal\nindices for R",
+# Hex logo in the top-left corner, keeping its aspect ratio, and the name
+# next to it.
+logo <- png::readPNG("man/figures/logo.png")
+logo_h <- 0.34
+logo_w <- logo_h * graphics::par("pin")[2] / graphics::par("pin")[1] *
+  dim(logo)[2] / dim(logo)[1]
+graphics::rasterImage(logo, 0, 1 - logo_h, logo_w, 1)
+graphics::text(logo_w + 0.04, 1 - logo_h / 2, "thermify", adj = 0, cex = 5,
+               font = 2, col = "#0B5563")
+graphics::text(0, 0.49, "Agroclimatic thermal\nindices for R",
                adj = 0, cex = 3.1, font = 2, col = "grey15")
-graphics::text(0, 0.29, "Degree-days | chilling hours\nUtah units | chill portions",
+graphics::text(0, 0.245, "Degree-days | chilling hours\nUtah units | chill portions",
                adj = 0, cex = 2.2, col = "grey25")
 graphics::text(0, 0.04, "github.com/djwillichile/thermify", adj = 0,
                cex = 1.85, font = 2, col = "#0B5563")

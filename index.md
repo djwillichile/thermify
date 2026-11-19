@@ -1,7 +1,21 @@
 # thermify
 
-**Efficient, reproducible and spatially explicit agroclimatic thermal
-indices in R.**
+**Degree-days and winter chill from any temperature data, from a weather
+station to a whole region, in one R call.**
+
+![Animated map: monthly growing degree-days over the province of
+Cauquenes, Chile, computed by thermify from WorldClim
+2.1](reference/figures/thermify-demo.gif)
+
+``` r
+
+remotes::install_github("djwillichile/thermify@v0.3.1")
+```
+
+**Live demo:** [worked example for the province of Cauquenes,
+Chile](https://djwillichile.github.io/thermify/articles/cauquenes.html),
+with maps, tables and code, recomputed from WorldClim 2.1 each time the
+site is built.
 
 `thermify` computes heat and chill accumulation indices from daily or
 hourly temperatures, and from monthly climatologies such as WorldClim
@@ -25,10 +39,11 @@ after a mean-preserving temporal densification.
 
 ``` r
 
-# install.packages("remotes")
 remotes::install_github("djwillichile/thermify@v0.3.1")   # release
 remotes::install_github("djwillichile/thermify")          # development
 ```
+
+If `remotes` is missing, run `install.packages("remotes")` first.
 
 [`library(thermify)`](https://github.com/djwillichile/thermify) also
 attaches `terra`, so
@@ -167,6 +182,18 @@ record](https://doi.org/10.5281/zenodo.23841856) (for example v0.3.1:
 
 Please also cite the original publications of the methods you use; they
 are listed in each function’s help page.
+
+## Contributing
+
+Bug reports, ideas and pull requests are welcome: see the [contributing
+guide](https://djwillichile.github.io/thermify/CONTRIBUTING.md) and the
+issues labelled
+[`good first issue`](https://github.com/djwillichile/thermify/labels/good%20first%20issue).
+Questions go to
+[Discussions](https://github.com/djwillichile/thermify/discussions).
+Please note that this project is released with a [Contributor Code of
+Conduct](https://djwillichile.github.io/thermify/CODE_OF_CONDUCT.md); by
+participating you agree to abide by its terms.
 
 ## License
 

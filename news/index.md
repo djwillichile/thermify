@@ -2,6 +2,15 @@
 
 ## thermify (development version)
 
+### Documentation
+
+- README with an animated demo, a one-line summary, the install command
+  and a link to the live Cauquenes example; social preview image
+  (`man/figures/social-preview.png`), rebuilt with
+  `data-raw/readme-figures.R`.
+- Contributing guide, Contributor Covenant code of conduct, issue forms
+  (bug report, feature request) and a pull request template.
+
 ## thermify 0.3.1
 
 Prepares the package for a CRAN submission: no Python is downloaded

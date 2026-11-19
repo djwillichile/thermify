@@ -1,8 +1,9 @@
 #' Growing degree-days from daily minimum and maximum temperatures
 #'
 #' Computes daily growing degree-days (GDD, in degree Celsius day) with the
-#' averaging, single sine, single triangle, double sine or double triangle
-#' methods, optionally bounded by an upper developmental threshold.
+#' averaging, modified averaging, single sine, single triangle, double sine or
+#' double triangle methods, optionally bounded by an upper developmental
+#' threshold.
 #'
 #' @section Methods:
 #' All sine and triangle methods are evaluated with closed-form expressions;
@@ -11,6 +12,16 @@
 #' * `"average"`: \eqn{\max(0, (T_{max} + T_{min}) / 2 - T_b)} (McMaster &
 #'   Wilhelm 1997, method 1). With an upper threshold the cutoff is applied to
 #'   the daily mean.
+#' * `"modified_average"`: the extremes are bounded before averaging,
+#'   \eqn{T^*_{min} = \min(\max(T_{min}, T_b), T_u)} and
+#'   \eqn{T^*_{max} = \min(\max(T_{max}, T_b), T_u)}, and
+#'   GDD \eqn{= (T^*_{max} + T^*_{min}) / 2 - T_b} (McMaster & Wilhelm 1997,
+#'   method 2; the "86/50" method for maize with \eqn{T_b = 10} and
+#'   \eqn{T_u = 30} degrees C). Without `upper` only \eqn{T_b} bounds the
+#'   extremes. Raising \eqn{T_{min}} to \eqn{T_b} counts days whose mean is
+#'   below the base when \eqn{T_{max} > T_b}, unlike `"average"`. The bound
+#'   on the extremes is the method's own upper-threshold rule, so only
+#'   `cutoff = "horizontal"` is accepted.
 #' * `"single_sine"`: a sine wave between `tmin` and `tmax` over 24 h
 #'   (Baskerville & Emin 1969).
 #' * `"single_triangle"`: a symmetric triangle between `tmin` and `tmax`
@@ -46,7 +57,8 @@
 #' @param tmin,tmax Numeric vectors of daily minimum and maximum temperatures
 #'   (degrees Celsius), of equal length, ordered in time for double methods.
 #' @param method One of `"single_sine"` (default), `"average"`,
-#'   `"single_triangle"`, `"double_sine"` or `"double_triangle"`.
+#'   `"modified_average"`, `"single_triangle"`, `"double_sine"` or
+#'   `"double_triangle"`.
 #' @param base Lower developmental threshold (degrees Celsius).
 #' @param upper Optional upper developmental threshold (degrees Celsius).
 #' @param cutoff Upper threshold treatment: `"horizontal"` (default),
@@ -85,6 +97,7 @@
 #' tmin <- c(4, 8, 12, 15)
 #' tmax <- c(16, 22, 28, 34)
 #' degree_days(tmin, tmax, method = "average", base = 10)
+#' degree_days(tmin, tmax, method = "modified_average", base = 10, upper = 30)
 #' degree_days(tmin, tmax, method = "single_sine", base = 10)
 #' degree_days(tmin, tmax, method = "single_sine", base = 10, upper = 30,
 #'             cutoff = "vertical")
@@ -92,7 +105,8 @@
 #'             tmin_next = c(tmin[-1], 10))
 #' @export
 degree_days <- function(tmin, tmax,
-                        method = c("single_sine", "average", "single_triangle",
+                        method = c("single_sine", "average",
+                                   "modified_average", "single_triangle",
                                    "double_sine", "double_triangle"),
                         base = 10, upper = NULL,
                         cutoff = c("horizontal", "vertical", "intermediate"),
@@ -104,6 +118,13 @@ degree_days <- function(tmin, tmax,
 
   if (method == "average") {
     return(average_degree_days(tmin, tmax, base, upper, cutoff))
+  }
+  if (method == "modified_average") {
+    if (!is.null(upper) && cutoff != "horizontal") {
+      stop("`modified_average` bounds the extremes at `upper`; use ",
+           "cutoff = \"horizontal\".", call. = FALSE)
+    }
+    return(modified_average_degree_days(tmin, tmax, base, upper))
   }
   shape <- if (grepl("sine", method)) "sine" else "triangle"
   if (startsWith(method, "single")) {
@@ -123,6 +144,13 @@ degree_days <- function(tmin, tmax,
                                      pmax(tmin_next, tmax),
                                      base, upper, cutoff, shape)
   (first_half + second_half) / 2
+}
+
+# McMaster & Wilhelm (1997), method 2: bound the extremes, then average.
+modified_average_degree_days <- function(tmin, tmax, base, upper) {
+  hi <- if (is.null(upper)) Inf else upper
+  bound <- function(x) pmin(pmax(x, base), hi)
+  (bound(tmin) + bound(tmax)) / 2 - base
 }
 
 average_degree_days <- function(tmin, tmax, base, upper, cutoff) {

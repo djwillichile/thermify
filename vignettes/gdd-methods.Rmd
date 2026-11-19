@@ -50,19 +50,27 @@ day.
 
 ```{r}
 tmin <- 8; tmax <- seq(10, 40, by = 1)
-methods <- c("average", "single_sine", "single_triangle")
+methods <- c("average", "modified_average", "single_sine", "single_triangle")
+cols <- c("grey40", "#8E5BA8", "#0B5563", "#E8702A")
 gdd <- sapply(methods, function(m) degree_days(rep(tmin, length(tmax)), tmax,
                                                method = m, base = 10))
-matplot(tmax, gdd, type = "l", lty = 1, lwd = 2,
-        col = c("grey40", "#0B5563", "#E8702A"),
+matplot(tmax, gdd, type = "l", lty = 1, lwd = 2, col = cols,
         xlab = "Tmax (degC), Tmin = 8 degC", ylab = "GDD base 10 (degC day)")
-legend("topleft", legend = methods, lty = 1, lwd = 2, bty = "n",
-       col = c("grey40", "#0B5563", "#E8702A"))
+legend("topleft", legend = methods, lty = 1, lwd = 2, bty = "n", col = cols)
 ```
 
 When \(T_{min} < T_b < T_{max}\) the averaging method underestimates heat
 accumulation because it ignores the warm hours (a consequence of Jensen's
 inequality for the convex function \(\max(0, T - T_b)\)).
+
+The **modified average** (McMaster & Wilhelm 1997, method 2) raises
+\(T_{min}\) to \(T_b\) and caps \(T_{max}\) at \(T_u\) before averaging.
+It counts part of the warm hours on cool days, but it is not an integral of
+the diurnal profile: with \(T_{min} < T_b\) it lies above the averaging
+method and, in this example, also above the sine and triangle methods,
+because replacing \(T_{min}\) by \(T_b\) assigns the base temperature to
+the whole cool part of the day. It is the standard method for maize in the
+United States (\(T_b = 10\), \(T_u = 30\) degrees C, the "86/50" rule).
 
 ## Cutoffs are not interchangeable
 

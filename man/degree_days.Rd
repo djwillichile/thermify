@@ -7,8 +7,8 @@
 degree_days(
   tmin,
   tmax,
-  method = c("single_sine", "average", "single_triangle", "double_sine",
-    "double_triangle"),
+  method = c("single_sine", "average", "modified_average", "single_triangle",
+    "double_sine", "double_triangle"),
   base = 10,
   upper = NULL,
   cutoff = c("horizontal", "vertical", "intermediate"),
@@ -20,7 +20,8 @@ degree_days(
 (degrees Celsius), of equal length, ordered in time for double methods.}
 
 \item{method}{One of \code{"single_sine"} (default), \code{"average"},
-\code{"single_triangle"}, \code{"double_sine"} or \code{"double_triangle"}.}
+\code{"modified_average"}, \code{"single_triangle"}, \code{"double_sine"} or
+\code{"double_triangle"}.}
 
 \item{base}{Lower developmental threshold (degrees Celsius).}
 
@@ -38,8 +39,9 @@ as \code{tmin}.
 }
 \description{
 Computes daily growing degree-days (GDD, in degree Celsius day) with the
-averaging, single sine, single triangle, double sine or double triangle
-methods, optionally bounded by an upper developmental threshold.
+averaging, modified averaging, single sine, single triangle, double sine or
+double triangle methods, optionally bounded by an upper developmental
+threshold.
 }
 \section{Methods}{
 
@@ -49,6 +51,16 @@ no hourly temperatures are generated.
 \item \code{"average"}: \eqn{\max(0, (T_{max} + T_{min}) / 2 - T_b)} (McMaster &
 Wilhelm 1997, method 1). With an upper threshold the cutoff is applied to
 the daily mean.
+\item \code{"modified_average"}: the extremes are bounded before averaging,
+\eqn{T^*_{min} = \min(\max(T_{min}, T_b), T_u)} and
+\eqn{T^*_{max} = \min(\max(T_{max}, T_b), T_u)}, and
+GDD \eqn{= (T^*_{max} + T^*_{min}) / 2 - T_b} (McMaster & Wilhelm 1997,
+method 2; the "86/50" method for maize with \eqn{T_b = 10} and
+\eqn{T_u = 30} degrees C). Without \code{upper} only \eqn{T_b} bounds the
+extremes. Raising \eqn{T_{min}} to \eqn{T_b} counts days whose mean is
+below the base when \eqn{T_{max} > T_b}, unlike \code{"average"}. The bound
+on the extremes is the method's own upper-threshold rule, so only
+\code{cutoff = "horizontal"} is accepted.
 \item \code{"single_sine"}: a sine wave between \code{tmin} and \code{tmax} over 24 h
 (Baskerville & Emin 1969).
 \item \code{"single_triangle"}: a symmetric triangle between \code{tmin} and \code{tmax}
@@ -93,6 +105,7 @@ increasing order.
 tmin <- c(4, 8, 12, 15)
 tmax <- c(16, 22, 28, 34)
 degree_days(tmin, tmax, method = "average", base = 10)
+degree_days(tmin, tmax, method = "modified_average", base = 10, upper = 30)
 degree_days(tmin, tmax, method = "single_sine", base = 10)
 degree_days(tmin, tmax, method = "single_sine", base = 10, upper = 30,
             cutoff = "vertical")

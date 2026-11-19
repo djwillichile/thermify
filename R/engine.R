@@ -15,8 +15,8 @@ thermal_config <- function(indices = c("gdd", "ch", "cu", "cp"),
   indices <- unique(match.arg(indices, c("gdd", "ch", "cu", "cp"),
                               several.ok = TRUE))
   gdd_methods <- unique(match.arg(gdd_methods,
-    c("average", "single_sine", "single_triangle", "double_sine",
-      "double_triangle", "hourly"), several.ok = TRUE))
+    c("average", "modified_average", "single_sine", "single_triangle",
+      "double_sine", "double_triangle", "hourly"), several.ok = TRUE))
   ch_methods <- unique(match.arg(ch_methods, c("sine", "triangle", "hourly"),
                                  several.ok = TRUE))
   cutoff <- match.arg(cutoff, c("horizontal", "vertical", "intermediate"))

@@ -1,5 +1,13 @@
 # thermify (development version)
 
+## New features
+
+* `degree_days()` gains `method = "modified_average"` (McMaster & Wilhelm
+  1997, method 2): the daily extremes are bounded by the base and upper
+  thresholds before averaging, as in the "86/50" rule for maize. It is also
+  available in `thermify()`, `thermify_rast()` and `validate_station()`
+  through `gdd_methods`.
+
 ## Documentation
 
 * README with an animated demo, a one-line summary, the install command and a

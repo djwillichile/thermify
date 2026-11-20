@@ -135,6 +135,12 @@ test_that("weights from validation results enforce the same thresholds", {
                            base = 10, upper = 30), "upper")
   expect_error(gdd_ensemble_weights(v, level = "nonexistent"),
                "No GDD cases")
+  # Hourly-reconstruction estimates are reported but are not members.
+  expect_true("hourly_linvill" %in% v$seasons$method)
+  expect_false(any(startsWith(names(w$weights), "hourly_")))
+  expect_error(gdd_ensemble_weights(v, methods = c("average",
+                                                   "hourly_linvill")),
+               "daily degree_days")
 })
 
 test_that("thermify() and thermify_rast() accept the ensemble", {

@@ -58,8 +58,10 @@
 #' @param level Level of the estimates to combine: `"daily"`, `"monthly"` or
 #'   `"gridded"` (see [validate_station()]). Weights for daily extremes are
 #'   not valid for monthly climatologies and vice versa.
-#' @param methods Member methods. `NULL` (default) uses every GDD method
-#'   present at `level`.
+#' @param methods Member methods. `NULL` (default) uses every daily
+#'   [degree_days()] method present at `level`; estimates from hourly
+#'   reconstructions (`"hourly_linvill"`, `"hourly_sine"`) are not members
+#'   because they cannot be computed by [degree_days()].
 #' @param scheme `"stacking"`, `"bma"` or `"akaike"`.
 #' @param cv Assess the ensemble by leave-one-group-out cross-validation?
 #' @param tol,max_iter Convergence tolerance and maximum number of
@@ -109,7 +111,14 @@ gdd_ensemble_weights <- function(x, level = "daily", methods = NULL,
   scheme <- match.arg(scheme)
   data <- ensemble_cases(x, level)
   available <- unique(data$long$method)
-  if (is.null(methods)) methods <- available
+  daily_methods <- c("average", "modified_average", "single_sine",
+                     "single_triangle", "double_sine", "double_triangle")
+  if (is.null(methods)) methods <- intersect(available, daily_methods)
+  not_daily <- setdiff(methods, c(daily_methods, "ensemble"))
+  if (length(not_daily)) {
+    stop("Ensemble members must be daily degree_days() methods; not ",
+         "allowed: ", paste(not_daily, collapse = ", "), ".", call. = FALSE)
+  }
   unknown <- setdiff(methods, available)
   if (length(unknown)) {
     stop("Method(s) not found at level \"", level, "\": ",

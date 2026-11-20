@@ -24,8 +24,10 @@ optionally \code{station}, \code{season}, \code{index} and \code{level}.}
 \code{"gridded"} (see \code{\link[=validate_station]{validate_station()}}). Weights for daily extremes are
 not valid for monthly climatologies and vice versa.}
 
-\item{methods}{Member methods. \code{NULL} (default) uses every GDD method
-present at \code{level}.}
+\item{methods}{Member methods. \code{NULL} (default) uses every daily
+\code{\link[=degree_days]{degree_days()}} method present at \code{level}; estimates from hourly
+reconstructions (\code{"hourly_linvill"}, \code{"hourly_sine"}) are not members
+because they cannot be computed by \code{\link[=degree_days]{degree_days()}}.}
 
 \item{scheme}{\code{"stacking"}, \code{"bma"} or \code{"akaike"}.}
 

@@ -9,11 +9,15 @@ A0
 ABI
 Administrativa
 Agromet
+BMA
+Balabdaoui
+Breiman
 Butland
 CEAZA
 CMD
 CRS
 Cauquenes
+Chanco
 ColorBrewer
 Couvillon
 Cutoff
@@ -36,14 +40,17 @@ Fuentes
 GDAL
 GDAL's
 GDD
+Gelman
 GeoTIFF
 Girvetz
+Gneiting
 Goodell
 HORTSCI
 Hermite
 Hijmans
 HortScience
 Horticulturae
+Huglin
 IGM
 INE
 INIA
@@ -55,6 +62,7 @@ Linvill
 Luedeling
 Lygus
 Maule
+Multimodel
 NetCDF
 Noakes
 NumPy
@@ -63,6 +71,8 @@ ORCID
 PCHIP
 PLoS
 PROJ
+Polakowski
+Raftery
 Redhaven
 Resolución
 Rymes
@@ -71,8 +81,10 @@ SIRGAS
 SUBDERE
 Scientia
 Sevacherian
+Talca
 Tf
 UC
+Vehtari
 WGS84
 WorldClim
 Zalom
@@ -90,8 +102,10 @@ densifies
 densify
 densifying
 doi
+dryland
 dt
 e6166
+ed
 ee
 float64
 frac
@@ -104,6 +118,7 @@ jsonlite
 km2
 oldrel
 parameterised
+propto
 qquad
 rast
 resumable
@@ -112,5 +127,6 @@ tempify
 terra
 thermify's
 v0
+viticultural
 xarray
 zenodo

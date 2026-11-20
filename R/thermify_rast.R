@@ -71,6 +71,7 @@ thermify_rast <- function(tmin, tmax, output_dir, year = 2023,
                           hourly_method = c("linvill", "sine"),
                           chill_period = c("05-01", "08-31"),
                           heat_period = c("09-01", "04-30"),
+                          gdd_weights = NULL,
                           temporal_aggregation = c("season", "annual",
                                                    "monthly"),
                           max_cells = 2000L, format = "GTiff",
@@ -86,7 +87,7 @@ thermify_rast <- function(tmin, tmax, output_dir, year = 2023,
   check_monthly_rasters(tmin, tmax)
   cfg <- thermal_config(indices, gdd_methods, base, upper, cutoff,
                         ch_methods, ch_lower, ch_upper, hourly_method,
-                        chill_period, heat_period)
+                        chill_period, heat_period, gdd_weights)
   if (temporal == "auto") temporal <- if (tempify_available()) "tempify" else
     "native"
   dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)

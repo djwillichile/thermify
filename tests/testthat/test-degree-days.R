@@ -125,3 +125,45 @@ test_that("degree hours convert to degree days with 24 hours per day", {
   expect_equal(degree_hours(m, base = 10, by_day = TRUE),
                rbind(c(5, 0), c(6, 0)))
 })
+
+test_that("modified_average bounds the extremes before averaging", {
+  # Worked by hand from McMaster & Wilhelm (1997), method 2.
+  tmin <- c(5, 12, 8, 2, 18)
+  tmax <- c(20, 25, 35, 9, 33)
+  expect_equal(degree_days(tmin, tmax, method = "modified_average", base = 10),
+               c(5, 8.5, 12.5, 0, 15.5))
+  expect_equal(degree_days(tmin, tmax, method = "modified_average", base = 10,
+                           upper = 30),
+               c(5, 8.5, 10, 0, 14))
+  # "86/50" rule in degrees C: Tmax 90 F, Tmin 45 F -> 18 F day = 10 degC day.
+  f2c <- function(f) (f - 32) * 5 / 9
+  expect_equal(degree_days(f2c(45), f2c(90), method = "modified_average",
+                           base = 10, upper = 30), 10)
+})
+
+test_that("modified_average equals average when the bounds are inactive", {
+  tmin <- c(11, 14, 20); tmax <- c(22, 28, 29)
+  expect_equal(degree_days(tmin, tmax, method = "modified_average", base = 10,
+                           upper = 30),
+               degree_days(tmin, tmax, method = "average", base = 10,
+                           upper = 30))
+})
+
+test_that("modified_average is never below average and keeps NA", {
+  set.seed(1)
+  tmin <- runif(200, -5, 20); tmax <- tmin + runif(200, 0, 20)
+  tmin[3] <- NA
+  ma <- degree_days(tmin, tmax, method = "modified_average", base = 10)
+  av <- degree_days(tmin, tmax, method = "average", base = 10)
+  expect_true(is.na(ma[3]))
+  expect_true(all(ma >= av - 1e-12, na.rm = TRUE))
+  expect_true(all(ma >= 0, na.rm = TRUE))
+})
+
+test_that("modified_average only accepts the horizontal cutoff", {
+  expect_error(degree_days(5, 35, method = "modified_average", base = 10,
+                           upper = 30, cutoff = "vertical"),
+               "horizontal")
+  expect_equal(degree_days(5, 35, method = "modified_average", base = 10,
+                           cutoff = "vertical"), 12.5)
+})

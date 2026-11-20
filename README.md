@@ -18,7 +18,7 @@ station to a whole region, in one R call.**
 </p>
 
 ```r
-remotes::install_github("djwillichile/thermify@v0.3.1")
+remotes::install_github("djwillichile/thermify@v0.4.0")
 ```
 
 **Live demo:** [worked example for the province of Cauquenes,
@@ -31,7 +31,7 @@ mean-preserving temporal densification.
 
 | Family | Methods |
 |---|---|
-| Growing degree-days | average, single sine, single triangle, double sine, double triangle; horizontal, vertical and intermediate upper cutoffs; degree-hours |
+| Growing degree-days | average, modified average (McMaster & Wilhelm 1997, method 2), single sine, single triangle, double sine, double triangle; horizontal, vertical and intermediate upper cutoffs; degree-hours |
 | Chilling hours | analytical sine and triangle estimates from daily extremes; counts on hourly data |
 | Chill units | Utah model (Richardson et al. 1974) |
 | Chill portions | Dynamic model (Fishman et al. 1987; Erez et al. 1990), resumable across blocks |
@@ -46,7 +46,7 @@ mean-preserving temporal densification.
 ## Installation
 
 ```r
-remotes::install_github("djwillichile/thermify@v0.3.1")   # release
+remotes::install_github("djwillichile/thermify@v0.4.0")   # release
 remotes::install_github("djwillichile/thermify")          # development
 ```
 
@@ -133,6 +133,12 @@ progress (blocks done, elapsed time and estimated time remaining).
   1e-12, except for one documented convention in the pre-dawn Linvill curve
   (`night = "chillr"` reproduces chillR exactly).
 * The native `pchip_mp` engine reproduces tempify to within 1e-13 degC.
+* A controlled experiment on **synthetic** temperatures (generated from
+  WorldClim normals at four Maule sites) compares every degree-day method
+  against hourly integrals at the daily, monthly and climatological levels:
+  [Degree-day methods compared on synthetic temperatures](https://djwillichile.github.io/thermify/articles/gdd-synthetic.html).
+  It complements, and does not replace, validation against observed
+  stations.
 
 * About 400 expectations in unit, acceptance (one per
   [user story](docs/USER_STORIES.md)), integration and error-path tests,
@@ -163,7 +169,7 @@ citation("thermify")
 
 This DOI always resolves to the latest version. To cite a specific version,
 use its own DOI from the [Zenodo record](https://doi.org/10.5281/zenodo.23841856)
-(for example v0.3.1: 10.5281/zenodo.23937033) and the version reported by
+(for example v0.4.0: 10.5281/zenodo.24385014) and the version reported by
 `packageVersion("thermify")`.
 
 Please also cite the original publications of the methods you use; they are

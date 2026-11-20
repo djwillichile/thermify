@@ -1,7 +1,44 @@
 # thermify (development version)
 
+# thermify 0.4.0
+
+Adds the modified average degree-day method and experimental ensembles of
+degree-day methods, and documents a controlled comparison of all methods on
+synthetic temperatures. Results of the existing methods are unchanged.
+Archived on Zenodo: <https://doi.org/10.5281/zenodo.24385014>.
+
+Not yet included: validation against observed hourly station records (data
+requested from CEAZA and INIA, issue #3), and the Winkler and Huglin
+viticultural indices.
+
+## New features
+
+* `degree_days()` gains `method = "modified_average"` (McMaster & Wilhelm
+  1997, method 2): the daily extremes are bounded by the base and upper
+  thresholds before averaging, as in the "86/50" rule for maize. It is also
+  available in `thermify()`, `thermify_rast()` and `validate_station()`
+  through `gdd_methods`.
+* GDD ensembles (experimental): `gdd_ensemble_weights()` estimates the weights of a
+  combination of daily GDD methods from `validate_station()` results with
+  observed hourly data, by stacking (default), Bayesian model averaging or
+  Akaike weights, and assesses it by leave-one-station-out
+  cross-validation. `degree_days(method = "ensemble")`, `gdd_ensemble()`
+  (weighted mean plus the spread between members) and `gdd_methods =
+  "ensemble"` with `gdd_weights` in `thermify()` and `thermify_rast()` apply
+  the weights. No default weights are shipped: they depend on the climate,
+  the base temperature and the data available.
+
 ## Documentation
 
+* New article "Degree-day methods compared on synthetic temperatures": a
+  controlled experiment with **synthetic** daily and hourly temperatures
+  generated from WorldClim normals at four sites in the Maule Region
+  (Parton & Logan diurnal model), comparing every GDD method at the daily,
+  monthly and climatological levels. Reproducible with
+  `data-raw/gdd-synthetic/run.R`. It complements, and does not replace,
+  validation against observed station data. Its figures show the bias of
+  each method by level of information and site, and the seasonal bias next
+  to the monthly reference degree-days.
 * README with an animated demo, a one-line summary, the install command and a
   link to the live Cauquenes example; social preview image
   (`man/figures/social-preview.png`), rebuilt with `data-raw/readme-figures.R`.

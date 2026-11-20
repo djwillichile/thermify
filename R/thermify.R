@@ -32,7 +32,9 @@
 #' @param interpolation Densification method, default `"pchip_mp"`.
 #' @param consistency `"check"` or `"mean_range"` (see [densify_monthly()]).
 #' @param indices Any of `"gdd"`, `"ch"`, `"cu"`, `"cp"`.
-#' @param gdd_methods GDD methods, see [degree_days()]; `"hourly"` uses
+#' @param gdd_methods GDD methods: `"average"`, `"modified_average"`,
+#'   `"single_sine"`, `"single_triangle"`, `"double_sine"`,
+#'   `"double_triangle"` (see [degree_days()]) or `"hourly"`, which uses
 #'   [degree_hours()] on observed or reconstructed hourly temperatures.
 #' @param base Lower GDD thresholds (degrees Celsius); one result per value.
 #' @param upper,cutoff Upper GDD threshold and cutoff (see [degree_days()]).

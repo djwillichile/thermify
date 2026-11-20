@@ -54,7 +54,9 @@ hourly model.}
 
 \item{indices}{Any of \code{"gdd"}, \code{"ch"}, \code{"cu"}, \code{"cp"}.}
 
-\item{gdd_methods}{GDD methods, see \code{\link[=degree_days]{degree_days()}}; \code{"hourly"} uses
+\item{gdd_methods}{GDD methods: \code{"average"}, \code{"modified_average"},
+\code{"single_sine"}, \code{"single_triangle"}, \code{"double_sine"},
+\code{"double_triangle"} (see \code{\link[=degree_days]{degree_days()}}) or \code{"hourly"}, which uses
 \code{\link[=degree_hours]{degree_hours()}} on observed or reconstructed hourly temperatures.}
 
 \item{base}{Lower GDD thresholds (degrees Celsius); one result per value.}

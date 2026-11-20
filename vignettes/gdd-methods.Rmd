@@ -97,6 +97,20 @@ temp <- 12 + 9 * sin(2 * pi * (0:47 - 9) / 24)
 degree_hours(temp, base = 10, by_day = TRUE)
 ```
 
+## Which method?
+
+The differences above are exact consequences of each formula. How large
+they are in practice depends on the climate and on the data available
+(hourly, daily or monthly). The article
+[Degree-day methods compared on synthetic temperatures](https://djwillichile.github.io/thermify/articles/gdd-synthetic.html)
+quantifies them with synthetic hourly series for four sites in the Maule
+Region. With daily extremes, the triangle methods and the hourly
+reconstruction stayed within about 1 % of the hourly integral, the sine
+methods overestimated by about 2 %, the averaging method underestimated by
+2-6 % and the modified average overestimated by 7-11 % (base 10 degrees C,
+heat season). These results are synthetic and must be confirmed with
+observed hourly records (`vignette("validation")`).
+
 ## References
 
 Baskerville & Emin (1969); Lindsey & Newman (1956); Sevacherian et al.

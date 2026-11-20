@@ -16,6 +16,12 @@
 
 ## Documentation
 
+* New article "Projected change of thermal indices: WorldClim CMIP6": change
+  of degree-days, chilling hours, Utah units and chill portions by
+  2041-2060 (14 GCMs, SSP2-4.5 and SSP5-8.5) over the province of Cauquenes,
+  and at the 30 CEAZA-Met stations with a delta method applied to the
+  observed hourly records. Scripts in `data-raw/climate-change/`.
+
 * New article "Validation with observed hourly temperature: CEAZA-Met
   network" with the results of the 30-station validation, per-station
   figures and practical guidance; `vignette("validation")` summarises them.

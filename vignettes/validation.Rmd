@@ -26,6 +26,26 @@ library(thermify)
 No claim of predictive superiority of one method over another should be made
 without empirical validation.
 
+## Empirical validation so far
+
+thermify has been validated against observed hourly temperature at 30
+stations of the CEAZA-Met network in north-central Chile (264 heat and 313
+chill seasons, 7-2,543 m); see
+[Validation with observed hourly temperature: CEAZA-Met network](https://djwillichile.github.io/thermify/articles/validation-ceaza.html).
+In short, from daily extremes:
+
+| Index | Best method | Bias of the season total |
+|---|---|---|
+| Degree-days, base 10 degC | average / Linvill reconstruction | +5.4 % / +6.0 % (sine +8.4 %) |
+| Chilling hours, 0-7.2 degC | Linvill reconstruction | +1.0 % (sine -9.4 %) |
+| Utah chill units | Linvill reconstruction | -9.3 % (sine -43.6 %) |
+| Chill portions | Linvill reconstruction | -4.3 % (sine -16.3 %) |
+
+Monthly climatologies underestimate chilling hours by about a quarter, and
+WorldClim cells give much larger errors, which depend on elevation. These
+results come from arid and semi-arid sites; the central-south of Chile has
+not been validated yet.
+
 ## Verification summary
 
 | Check | Reference | Max. abs. difference |

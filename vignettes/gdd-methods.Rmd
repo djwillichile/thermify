@@ -99,17 +99,30 @@ degree_hours(temp, base = 10, by_day = TRUE)
 
 ## Which method?
 
-The differences above are exact consequences of each formula. How large
-they are in practice depends on the climate and on the data available
-(hourly, daily or monthly). The article
-[Degree-day methods compared on synthetic temperatures](https://djwillichile.github.io/thermify/articles/gdd-synthetic.html)
-quantifies them with synthetic hourly series for four sites in the Maule
-Region. With daily extremes, the triangle methods and the hourly
-reconstruction stayed within about 1 % of the hourly integral, the sine
-methods overestimated by about 2 %, the averaging method underestimated by
-2-6 % and the modified average overestimated by 7-11 % (base 10 degrees C,
-heat season). These results are synthetic and must be confirmed with
-observed hourly records (`vignette("validation")`).
+The differences above are exact consequences of each formula. Which method
+is closest to the truth depends on the shape of the real diurnal cycle, so on
+the climate, and on the data available (hourly, daily or monthly).
+
+* **Observed data, semi-arid north-central Chile** (30 CEAZA-Met stations,
+  [validation article](https://djwillichile.github.io/thermify/articles/validation-ceaza.html)):
+  with daily extremes every method overestimates, because long cool nights
+  put the daily mid-range above the true mean. The averaging method
+  (+5.4 %) and the Linvill reconstruction (`gdd_methods = "hourly"`,
+  +6.0 %, lowest absolute error) are the closest; triangle +7.2 %, sine
+  +8.4 %, modified average +12.2 % (base 10 degrees C, heat season).
+* **Synthetic data** ([article](https://djwillichile.github.io/thermify/articles/gdd-synthetic.html)):
+  with a less skewed diurnal cycle the triangle methods and the Linvill
+  reconstruction were within about 1 % and the averaging method
+  underestimated. The observed stations contradict this ranking for
+  semi-arid climates, which shows how strongly the answer depends on the
+  diurnal cycle.
+
+Until the central-south of Chile is validated, use the averaging method or
+the Linvill reconstruction in dry climates with large diurnal ranges, report
+which method was used, and treat differences of a few percent between
+methods as part of the uncertainty. The modified average reproduces a
+published convention (the "86/50" rule for maize) and should not be used as
+an estimate of the heat of the day.
 
 ## Ensembles
 

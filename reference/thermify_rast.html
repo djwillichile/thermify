@@ -83,7 +83,7 @@ rasters are never held for the whole extent.</p>
 <span>  base <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">10</span><span class="op">)</span>,</span>
 <span>  upper <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  cutoff <span class="op">=</span> <span class="st">"horizontal"</span>,</span>
-<span>  ch_methods <span class="op">=</span> <span class="st">"sine"</span>,</span>
+<span>  ch_methods <span class="op">=</span> <span class="st">"hourly"</span>,</span>
 <span>  ch_lower <span class="op">=</span> <span class="fl">0</span>,</span>
 <span>  ch_upper <span class="op">=</span> <span class="fl">7.2</span>,</span>
 <span>  hourly_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"linvill"</span>, <span class="st">"sine"</span><span class="op">)</span>,</span>
@@ -156,8 +156,11 @@ temperatures.</p></dd>
 
 
 <dt id="arg-ch-methods">ch_methods<a class="anchor" aria-label="anchor" href="#arg-ch-methods"></a></dt>
-<dd><p>Chilling-hours methods: <code>"sine"</code>, <code>"triangle"</code> (from
-daily extremes) and/or <code>"hourly"</code> (counted on hourly temperatures).</p></dd>
+<dd><p>Chilling-hours methods: <code>"hourly"</code> (the default;
+counted on observed or reconstructed hourly temperatures), and/or
+<code>"sine"</code>, <code>"triangle"</code> (analytical estimates from daily extremes). The
+default was <code>"sine"</code> before thermify 0.5.0; validation against observed
+hourly records showed that the hourly count is much less biased.</p></dd>
 
 
 <dt id="arg-ch-lower-ch-upper">ch_lower, ch_upper<a class="anchor" aria-label="anchor" href="#arg-ch-lower-ch-upper"></a></dt>

@@ -133,12 +133,14 @@ For semi-arid climates like north-central Chile:
 - **Chill from daily extremes**: use the Linvill reconstruction
   (`hourly_method = "linvill"`, the default) and avoid the sine,
   especially for Utah units. Utah units and chill portions always use
-  the hourly reconstruction, but chilling hours do not: in
+  the hourly reconstruction. For chilling hours,
   [`thermify()`](https://djwillichile.github.io/thermify/reference/thermify.md)
   and
   [`thermify_rast()`](https://djwillichile.github.io/thermify/reference/thermify_rast.md)
-  set `ch_methods = "hourly"`, because the default `ch_methods = "sine"`
-  gives the analytical sine estimate (-9 % here).
+  count on the hourly reconstruction by default
+  (`ch_methods = "hourly"`, since thermify 0.5.0); the analytical
+  `ch_methods = "sine"`, the default in earlier versions, underestimates
+  them (-9 % here).
 - **Monthly climatologies**: chilling hours are underestimated by about
   a quarter; report them as approximate.
 - **WorldClim**: treat values in mountainous terrain with great caution

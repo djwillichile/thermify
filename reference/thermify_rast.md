@@ -26,7 +26,7 @@ thermify_rast(
   base = c(5, 10),
   upper = NULL,
   cutoff = "horizontal",
-  ch_methods = "sine",
+  ch_methods = "hourly",
   ch_lower = 0,
   ch_upper = 7.2,
   hourly_method = c("linvill", "sine"),
@@ -103,8 +103,11 @@ thermify_rast(
 
 - ch_methods:
 
-  Chilling-hours methods: `"sine"`, `"triangle"` (from daily extremes)
-  and/or `"hourly"` (counted on hourly temperatures).
+  Chilling-hours methods: `"hourly"` (the default; counted on observed
+  or reconstructed hourly temperatures), and/or `"sine"`, `"triangle"`
+  (analytical estimates from daily extremes). The default was `"sine"`
+  before thermify 0.5.0; validation against observed hourly records
+  showed that the hourly count is much less biased.
 
 - ch_lower, ch_upper:
 

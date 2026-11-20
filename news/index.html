@@ -50,6 +50,11 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="thermify-development-version">thermify (development version)<a class="anchor" aria-label="anchor" href="#thermify-development-version"></a></h2>
 <div class="section level3">
+<h3 id="breaking-changes-development-version">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-development-version"></a></h3>
+<ul><li>
+<code><a href="../reference/thermify.html">thermify()</a></code> and <code><a href="../reference/thermify_rast.html">thermify_rast()</a></code> now count chilling hours on the hourly temperatures by default (<code>ch_methods = "hourly"</code>, from observed or reconstructed hourly series) instead of the analytical sine estimate from daily extremes (<code>"sine"</code>). In the CEAZA-Met validation the hourly count (Linvill reconstruction) was within 1 % of the observed chilling hours, against -9 % for the sine estimate. Results keyed <code>ch_sine</code> are now <code>ch_hourly</code>; set <code>ch_methods = "sine"</code> to keep the previous output. A note is shown once per session when the default is used (<a href="https://github.com/djwillichile/thermify/issues/43" class="external-link">#43</a>).</li>
+</ul></div>
+<div class="section level3">
 <h3 id="new-features-development-version">New features<a class="anchor" aria-label="anchor" href="#new-features-development-version"></a></h3>
 <ul><li>
 <code><a href="../reference/worldclim_future_region.html">worldclim_future_region()</a></code> reads WorldClim 2.1 downscaled CMIP6 projections (monthly <code>tmin</code>, <code>tmax</code>, <code>prec</code> at 30 arc-seconds) for a region, reading only the bytes of the region from the global files (about 5 GB each) and caching the result. <code>worldclim_cmip6_gcms</code> lists the available global climate models.</li>
@@ -61,9 +66,10 @@
 </ul></div>
 <div class="section level3">
 <h3 id="documentation-development-version">Documentation<a class="anchor" aria-label="anchor" href="#documentation-development-version"></a></h3>
-<ul><li><p>New article “Projected change of thermal indices: WorldClim CMIP6”: change of degree-days, chilling hours, Utah units and chill portions by 2041-2060 (14 GCMs, SSP2-4.5 and SSP5-8.5) over the province of Cauquenes, and at 29 CEAZA-Met stations with a delta method applied to the observed hourly records. Scripts in <code>data-raw/climate-change/</code>.</p></li>
-<li><p>New article “Validation with observed hourly temperature: CEAZA-Met network” with the results of the 30-station validation, per-station figures and practical guidance; <code><a href="../articles/validation.html">vignette("validation")</a></code> summarises them.</p></li>
-<li><p><code><a href="../articles/gdd-methods.html">vignette("gdd-methods")</a></code> (“Which method?”) and the synthetic comparison article are updated: the observed stations contradict the synthetic ranking of degree-day methods in semi-arid climates.</p></li>
+<ul><li>New article “Projected change of thermal indices: WorldClim CMIP6”: change of degree-days, chilling hours, Utah units and chill portions by 2041-2060 (14 GCMs, SSP2-4.5 and SSP5-8.5) over the province of Cauquenes, and at 29 CEAZA-Met stations with a delta method applied to the observed hourly records. Scripts in <code>data-raw/climate-change/</code>.</li>
+<li>New article “Validation with observed hourly temperature: CEAZA-Met network” with the results of the 30-station validation, per-station figures and practical guidance; <code><a href="../articles/validation.html">vignette("validation")</a></code> summarises them.</li>
+<li>
+<code><a href="../articles/gdd-methods.html">vignette("gdd-methods")</a></code> (“Which method?”) and the synthetic comparison article are updated: the observed stations contradict the synthetic ranking of degree-day methods in semi-arid climates.</li>
 </ul></div>
 <div class="section level3">
 <h3 id="validation-development-version">Validation<a class="anchor" aria-label="anchor" href="#validation-development-version"></a></h3>

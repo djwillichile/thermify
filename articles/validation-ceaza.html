@@ -370,11 +370,11 @@ to reproduce a published convention.</li>
 <strong>Chill from daily extremes</strong>: use the Linvill
 reconstruction (<code>hourly_method = "linvill"</code>, the default) and
 avoid the sine, especially for Utah units. Utah units and chill portions
-always use the hourly reconstruction, but chilling hours do not: in
-<code><a href="../reference/thermify.html">thermify()</a></code> and <code><a href="../reference/thermify_rast.html">thermify_rast()</a></code> set
-<code>ch_methods = "hourly"</code>, because the default
-<code>ch_methods = "sine"</code> gives the analytical sine estimate (-9
-% here).</li>
+always use the hourly reconstruction. For chilling hours,
+<code><a href="../reference/thermify.html">thermify()</a></code> and <code><a href="../reference/thermify_rast.html">thermify_rast()</a></code> count on the
+hourly reconstruction by default (<code>ch_methods = "hourly"</code>,
+since thermify 0.5.0); the analytical <code>ch_methods = "sine"</code>,
+the default in earlier versions, underestimates them (-9 % here).</li>
 <li>
 <strong>Monthly climatologies</strong>: chilling hours are
 underestimated by about a quarter; report them as approximate.</li>

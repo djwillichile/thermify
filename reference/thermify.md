@@ -24,7 +24,7 @@ thermify(
   base = c(5, 10),
   upper = NULL,
   cutoff = "horizontal",
-  ch_methods = "sine",
+  ch_methods = "hourly",
   ch_lower = 0,
   ch_upper = 7.2,
   hourly_method = c("linvill", "sine"),
@@ -101,8 +101,11 @@ thermify(
 
 - ch_methods:
 
-  Chilling-hours methods: `"sine"`, `"triangle"` (from daily extremes)
-  and/or `"hourly"` (counted on hourly temperatures).
+  Chilling-hours methods: `"hourly"` (the default; counted on observed
+  or reconstructed hourly temperatures), and/or `"sine"`, `"triangle"`
+  (analytical estimates from daily extremes). The default was `"sine"`
+  before thermify 0.5.0; validation against observed hourly records
+  showed that the hourly count is much less biased.
 
 - ch_lower, ch_upper:
 
@@ -159,6 +162,7 @@ tmax <- c(29.6, 29.2, 26.5, 21.9, 17.2, 13.9, 13.6, 15.3, 17.9, 21.2,
           24.9, 28.2)
 res <- thermify(tmin, tmax, input = "monthly", latitude = -35.97,
                 temporal = "native")
+#> `ch_methods` now defaults to "hourly" (thermify 0.5.0). Set `ch_methods = "sine"` for the previous estimate. This message is shown once per session.
 res
 #> <thermify> monthly input, 365 days (climatological cycle)
 #> Densification: pchip_mp via native (max |monthly mean error| = 4.4e-16 degC)
@@ -172,8 +176,8 @@ res
 #>   gdd_single_sine_b5      annual 3409.8    degC day
 #>  gdd_single_sine_b10      season 1724.6    degC day
 #>  gdd_single_sine_b10      annual 1915.4    degC day
-#>              ch_sine      season 1073.9           h
-#>              ch_sine      annual 1462.3           h
+#>            ch_hourly      season 1307.0           h
+#>            ch_hourly      annual 1669.0           h
 #>              cu_utah      season 1867.0 chill units
 #>           cp_dynamic      season   81.8    portions
 head(res$daily)
@@ -184,11 +188,11 @@ head(res$daily)
 #> 4 2023-01-04   4     1 11.24460 29.41574       15.33017        10.33017
 #> 5 2023-01-05   5     1 11.27949 29.45810       15.36879        10.36879
 #> 6 2023-01-06   6     1 11.31219 29.49765       15.40492        10.40492
-#>   gdd_single_sine_b5 gdd_single_sine_b10 ch_sine cu_utah cp_dynamic
-#> 1           15.20102            10.20102       0      NA         NA
-#> 2           15.24612            10.24612       0      NA         NA
-#> 3           15.28923            10.28923       0      NA         NA
-#> 4           15.33017            10.33017       0      NA         NA
-#> 5           15.36879            10.36879       0      NA         NA
-#> 6           15.40492            10.40492       0      NA         NA
+#>   gdd_single_sine_b5 gdd_single_sine_b10 ch_hourly cu_utah cp_dynamic
+#> 1           15.20102            10.20102         0      NA         NA
+#> 2           15.24612            10.24612         0      NA         NA
+#> 3           15.28923            10.28923         0      NA         NA
+#> 4           15.33017            10.33017         0      NA         NA
+#> 5           15.36879            10.36879         0      NA         NA
+#> 6           15.40492            10.40492         0      NA         NA
 ```

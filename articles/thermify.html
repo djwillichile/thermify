@@ -129,6 +129,7 @@ take <code>temperature</code>; monthly workflows are selected with
 <span><span class="va">res</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/thermify.html">thermify</a></span><span class="op">(</span><span class="va">tmin_m</span>, <span class="va">tmax_m</span>, input <span class="op">=</span> <span class="st">"monthly"</span>, latitude <span class="op">=</span> <span class="op">-</span><span class="fl">35.97</span>,</span>
 <span>                temporal <span class="op">=</span> <span class="st">"native"</span>, gdd_methods <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"average"</span>, <span class="st">"single_sine"</span><span class="op">)</span>,</span>
 <span>                base <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; `ch_methods` now defaults to "hourly" (thermify 0.5.0). Set `ch_methods = "sine"` for the previous estimate. This message is shown once per session.</span></span>
 <span><span class="va">res</span></span>
 <span><span class="co">#&gt; &lt;thermify&gt; monthly input, 365 days (climatological cycle)</span></span>
 <span><span class="co">#&gt; Densification: pchip_mp via native (max |monthly mean error| = 4.4e-16 degC)</span></span>
@@ -142,8 +143,8 @@ take <code>temperature</code>; monthly workflows are selected with
 <span><span class="co">#&gt;   gdd_single_sine_b5      annual 3409.8    degC day</span></span>
 <span><span class="co">#&gt;  gdd_single_sine_b10      season 1724.6    degC day</span></span>
 <span><span class="co">#&gt;  gdd_single_sine_b10      annual 1915.4    degC day</span></span>
-<span><span class="co">#&gt;              ch_sine      season 1073.9           h</span></span>
-<span><span class="co">#&gt;              ch_sine      annual 1462.3           h</span></span>
+<span><span class="co">#&gt;            ch_hourly      season 1307.0           h</span></span>
+<span><span class="co">#&gt;            ch_hourly      annual 1669.0           h</span></span>
 <span><span class="co">#&gt;              cu_utah      season 1867.0 chill units</span></span>
 <span><span class="co">#&gt;           cp_dynamic      season   81.8    portions</span></span></code></pre></div>
 <p>The <code>daily</code>, <code>hourly</code> and <code>summary</code>

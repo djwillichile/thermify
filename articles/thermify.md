@@ -56,6 +56,7 @@ tmax_m <- c(29.6, 29.2, 26.5, 21.9, 17.2, 13.9, 13.6, 15.3, 17.9, 21.2,
 res <- thermify(tmin_m, tmax_m, input = "monthly", latitude = -35.97,
                 temporal = "native", gdd_methods = c("average", "single_sine"),
                 base = c(5, 10))
+#> `ch_methods` now defaults to "hourly" (thermify 0.5.0). Set `ch_methods = "sine"` for the previous estimate. This message is shown once per session.
 res
 #> <thermify> monthly input, 365 days (climatological cycle)
 #> Densification: pchip_mp via native (max |monthly mean error| = 4.4e-16 degC)
@@ -69,8 +70,8 @@ res
 #>   gdd_single_sine_b5      annual 3409.8    degC day
 #>  gdd_single_sine_b10      season 1724.6    degC day
 #>  gdd_single_sine_b10      annual 1915.4    degC day
-#>              ch_sine      season 1073.9           h
-#>              ch_sine      annual 1462.3           h
+#>            ch_hourly      season 1307.0           h
+#>            ch_hourly      annual 1669.0           h
 #>              cu_utah      season 1867.0 chill units
 #>           cp_dynamic      season   81.8    portions
 ```

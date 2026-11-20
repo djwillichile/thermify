@@ -11,9 +11,8 @@ tempify_available()
 }
 \description{
 Checks that \code{reticulate} is installed and that the active Python
-environment can import \code{tempify}. With \code{reticulate} (>= 1.41), thermify
-declares tempify when it is loaded, so the first call builds and caches a
-Python environment with it; see \code{\link[=install_tempify]{install_tempify()}} for the alternatives
-and how to disable this. A Python chosen with \code{RETICULATE_PYTHON} or
-\code{reticulate::use_virtualenv()} is respected.
+environment can import \code{tempify}. Python is not started, and nothing is
+downloaded, unless a Python was chosen by the user, the environment of
+\code{\link[=install_tempify]{install_tempify()}} exists, or the automatic setup was enabled with
+\code{options(thermify.tempify_auto = TRUE)}; see \code{\link[=install_tempify]{install_tempify()}}.
 }

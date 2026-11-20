@@ -11,21 +11,15 @@ test_that("the default requirement installs tempify from GitHub", {
   expect_identical(tempify_requirement(), tempify_default_requirement())
 })
 
-test_that("the automatic setup is off unless someone is there to see it", {
-  expect_true(tempify_auto_default("", session = TRUE, checking = FALSE))
-  # Scripts and package checks (CRAN) never download Python by default.
-  expect_false(tempify_auto_default("", session = FALSE,
-                                    checking = FALSE))
-  expect_false(tempify_auto_default("", session = TRUE, checking = TRUE))
-  # The environment variable forces it either way.
-  expect_true(tempify_auto_default("true", session = FALSE,
-                                   checking = TRUE))
-  expect_true(tempify_auto_default("YES", session = FALSE,
-                                   checking = FALSE))
-  expect_false(tempify_auto_default("false", session = TRUE,
-                                    checking = FALSE))
-  expect_false(tempify_auto_default("0", session = TRUE,
-                                    checking = FALSE))
+test_that("the automatic setup is off unless the user asks for it", {
+  # Interactive or not, nothing is downloaded by default (CRAN policy).
+  expect_false(tempify_auto_default(""))
+  expect_false(tempify_auto_default("false"))
+  expect_false(tempify_auto_default("0"))
+  # The environment variable turns it on.
+  expect_true(tempify_auto_default("true"))
+  expect_true(tempify_auto_default("YES"))
+  expect_true(tempify_auto_default("1"))
 })
 
 test_that("tempify_available() never starts Python when none is set up", {

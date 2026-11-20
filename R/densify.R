@@ -260,11 +260,10 @@ densify_native <- function(m, year, method) {
 #' Is the tempify Python package available?
 #'
 #' Checks that `reticulate` is installed and that the active Python
-#' environment can import `tempify`. With `reticulate` (>= 1.41), thermify
-#' declares tempify when it is loaded, so the first call builds and caches a
-#' Python environment with it; see [install_tempify()] for the alternatives
-#' and how to disable this. A Python chosen with `RETICULATE_PYTHON` or
-#' `reticulate::use_virtualenv()` is respected.
+#' environment can import `tempify`. Python is not started, and nothing is
+#' downloaded, unless a Python was chosen by the user, the environment of
+#' [install_tempify()] exists, or the automatic setup was enabled with
+#' `options(thermify.tempify_auto = TRUE)`; see [install_tempify()].
 #'
 #' @return `TRUE` or `FALSE`.
 #' @export
@@ -337,7 +336,9 @@ densify_tempify <- function(m, year, method) {
   if (!tempify_available()) {
     stop("The tempify engine needs the Python package tempify ",
          "(https://github.com/djwillichile/tempify) reachable through ",
-         "reticulate. Use engine = \"native\" to run without Python.",
+         "reticulate: run install_tempify() once, or set ",
+         "options(thermify.tempify_auto = TRUE) before loading thermify. ",
+         "Use engine = \"native\" to run without Python.",
          call. = FALSE)
   }
   interp <- reticulate::import("tempify.interpolation", convert = FALSE)

@@ -1,5 +1,17 @@
 # thermify (development version)
 
+## Changes
+
+* The automatic installation of the tempify Python backend is now opt-in:
+  thermify never downloads Python or tempify unless the user asks for it,
+  with `install_tempify()` or with `options(thermify.tempify_auto = TRUE)`
+  (or `THERMIFY_TEMPIFY_AUTO=true`) before loading the package. Before, it
+  was on by default in interactive sessions. A Python chosen by the user and
+  an existing `install_tempify()` environment are used as before, and
+  without tempify all computations use the equivalent native R engine. The
+  error raised when the tempify engine is requested but unavailable now
+  says how to install it.
+
 # thermify 0.5.0
 
 First release validated against observed hourly temperatures (30 CEAZA-Met

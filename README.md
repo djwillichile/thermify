@@ -54,11 +54,10 @@ If `remotes` is missing, run `install.packages("remotes")` first.
 
 `library(thermify)` also attaches `terra`, so `rast()`, `vect()`, `plot()`
 and the other `terra` functions are available directly. The optional
-[tempify](https://github.com/djwillichile/tempify) backend is set up
-automatically in interactive sessions when `reticulate` (>= 1.41) is
-installed: the first use builds and caches a Python environment with it (see `install_tempify()` for a
-persistent environment). Without it, `thermify` uses an equivalent native R
-engine.
+[tempify](https://github.com/djwillichile/tempify) backend is installed
+only when you ask for it, with `install_tempify()` or
+`options(thermify.tempify_auto = TRUE)` (see `?install_tempify`). Without
+it, `thermify` uses an equivalent native R engine.
 
 ## Quick start
 

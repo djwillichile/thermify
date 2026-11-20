@@ -106,11 +106,11 @@ mean-preserving interpolation (`pchip_mp`), reconstructs hourly temperatures
 (1 September - 30 April) and the chill season (1 May - 31 August).
 
 The tutorial uses the native R engine (`temporal = "native"`), which
-reproduces tempify to within 1e-13 degC. With `reticulate` installed,
-`temporal = "auto"` uses the
-[tempify](https://github.com/djwillichile/tempify) Python package instead;
-it is set up automatically the first time (see `install_tempify()` and
-`vignette("tempify-integration")`).
+reproduces tempify to within 1e-13 degC. Once the
+[tempify](https://github.com/djwillichile/tempify) Python package is
+installed (`install_tempify()`, or `options(thermify.tempify_auto = TRUE)`;
+see `vignette("tempify-integration")`), `temporal = "auto"` uses it
+instead.
 
 ```{r town}
 town <- vect(cbind(-72.3225, -35.9671), crs = "EPSG:4326")

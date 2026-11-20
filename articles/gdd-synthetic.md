@@ -133,14 +133,21 @@ asymmetric diurnal profile corrects it.
 
 ![](gdd-synthetic_files/figure-html/monthly-profile-1.png)
 
-At the dryland site, with daily extremes and base 10 degrees C, the
-methods agree most in midsummer (December-February), when most of the
-day is above the base. From March to November the minimum is usually
+Dryland site, daily extremes, base 10 degrees C; mean of 30 years. Top:
+monthly degree-days of the hourly reference. Bottom: mean bias of each
+method. The shaded months form the heat season used in the tables above.
+The double sine and double triangle methods are omitted because they are
+almost identical to the single ones.
+
+The methods agree most in midsummer (December-February), when most of
+the day is above the base. From March to November the minimum is usually
 below 10 degrees C while the maximum is above it, and the methods
 diverge: the averaging method underestimates and the modified average
 overestimates by 20-30 degrees C day per month, while the triangle
 methods stay within about 7 and the Linvill reconstruction within 3
-degrees C day.
+degrees C day. The top panel puts these numbers in context: from May to
+August the reference total is only 26-59 degrees C day per month, so the
+same absolute bias is a much larger relative error than in summer.
 
 ## Practical guidance
 

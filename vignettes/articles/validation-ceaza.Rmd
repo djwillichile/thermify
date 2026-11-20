@@ -204,8 +204,11 @@ For semi-arid climates like north-central Chile:
   expect an overestimate of about 5-6 %. Avoid the modified average except
   to reproduce a published convention.
 * **Chill from daily extremes**: use the Linvill reconstruction
-  (`hourly_method = "linvill"`, the default); avoid the sine, especially for
-  Utah units.
+  (`hourly_method = "linvill"`, the default) and avoid the sine, especially
+  for Utah units. Utah units and chill portions always use the hourly
+  reconstruction, but chilling hours do not: in `thermify()` and
+  `thermify_rast()` set `ch_methods = "hourly"`, because the default
+  `ch_methods = "sine"` gives the analytical sine estimate (-9 % here).
 * **Monthly climatologies**: chilling hours are underestimated by about a
   quarter; report them as approximate.
 * **WorldClim**: treat values in mountainous terrain with great caution and,

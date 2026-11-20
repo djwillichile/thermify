@@ -1,0 +1,3 @@
+thermify 0.4.0.9000
+stations: 30
+created: 2026-11-20 14:20:26

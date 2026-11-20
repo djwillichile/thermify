@@ -19,3 +19,5 @@
   protocol](https://djwillichile.github.io/thermify/articles/validation.md):
 - [Validation with observed hourly temperature: CEAZA-Met
   network](https://djwillichile.github.io/thermify/articles/validation-ceaza.md):
+- [Projected change of thermal indices: WorldClim
+  CMIP6](https://djwillichile.github.io/thermify/articles/climate-change.md):

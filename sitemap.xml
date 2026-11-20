@@ -6,6 +6,7 @@
 <url><loc>https://djwillichile.github.io/thermify/LICENSE.html</loc></url>
 <url><loc>https://djwillichile.github.io/thermify/articles/cauquenes.html</loc></url>
 <url><loc>https://djwillichile.github.io/thermify/articles/chill-models.html</loc></url>
+<url><loc>https://djwillichile.github.io/thermify/articles/climate-change.html</loc></url>
 <url><loc>https://djwillichile.github.io/thermify/articles/gdd-methods.html</loc></url>
 <url><loc>https://djwillichile.github.io/thermify/articles/gdd-synthetic.html</loc></url>
 <url><loc>https://djwillichile.github.io/thermify/articles/index.html</loc></url>
@@ -46,6 +47,8 @@
 <url><loc>https://djwillichile.github.io/thermify/reference/utah_weights.html</loc></url>
 <url><loc>https://djwillichile.github.io/thermify/reference/validate_station.html</loc></url>
 <url><loc>https://djwillichile.github.io/thermify/reference/validation_metrics.html</loc></url>
+<url><loc>https://djwillichile.github.io/thermify/reference/worldclim_cmip6_gcms.html</loc></url>
+<url><loc>https://djwillichile.github.io/thermify/reference/worldclim_future_region.html</loc></url>
 <url><loc>https://djwillichile.github.io/thermify/reference/worldclim_monthly.html</loc></url>
 <url><loc>https://djwillichile.github.io/thermify/reference/worldclim_region.html</loc></url>
 </urlset>

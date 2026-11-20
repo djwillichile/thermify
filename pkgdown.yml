@@ -4,13 +4,14 @@ pkgdown_sha: ~
 articles:
   cauquenes: cauquenes.html
   chill-models: chill-models.html
+  articles/climate-change: climate-change.html
   gdd-methods: gdd-methods.html
   articles/gdd-synthetic: gdd-synthetic.html
   tempify-integration: tempify-integration.html
   thermify: thermify.html
   articles/validation-ceaza: validation-ceaza.html
   validation: validation.html
-last_built: 2026-11-20T15:19Z
+last_built: 2026-11-20T16:52Z
 urls:
   reference: https://djwillichile.github.io/thermify/reference
   article: https://djwillichile.github.io/thermify/articles

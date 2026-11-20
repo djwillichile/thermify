@@ -70,6 +70,10 @@
   : Square study window around a point
 - [`worldclim_region()`](https://djwillichile.github.io/thermify/reference/worldclim_region.md)
   : Read WorldClim 2.1 at 30 arc-seconds for a region only
+- [`worldclim_future_region()`](https://djwillichile.github.io/thermify/reference/worldclim_future_region.md)
+  : Read WorldClim 2.1 CMIP6 future climate for a region
+- [`worldclim_cmip6_gcms`](https://djwillichile.github.io/thermify/reference/worldclim_cmip6_gcms.md)
+  : Global climate models of the WorldClim 2.1 CMIP6 projections
 - [`worldclim_monthly()`](https://djwillichile.github.io/thermify/reference/worldclim_monthly.md)
   : Download (or reuse) WorldClim 2.1 monthly temperature normals
 - [`check_monthly_climate()`](https://djwillichile.github.io/thermify/reference/check_monthly_climate.md)

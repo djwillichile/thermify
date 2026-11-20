@@ -53,8 +53,9 @@ normals; the daily maximum occurs around 13:00 and the minimum around
 
 ![](gdd-synthetic_files/figure-html/bias-b10-1.png)
 
-Each point is one site; the line spans the four sites. Dashed lines mark
-±2 %.
+Each method has three rows, one per level of information; each symbol is
+a site and the line spans the four sites. The grey band marks ±2 %.
+Methods are ordered by their bias with daily extremes.
 
 | method           | coast | dryland | valley | foothills |
 |:-----------------|:------|:--------|:-------|:----------|

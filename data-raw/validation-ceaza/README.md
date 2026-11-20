@@ -47,6 +47,28 @@ observed hourly series (`results/ceaza-metrics.csv`).
 | Utah chill units | hourly Linvill | -9.3 % | hourly sine -43.6 % |
 | Chill portions | hourly Linvill | -4.3 % | hourly sine -16.3 % |
 
+Degree-days (base 10 degrees C) for every method, from daily extremes (264
+heat seasons, 30 stations):
+
+| Method | Relative bias | MAE (degC day) |
+|---|---|---|
+| average | +5.4 % | 100.7 |
+| hourly Linvill | +6.0 % | 97.0 |
+| single triangle | +7.20 % | 116.6 |
+| double triangle | +7.23 % | 117.2 |
+| single sine | +8.36 % | 135.3 |
+| double sine | +8.39 % | 135.7 |
+| modified average | +12.2 % | 196.5 |
+
+The double methods split the day into a rising half (minimum to maximum of
+the same day) and a falling half (maximum to the **next day's** minimum).
+They differ from the single methods only when consecutive minima differ,
+for example when a front passes; those differences change sign from day to
+day and cancel over a season of about 240 days, so the season totals differ
+by about 0.03 percentage points. The double methods can matter for short
+sums (a week, a month) or around abrupt air-mass changes, which this
+season-level validation does not assess.
+
 **From the station's monthly climatology (densified with `pchip_mp`)**:
 degree-days +4 to +10 %; chilling hours -25 to -29 %; Utah units -1 %
 (Linvill) to -41 % (sine); chill portions -11 % (Linvill) to -32 % (sine).

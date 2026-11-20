@@ -1,4 +1,4 @@
-# Projected change of agroclimatic thermal indices at 30 CEAZA-Met stations:
+# Projected change of agroclimatic thermal indices at the CEAZA-Met stations:
 # delta method on the observed hourly series.
 #
 # For each global climate model (GCM) and scenario, the monthly change of
@@ -94,6 +94,11 @@ rows <- list()
 for (i in seq_len(nrow(stations))) {
   code <- stations$station[i]
   message(sprintf("[%d/%d] %s", i, nrow(stations), stations$name[i]))
+  if (anyNA(c(wc_now$tmin[i, ], wc_now$tmax[i, ]))) {
+    # Shoreline stations can fall on a sea cell of WorldClim (no data).
+    message("  skipped: no WorldClim data at the station's cell")
+    next
+  }
   h <- readRDS(file.path(cache, paste0(code, ".rds")))
   base <- season_indices(h$time, h$prom)
   if (is.null(base)) next

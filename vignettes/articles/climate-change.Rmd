@@ -106,14 +106,16 @@ with older literature.
 
 ## CEAZA-Met stations (north-central Chile): delta method
 
-At the 30 stations of the [validation](validation-ceaza.html), each model's
+At 29 of the 30 stations of the [validation](validation-ceaza.html), each model's
 monthly change at the station's WorldClim cell (future minus 1970-2000) is
 applied to **every hour of the station's observed record**: the shift goes
 from the change of the minimum at the daily minimum to the change of the
 maximum at the daily maximum. The indices are then computed from the
 modified hourly series, season by season, exactly as the reference of the
 validation. This keeps the observed day-to-day and year-to-year variability,
-and the present-day baseline is the observed index.
+and the present-day baseline is the observed index. Punta de Choros is
+excluded: the station is on the shoreline and its WorldClim cell is sea
+(no data), so there is no model change to apply.
 
 A simpler variant, adding the change to the station's monthly climatology,
 is **not** used: monthly climatologies lose the cold nights, give zero chill

@@ -47,6 +47,15 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="thermify-development-version">thermify (development version)<a class="anchor" aria-label="anchor" href="#thermify-development-version"></a></h2>
+<div class="section level3">
+<h3 id="changes-development-version">Changes<a class="anchor" aria-label="anchor" href="#changes-development-version"></a></h3>
+<ul><li>
+<code><a href="../reference/validate_station.html">validate_station()</a></code> also evaluates degree-days computed on the hourly reconstructions from daily extremes (<code>"hourly_linvill"</code>, <code>"hourly_sine"</code>), at the daily, monthly and gridded levels.</li>
+</ul></div>
+<div class="section level3">
+<h3 id="validation-development-version">Validation<a class="anchor" aria-label="anchor" href="#validation-development-version"></a></h3>
+<ul><li>First empirical validation with observed hourly temperature: 30 stations of the CEAZA-Met network (Coquimbo and Atacama regions), with scripts in <code>data-raw/validation-ceaza/</code>. Only derived seasonal totals and metrics are stored in the repository; the hourly records stay with CEAZA.</li>
+</ul></div>
 </div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.4.0" id="thermify-040">thermify 0.4.0<a class="anchor" aria-label="anchor" href="#thermify-040"></a></h2>

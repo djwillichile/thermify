@@ -136,8 +136,9 @@ and why) and <code>quality</code> (from the station object).</p>
 
 <ul><li><p>level <code>"daily"</code>: daily extremes of the same station, with the analytical
 daily methods (GDD, chilling hours) and with hourly reconstructions
-(Linvill, sine) for chilling hours, Utah units and chill portions. This
-isolates the error of the diurnal model.</p></li>
+(Linvill, sine) for every index, including degree-hours (methods
+<code>"hourly_linvill"</code>, <code>"hourly_sine"</code>). This isolates the error of the
+diurnal model.</p></li>
 <li><p>level <code>"monthly"</code>: the station's own monthly climatology (mean daily
 extremes per calendar month over all valid days), densified with
 <code>pchip_mp</code>. This adds the loss of day-to-day variability and of

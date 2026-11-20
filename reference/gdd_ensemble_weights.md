@@ -36,8 +36,12 @@ gdd_ensemble_weights(
 
 - methods:
 
-  Member methods. `NULL` (default) uses every GDD method present at
-  `level`.
+  Member methods. `NULL` (default) uses every daily
+  [`degree_days()`](https://djwillichile.github.io/thermify/reference/degree_days.md)
+  method present at `level`; estimates from hourly reconstructions
+  (`"hourly_linvill"`, `"hourly_sine"`) are not members because they
+  cannot be computed by
+  [`degree_days()`](https://djwillichile.github.io/thermify/reference/degree_days.md).
 
 - scheme:
 

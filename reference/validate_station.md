@@ -85,8 +85,9 @@ station object).
 
 - level `"daily"`: daily extremes of the same station, with the
   analytical daily methods (GDD, chilling hours) and with hourly
-  reconstructions (Linvill, sine) for chilling hours, Utah units and
-  chill portions. This isolates the error of the diurnal model.
+  reconstructions (Linvill, sine) for every index, including
+  degree-hours (methods `"hourly_linvill"`, `"hourly_sine"`). This
+  isolates the error of the diurnal model.
 
 - level `"monthly"`: the station's own monthly climatology (mean daily
   extremes per calendar month over all valid days), densified with

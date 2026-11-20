@@ -113,6 +113,48 @@ degrees C, heat season). These results are synthetic and must be
 confirmed with observed hourly records
 ([`vignette("validation")`](https://djwillichile.github.io/thermify/articles/validation.md)).
 
+## Ensembles
+
+No single method is best everywhere, so thermify can combine them.
+[`gdd_ensemble_weights()`](https://djwillichile.github.io/thermify/reference/gdd_ensemble_weights.md)
+estimates the weights from
+[`validate_station()`](https://djwillichile.github.io/thermify/reference/validate_station.md)
+results, that is, from **observed** hourly records, with three schemes:
+
+- `"stacking"` (default): the non-negative weights that sum to one and
+  minimise the squared error. Methods with opposite biases, such as the
+  averaging (too low) and the sine (too high) methods, can be combined.
+- `"bma"`: Bayesian model averaging; weights follow each method’s
+  likelihood.
+- `"akaike"`: Akaike weights, $`w_k \propto \exp(-\Delta AIC_k / 2)`$.
+  The methods have no fitted parameters, so the AIC penalty is the same
+  for all of them and the weights are relative likelihoods: with many
+  seasons they tend to select one method rather than combine several.
+
+BMA and Akaike weights reward the single best method; stacking rewards
+the best combination. The fitted object reports cross-validated errors
+(leaving one station out); use the ensemble only when it beats the best
+single method in cross-validation.
+
+thermify ships no default weights. The weights below are illustrative
+only:
+
+``` r
+
+w <- c(average = 0.4, single_sine = 0.6)   # illustrative, not estimated
+gdd_ensemble(c(4, 8, 12), c(18, 24, 31), weights = w, base = 10)
+#>    ensemble        sd  min       max average single_sine
+#> 1  2.050567 0.8577841  1.0  2.750945     1.0    2.750945
+#> 2  6.182410 0.1489372  6.0  6.304017     6.0    6.304017
+#> 3 11.500000 0.0000000 11.5 11.500000    11.5   11.500000
+```
+
+[`gdd_ensemble()`](https://djwillichile.github.io/thermify/reference/gdd_ensemble.md)
+returns the members and their spread (`sd`, `min`, `max`) as a measure
+of method uncertainty. With estimated weights, use
+`degree_days(method = "ensemble", weights = w)` or
+`thermify(..., gdd_methods = "ensemble", gdd_weights = w)`.
+
 ## References
 
 Baskerville & Emin (1969); Lindsey & Newman (1956); Sevacherian et al.

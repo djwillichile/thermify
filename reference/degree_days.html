@@ -65,11 +65,12 @@ threshold.</p>
 <span>  <span class="va">tmin</span>,</span>
 <span>  <span class="va">tmax</span>,</span>
 <span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"single_sine"</span>, <span class="st">"average"</span>, <span class="st">"modified_average"</span>, <span class="st">"single_triangle"</span>,</span>
-<span>    <span class="st">"double_sine"</span>, <span class="st">"double_triangle"</span><span class="op">)</span>,</span>
+<span>    <span class="st">"double_sine"</span>, <span class="st">"double_triangle"</span>, <span class="st">"ensemble"</span><span class="op">)</span>,</span>
 <span>  base <span class="op">=</span> <span class="fl">10</span>,</span>
 <span>  upper <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  cutoff <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"horizontal"</span>, <span class="st">"vertical"</span>, <span class="st">"intermediate"</span><span class="op">)</span>,</span>
-<span>  tmin_next <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  tmin_next <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  weights <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -84,8 +85,8 @@ threshold.</p>
 
 <dt id="arg-method">method<a class="anchor" aria-label="anchor" href="#arg-method"></a></dt>
 <dd><p>One of <code>"single_sine"</code> (default), <code>"average"</code>,
-<code>"modified_average"</code>, <code>"single_triangle"</code>, <code>"double_sine"</code> or
-<code>"double_triangle"</code>.</p></dd>
+<code>"modified_average"</code>, <code>"single_triangle"</code>, <code>"double_sine"</code>,
+<code>"double_triangle"</code> or <code>"ensemble"</code>.</p></dd>
 
 
 <dt id="arg-base">base<a class="anchor" aria-label="anchor" href="#arg-base"></a></dt>
@@ -104,6 +105,12 @@ threshold.</p>
 <dt id="arg-tmin-next">tmin_next<a class="anchor" aria-label="anchor" href="#arg-tmin-next"></a></dt>
 <dd><p>Optional numeric vector with the minimum temperature of the
 following day, used only by double methods.</p></dd>
+
+
+<dt id="arg-weights">weights<a class="anchor" aria-label="anchor" href="#arg-weights"></a></dt>
+<dd><p>Ensemble weights for <code>method = "ensemble"</code>: an object from
+<code><a href="gdd_ensemble_weights.html">gdd_ensemble_weights()</a></code> or a named numeric vector (see
+<code><a href="gdd_ensemble.html">gdd_ensemble()</a></code>). Ignored by the other methods.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -129,6 +136,10 @@ extremes. Raising \(T_{min}\) to \(T_b\) counts days whose mean is
 below the base when \(T_{max} &gt; T_b\), unlike <code>"average"</code>. The bound
 on the extremes is the method's own upper-threshold rule, so only
 <code>cutoff = "horizontal"</code> is accepted.</p></li>
+<li><p><code>"ensemble"</code>: a weighted mean of the daily methods above, with weights
+estimated from observed data by <code><a href="gdd_ensemble_weights.html">gdd_ensemble_weights()</a></code> and passed in
+<code>weights</code>. There are no default weights. <code><a href="gdd_ensemble.html">gdd_ensemble()</a></code> also returns
+the members and their spread.</p></li>
 <li><p><code>"single_sine"</code>: a sine wave between <code>tmin</code> and <code>tmax</code> over 24 h
 (Baskerville &amp; Emin 1969).</p></li>
 <li><p><code>"single_triangle"</code>: a symmetric triangle between <code>tmin</code> and <code>tmax</code>

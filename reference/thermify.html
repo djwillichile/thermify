@@ -82,7 +82,8 @@ chill portions with explicit accumulation periods.</p>
 <span>  ch_upper <span class="op">=</span> <span class="fl">7.2</span>,</span>
 <span>  hourly_method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"linvill"</span>, <span class="st">"sine"</span><span class="op">)</span>,</span>
 <span>  chill_period <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"05-01"</span>, <span class="st">"08-31"</span><span class="op">)</span>,</span>
-<span>  heat_period <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"09-01"</span>, <span class="st">"04-30"</span><span class="op">)</span></span>
+<span>  heat_period <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"09-01"</span>, <span class="st">"04-30"</span><span class="op">)</span>,</span>
+<span>  gdd_weights <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -138,8 +139,9 @@ hourly model.</p></dd>
 <dt id="arg-gdd-methods">gdd_methods<a class="anchor" aria-label="anchor" href="#arg-gdd-methods"></a></dt>
 <dd><p>GDD methods: <code>"average"</code>, <code>"modified_average"</code>,
 <code>"single_sine"</code>, <code>"single_triangle"</code>, <code>"double_sine"</code>,
-<code>"double_triangle"</code> (see <code><a href="degree_days.html">degree_days()</a></code>) or <code>"hourly"</code>, which uses
-<code><a href="degree_hours.html">degree_hours()</a></code> on observed or reconstructed hourly temperatures.</p></dd>
+<code>"double_triangle"</code>, <code>"ensemble"</code> (see <code><a href="degree_days.html">degree_days()</a></code>) or <code>"hourly"</code>,
+which uses <code><a href="degree_hours.html">degree_hours()</a></code> on observed or reconstructed hourly
+temperatures.</p></dd>
 
 
 <dt id="arg-base">base<a class="anchor" aria-label="anchor" href="#arg-base"></a></dt>
@@ -167,6 +169,13 @@ daily extremes) and/or <code>"hourly"</code> (counted on hourly temperatures).</
 <dd><p>Accumulation windows as
 <code>c("MM-DD", "MM-DD")</code>. Defaults are southern-hemisphere conventions:
 chill from 1 May to 31 August, heat from 1 September to 30 April.</p></dd>
+
+
+<dt id="arg-gdd-weights">gdd_weights<a class="anchor" aria-label="anchor" href="#arg-gdd-weights"></a></dt>
+<dd><p>Weights for <code>gdd_methods = "ensemble"</code>, from
+<code><a href="gdd_ensemble_weights.html">gdd_ensemble_weights()</a></code> (estimated from observed data for the same
+base and upper threshold) or a named numeric vector. Required by the
+ensemble; there are no default weights.</p></dd>
 
 </dl></div>
     <div class="section level2">

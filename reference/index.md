@@ -6,6 +6,10 @@
   : Growing degree-days from daily minimum and maximum temperatures
 - [`degree_hours()`](https://djwillichile.github.io/thermify/reference/degree_hours.md)
   : Degree-hours from hourly temperatures
+- [`gdd_ensemble()`](https://djwillichile.github.io/thermify/reference/gdd_ensemble.md)
+  : Growing degree-days from an ensemble of methods
+- [`gdd_ensemble_weights()`](https://djwillichile.github.io/thermify/reference/gdd_ensemble_weights.md)
+  : Ensemble weights for growing degree-day methods
 
 ## Chill models
 

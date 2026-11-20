@@ -14,6 +14,22 @@
   and
   [`validate_station()`](https://djwillichile.github.io/thermify/reference/validate_station.md)
   through `gdd_methods`.
+- GDD ensembles:
+  [`gdd_ensemble_weights()`](https://djwillichile.github.io/thermify/reference/gdd_ensemble_weights.md)
+  estimates the weights of a combination of daily GDD methods from
+  [`validate_station()`](https://djwillichile.github.io/thermify/reference/validate_station.md)
+  results with observed hourly data, by stacking (default), Bayesian
+  model averaging or Akaike weights, and assesses it by
+  leave-one-station-out cross-validation.
+  `degree_days(method = "ensemble")`,
+  [`gdd_ensemble()`](https://djwillichile.github.io/thermify/reference/gdd_ensemble.md)
+  (weighted mean plus the spread between members) and
+  `gdd_methods = "ensemble"` with `gdd_weights` in
+  [`thermify()`](https://djwillichile.github.io/thermify/reference/thermify.md)
+  and
+  [`thermify_rast()`](https://djwillichile.github.io/thermify/reference/thermify_rast.md)
+  apply the weights. No default weights are shipped: they depend on the
+  climate, the base temperature and the data available.
 
 ### Documentation
 

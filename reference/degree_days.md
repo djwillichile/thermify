@@ -12,11 +12,12 @@ degree_days(
   tmin,
   tmax,
   method = c("single_sine", "average", "modified_average", "single_triangle",
-    "double_sine", "double_triangle"),
+    "double_sine", "double_triangle", "ensemble"),
   base = 10,
   upper = NULL,
   cutoff = c("horizontal", "vertical", "intermediate"),
-  tmin_next = NULL
+  tmin_next = NULL,
+  weights = NULL
 )
 ```
 
@@ -30,7 +31,8 @@ degree_days(
 - method:
 
   One of `"single_sine"` (default), `"average"`, `"modified_average"`,
-  `"single_triangle"`, `"double_sine"` or `"double_triangle"`.
+  `"single_triangle"`, `"double_sine"`, `"double_triangle"` or
+  `"ensemble"`.
 
 - base:
 
@@ -49,6 +51,14 @@ degree_days(
 
   Optional numeric vector with the minimum temperature of the following
   day, used only by double methods.
+
+- weights:
+
+  Ensemble weights for `method = "ensemble"`: an object from
+  [`gdd_ensemble_weights()`](https://djwillichile.github.io/thermify/reference/gdd_ensemble_weights.md)
+  or a named numeric vector (see
+  [`gdd_ensemble()`](https://djwillichile.github.io/thermify/reference/gdd_ensemble.md)).
+  Ignored by the other methods.
 
 ## Value
 
@@ -74,6 +84,13 @@ expressions; no hourly temperatures are generated.
   \\T\_{max} \> T_b\\, unlike `"average"`. The bound on the extremes is
   the method's own upper-threshold rule, so only `cutoff = "horizontal"`
   is accepted.
+
+- `"ensemble"`: a weighted mean of the daily methods above, with weights
+  estimated from observed data by
+  [`gdd_ensemble_weights()`](https://djwillichile.github.io/thermify/reference/gdd_ensemble_weights.md)
+  and passed in `weights`. There are no default weights.
+  [`gdd_ensemble()`](https://djwillichile.github.io/thermify/reference/gdd_ensemble.md)
+  also returns the members and their spread.
 
 - `"single_sine"`: a sine wave between `tmin` and `tmax` over 24 h
   (Baskerville & Emin 1969).

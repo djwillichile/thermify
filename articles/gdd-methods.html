@@ -243,6 +243,48 @@ season). These results are synthetic and must be confirmed with observed
 hourly records (<code><a href="../articles/validation.html">vignette("validation")</a></code>).</p>
 </div>
 <div class="section level2">
+<h2 id="ensembles">Ensembles<a class="anchor" aria-label="anchor" href="#ensembles"></a>
+</h2>
+<p>No single method is best everywhere, so thermify can combine them.
+<code><a href="../reference/gdd_ensemble_weights.html">gdd_ensemble_weights()</a></code> estimates the weights from
+<code><a href="../reference/validate_station.html">validate_station()</a></code> results, that is, from
+<strong>observed</strong> hourly records, with three schemes:</p>
+<ul>
+<li>
+<code>"stacking"</code> (default): the non-negative weights that sum
+to one and minimise the squared error. Methods with opposite biases,
+such as the averaging (too low) and the sine (too high) methods, can be
+combined.</li>
+<li>
+<code>"bma"</code>: Bayesian model averaging; weights follow each
+method’s likelihood.</li>
+<li>
+<code>"akaike"</code>: Akaike weights,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>w</mi><mi>k</mi></msub><mo>∝</mo><mrow><mi mathvariant="normal">exp</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><mi>−</mi><mi mathvariant="normal">Δ</mi><mi>A</mi><mi>I</mi><msub><mi>C</mi><mi>k</mi></msub><mi>/</mi><mn>2</mn><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">w_k \propto \exp(-\Delta AIC_k / 2)</annotation></semantics></math>.
+The methods have no fitted parameters, so the AIC penalty is the same
+for all of them and the weights are relative likelihoods: with many
+seasons they tend to select one method rather than combine several.</li>
+</ul>
+<p>BMA and Akaike weights reward the single best method; stacking
+rewards the best combination. The fitted object reports cross-validated
+errors (leaving one station out); use the ensemble only when it beats
+the best single method in cross-validation.</p>
+<p>thermify ships no default weights. The weights below are illustrative
+only:</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">w</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>average <span class="op">=</span> <span class="fl">0.4</span>, single_sine <span class="op">=</span> <span class="fl">0.6</span><span class="op">)</span>   <span class="co"># illustrative, not estimated</span></span>
+<span><span class="fu"><a href="../reference/gdd_ensemble.html">gdd_ensemble</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">8</span>, <span class="fl">12</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">18</span>, <span class="fl">24</span>, <span class="fl">31</span><span class="op">)</span>, weights <span class="op">=</span> <span class="va">w</span>, base <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
+<span><span class="co">#&gt;    ensemble        sd  min       max average single_sine</span></span>
+<span><span class="co">#&gt; 1  2.050567 0.8577841  1.0  2.750945     1.0    2.750945</span></span>
+<span><span class="co">#&gt; 2  6.182410 0.1489372  6.0  6.304017     6.0    6.304017</span></span>
+<span><span class="co">#&gt; 3 11.500000 0.0000000 11.5 11.500000    11.5   11.500000</span></span></code></pre></div>
+<p><code><a href="../reference/gdd_ensemble.html">gdd_ensemble()</a></code> returns the members and their spread
+(<code>sd</code>, <code>min</code>, <code>max</code>) as a measure of
+method uncertainty. With estimated weights, use
+<code>degree_days(method = "ensemble", weights = w)</code> or
+<code>thermify(..., gdd_methods = "ensemble", gdd_weights = w)</code>.</p>
+</div>
+<div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>
 </h2>
 <p>Baskerville &amp; Emin (1969); Lindsey &amp; Newman (1956);

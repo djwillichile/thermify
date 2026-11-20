@@ -32,6 +32,7 @@ thermify_rast(
   hourly_method = c("linvill", "sine"),
   chill_period = c("05-01", "08-31"),
   heat_period = c("09-01", "04-30"),
+  gdd_weights = NULL,
   temporal_aggregation = c("season", "annual", "monthly"),
   max_cells = 2000L,
   format = "GTiff",
@@ -84,7 +85,8 @@ thermify_rast(
 - gdd_methods:
 
   GDD methods: `"average"`, `"modified_average"`, `"single_sine"`,
-  `"single_triangle"`, `"double_sine"`, `"double_triangle"` (see
+  `"single_triangle"`, `"double_sine"`, `"double_triangle"`,
+  `"ensemble"` (see
   [`degree_days()`](https://djwillichile.github.io/thermify/reference/degree_days.md))
   or `"hourly"`, which uses
   [`degree_hours()`](https://djwillichile.github.io/thermify/reference/degree_hours.md)
@@ -117,6 +119,14 @@ thermify_rast(
   Accumulation windows as `c("MM-DD", "MM-DD")`. Defaults are
   southern-hemisphere conventions: chill from 1 May to 31 August, heat
   from 1 September to 30 April.
+
+- gdd_weights:
+
+  Weights for `gdd_methods = "ensemble"`, from
+  [`gdd_ensemble_weights()`](https://djwillichile.github.io/thermify/reference/gdd_ensemble_weights.md)
+  (estimated from observed data for the same base and upper threshold)
+  or a named numeric vector. Required by the ensemble; there are no
+  default weights.
 
 - temporal_aggregation:
 

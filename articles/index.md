@@ -17,3 +17,5 @@
   2.1](https://djwillichile.github.io/thermify/articles/cauquenes.md):
 - [Verification and validation
   protocol](https://djwillichile.github.io/thermify/articles/validation.md):
+- [Validation with observed hourly temperature: CEAZA-Met
+  network](https://djwillichile.github.io/thermify/articles/validation-ceaza.md):

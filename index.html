@@ -51,6 +51,7 @@
     <li><h6 class="dropdown-header" data-toc-skip>Applications</h6></li>
     <li><a class="dropdown-item" href="articles/cauquenes.html">Tutorial: Cauquenes (Maule, Chile) from WorldClim 2.1</a></li>
     <li><a class="dropdown-item" href="articles/validation.html">Verification and validation protocol</a></li>
+    <li><a class="dropdown-item" href="articles/validation-ceaza.html">Validation with observed hourly temperature: CEAZA-Met network</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
@@ -185,6 +186,7 @@
 <li><p><code>inst/verification/verify_references.R</code> cross-checks thermify against <code>chillR</code> (Dynamic, Utah, chilling hours, day length, Linvill hours) and <code>degday</code> (UC IPM degree-day formulas). Current differences are below 1e-12, except for one documented convention in the pre-dawn Linvill curve (<code>night = "chillr"</code> reproduces chillR exactly).</p></li>
 <li><p>The native <code>pchip_mp</code> engine reproduces tempify to within 1e-13 degC.</p></li>
 <li><p>A controlled experiment on <strong>synthetic</strong> temperatures (generated from WorldClim normals at four Maule sites) compares every degree-day method against hourly integrals at the daily, monthly and climatological levels: <a href="https://djwillichile.github.io/thermify/articles/gdd-synthetic.html">Degree-day methods compared on synthetic temperatures</a>. It complements, and does not replace, validation against observed stations.</p></li>
+<li><p><strong>Empirical validation</strong> against observed hourly temperature at 30 CEAZA-Met stations in north-central Chile (264 heat and 313 chill seasons): <a href="https://djwillichile.github.io/thermify/articles/validation-ceaza.html">results</a>. From daily extremes, chilling hours with the Linvill reconstruction are within 1 % and degree-days are overestimated by 5-8 % depending on the method.</p></li>
 <li><p>About 400 expectations in unit, acceptance (one per <a href="docs/USER_STORIES.html">user story</a>), integration and error-path tests, with 94 % line coverage; see <a href="docs/TESTING.html">docs/TESTING.md</a>.</p></li>
 </ul>
 <p>Computational verification is not empirical validation; see <code><a href="articles/validation.html">vignette("validation")</a></code> for the station-based protocol.</p>

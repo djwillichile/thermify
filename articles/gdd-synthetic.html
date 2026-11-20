@@ -48,6 +48,7 @@
     <li><h6 class="dropdown-header" data-toc-skip>Applications</h6></li>
     <li><a class="dropdown-item" href="../articles/cauquenes.html">Tutorial: Cauquenes (Maule, Chile) from WorldClim 2.1</a></li>
     <li><a class="dropdown-item" href="../articles/validation.html">Verification and validation protocol</a></li>
+    <li><a class="dropdown-item" href="../articles/validation-ceaza.html">Validation with observed hourly temperature: CEAZA-Met network</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -84,8 +85,16 @@ from real monthly normals (WorldClim 2.1 at 30 arc-seconds) at four
 sites in the Maule Region, but the daily and hourly values are
 generated. The experiment measures how much error each method adds under
 known, controlled conditions. It does not replace validation against
-observed station records, which is in progress
-(<code><a href="../articles/validation.html">vignette("validation")</a></code>).</p>
+observed station records.</p>
+</blockquote>
+<blockquote>
+<p><strong>Update: observed data.</strong> The validation with 30
+CEAZA-Met stations in semi-arid north-central Chile (<a href="validation-ceaza.html">article</a>) found daily cycles more skewed
+than the generator below assumes: with long cool nights the daily
+mid-range is about 0.9 degrees C above the true daily mean, so every
+daily method overestimated degree-days and the averaging method was the
+closest. Read the ranking of methods on this page as specific to the
+synthetic diurnal shape.</p>
 </blockquote>
 <div class="section level2">
 <h2 id="question">Question<a class="anchor" aria-label="anchor" href="#question"></a>

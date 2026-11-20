@@ -48,6 +48,7 @@
     <li><h6 class="dropdown-header" data-toc-skip>Applications</h6></li>
     <li><a class="dropdown-item" href="../articles/cauquenes.html">Tutorial: Cauquenes (Maule, Chile) from WorldClim 2.1</a></li>
     <li><a class="dropdown-item" href="../articles/validation.html">Verification and validation protocol</a></li>
+    <li><a class="dropdown-item" href="../articles/validation-ceaza.html">Validation with observed hourly temperature: CEAZA-Met network</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -95,6 +96,53 @@ data and is not answered by any WorldClim experiment.</li>
 </ul>
 <p>No claim of predictive superiority of one method over another should
 be made without empirical validation.</p>
+</div>
+<div class="section level2">
+<h2 id="empirical-validation-so-far">Empirical validation so far<a class="anchor" aria-label="anchor" href="#empirical-validation-so-far"></a>
+</h2>
+<p>thermify has been validated against observed hourly temperature at 30
+stations of the CEAZA-Met network in north-central Chile (264 heat and
+313 chill seasons, 7-2,543 m); see <a href="https://djwillichile.github.io/thermify/articles/validation-ceaza.html">Validation
+with observed hourly temperature: CEAZA-Met network</a>. In short, from
+daily extremes:</p>
+<table class="table">
+<colgroup>
+<col width="33%">
+<col width="33%">
+<col width="33%">
+</colgroup>
+<thead><tr class="header">
+<th>Index</th>
+<th>Best method</th>
+<th>Bias of the season total</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>Degree-days, base 10 degC</td>
+<td>average / Linvill reconstruction</td>
+<td>+5.4 % / +6.0 % (sine +8.4 %)</td>
+</tr>
+<tr class="even">
+<td>Chilling hours, 0-7.2 degC</td>
+<td>Linvill reconstruction</td>
+<td>+1.0 % (sine -9.4 %)</td>
+</tr>
+<tr class="odd">
+<td>Utah chill units</td>
+<td>Linvill reconstruction</td>
+<td>-9.3 % (sine -43.6 %)</td>
+</tr>
+<tr class="even">
+<td>Chill portions</td>
+<td>Linvill reconstruction</td>
+<td>-4.3 % (sine -16.3 %)</td>
+</tr>
+</tbody>
+</table>
+<p>Monthly climatologies underestimate chilling hours by about a
+quarter, and WorldClim cells give much larger errors, which depend on
+elevation. These results come from arid and semi-arid sites; the
+central-south of Chile has not been validated yet.</p>
 </div>
 <div class="section level2">
 <h2 id="verification-summary">Verification summary<a class="anchor" aria-label="anchor" href="#verification-summary"></a>

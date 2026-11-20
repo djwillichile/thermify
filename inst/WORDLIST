@@ -15,6 +15,7 @@ Breiman
 Butland
 CEAZA
 CMD
+CMIP6
 CRS
 Cauquenes
 Chanco
@@ -34,9 +35,12 @@ EPSG
 Elberta
 Emin
 Erez
+Eyring
 Fick
 Fritsch
 Fuentes
+GCM
+GCMs
 GDAL
 GDAL's
 GDD
@@ -56,6 +60,7 @@ INE
 INIA
 IPM
 ISO3
+Intercomparison
 Jaque
 Linsley
 Linvill
@@ -78,6 +83,7 @@ Resolución
 Rymes
 S0022
 SIRGAS
+SSP2
 SUBDERE
 Scientia
 Sevacherian

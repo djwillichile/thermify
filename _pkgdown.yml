@@ -54,6 +54,8 @@ reference:
     contents:
       - study_window
       - worldclim_region
+      - worldclim_future_region
+      - worldclim_cmip6_gcms
       - worldclim_monthly
       - check_monthly_climate
       - cauquenes

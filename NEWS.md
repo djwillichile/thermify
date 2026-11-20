@@ -1,5 +1,13 @@
 # thermify (development version)
 
+## New features
+
+* `worldclim_future_region()` reads WorldClim 2.1 downscaled CMIP6
+  projections (monthly `tmin`, `tmax`, `prec` at 30 arc-seconds) for a
+  region, reading only the bytes of the region from the global files
+  (about 5 GB each) and caching the result. `worldclim_cmip6_gcms` lists
+  the available global climate models.
+
 ## Changes
 
 * `validate_station()` also evaluates degree-days computed on the hourly

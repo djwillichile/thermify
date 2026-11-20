@@ -44,18 +44,23 @@ ensemble and of each member on the estimation cases), \code{cv}
 \code{scheme = "akaike"}, \code{aic} (AIC, \eqn{\Delta} and weight per method).
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+}
+\details{
 Estimates the weights of a growing degree-day ensemble from validation
 results, that is, from estimates of each method compared with values
 computed from \strong{observed} hourly temperature (see \code{\link[=validate_station]{validate_station()}}).
 The weights are then used by \code{\link[=degree_days]{degree_days()}} with \code{method = "ensemble"},
 by \code{\link[=gdd_ensemble]{gdd_ensemble()}} and by \code{\link[=thermify]{thermify()}} and \code{\link[=thermify_rast]{thermify_rast()}} through
 \code{gdd_weights}.
-}
-\details{
+
 thermify does not ship default weights: they depend on the climate, the
 base temperature and the data available (daily extremes or monthly
 climatologies), so they must be estimated from stations that represent the
 area of use.
+
+The ensemble is experimental: its interface may change once it has been
+assessed with observed station networks.
 }
 \section{Schemes}{
 

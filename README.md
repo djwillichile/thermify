@@ -18,7 +18,7 @@ station to a whole region, in one R call.**
 </p>
 
 ```r
-remotes::install_github("djwillichile/thermify@v0.3.1")
+remotes::install_github("djwillichile/thermify@v0.4.0")
 ```
 
 **Live demo:** [worked example for the province of Cauquenes,
@@ -46,7 +46,7 @@ mean-preserving temporal densification.
 ## Installation
 
 ```r
-remotes::install_github("djwillichile/thermify@v0.3.1")   # release
+remotes::install_github("djwillichile/thermify@v0.4.0")   # release
 remotes::install_github("djwillichile/thermify")          # development
 ```
 

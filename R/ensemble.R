@@ -1,5 +1,7 @@
 #' Ensemble weights for growing degree-day methods
 #'
+#' `r lifecycle::badge("experimental")`
+#'
 #' Estimates the weights of a growing degree-day ensemble from validation
 #' results, that is, from estimates of each method compared with values
 #' computed from **observed** hourly temperature (see [validate_station()]).
@@ -11,6 +13,9 @@
 #' base temperature and the data available (daily extremes or monthly
 #' climatologies), so they must be estimated from stations that represent the
 #' area of use.
+#'
+#' The ensemble is experimental: its interface may change once it has been
+#' assessed with observed station networks.
 #'
 #' @section Schemes:
 #' * `"stacking"` (default) chooses non-negative weights that sum to one and
@@ -191,6 +196,8 @@ print.gdd_ensemble_weights <- function(x, ...) {
 }
 
 #' Growing degree-days from an ensemble of methods
+#'
+#' `r lifecycle::badge("experimental")`
 #'
 #' Computes the daily degree-days of each member method and their weighted
 #' mean, with the spread between members as a measure of method

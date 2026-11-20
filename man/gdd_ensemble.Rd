@@ -39,6 +39,9 @@ A data frame with one row per day and columns \code{ensemble}
 column per member method.
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+}
+\details{
 Computes the daily degree-days of each member method and their weighted
 mean, with the spread between members as a measure of method
 uncertainty. \code{\link[=degree_days]{degree_days()}} with \code{method = "ensemble"} returns only the

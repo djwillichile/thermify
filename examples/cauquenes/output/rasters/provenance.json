@@ -1,7 +1,7 @@
 {
-  "thermify": "0.3.1",
+  "thermify": "0.4.0",
   "terra": "1.7.65",
-  "created": "2026-11-04 03:55:12",
+  "created": "2026-11-20 02:02:38",
   "year": 2023,
   "engine": "tempify",
   "interpolation": "pchip_mp",
@@ -25,7 +25,8 @@
     "ch_upper": 7.2,
     "hourly_method": "linvill",
     "chill_period": ["05-01", "08-31"],
-    "heat_period": ["09-01", "04-30"]
+    "heat_period": ["09-01", "04-30"],
+    "gdd_weights": null
   },
   "temporal_aggregation": ["season", "annual", "monthly"],
   "crs": "4326",
@@ -35,6 +36,6 @@
   "n_valid_cells": 672,
   "max_cells_per_block": 2000,
   "n_blocks": 1,
-  "elapsed_seconds": 7.195,
+  "elapsed_seconds": 5.346,
   "outputs": ["gdd_average_b5.tif", "gdd_average_b10.tif", "gdd_single_sine_b5.tif", "gdd_single_sine_b10.tif", "gdd_single_triangle_b5.tif", "gdd_single_triangle_b10.tif", "gdd_double_sine_b5.tif", "gdd_double_sine_b10.tif", "gdd_double_triangle_b5.tif", "gdd_double_triangle_b10.tif", "gdd_hourly_b5.tif", "gdd_hourly_b10.tif", "ch_sine.tif", "ch_hourly.tif", "cu_utah.tif", "cp_dynamic.tif"]
 }

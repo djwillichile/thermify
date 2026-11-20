@@ -66,33 +66,74 @@ normals; the daily maximum occurs around 13:00 and the minimum around 06:00.
 
 ## Results: base 10 degrees C
 
-```{r bias-b10, fig.height = 5.2}
+```{r bias-b10, fig.width = 9, fig.height = 6.2}
+method_label <- c(average = "Average", modified_average = "Modified average",
+                  single_triangle = "Single triangle",
+                  double_triangle = "Double triangle",
+                  single_sine = "Single sine", double_sine = "Double sine",
+                  hourly_linvill = "Hourly (Linvill)")
+level_col <- c(daily = "#0B5563", monthly = "#E8702A",
+               climatology = "#8E5BA8")
+level_label <- c(daily = "Daily extremes", monthly = "Monthly means",
+                 climatology = "Climatology")
+site_pch <- c(coast = 21, dryland = 22, valley = 24, foothills = 23)
+
+# One row per method (ordered by its bias with daily extremes) and one
+# sub-row per level of information; one symbol per site.
 plot_bias <- function(base, upper) {
   d <- season[season$base == base & season$upper == upper, ]
-  levels_ <- c("daily", "monthly", "climatology")
-  op <- par(mfrow = c(1, 3), mar = c(4, 9.5, 2.5, 0.6), oma = c(0, 0, 0, 0))
+  daily <- d[d$level == "daily", ]
+  ord <- rev(names(sort(tapply(daily$rel_bias_pct, daily$method, mean))))
+  offset <- c(daily = 0.22, monthly = 0, climatology = -0.22)
+  ticks <- pretty(range(d$rel_bias_pct, -2, 2), n = 8)
+  xl <- range(ticks)
+  op <- par(mar = c(4.2, 9.5, 3.2, 1))
   on.exit(par(op))
-  lim <- range(d$rel_bias_pct, 0)
-  for (lv in levels_) {
-    x <- d[d$level == lv, ]
-    ms <- rev(method_order[method_order %in% x$method])
-    plot(NA, xlim = lim, ylim = c(0.5, length(ms) + 0.5), yaxt = "n",
-         xlab = "Relative bias (%)", ylab = "", main = lv)
-    abline(v = 0, col = "grey60")
-    abline(v = c(-2, 2), col = "grey85", lty = 2)
-    axis(2, at = seq_along(ms), labels = ms, las = 1, cex.axis = 0.9)
-    for (i in seq_along(ms)) {
-      v <- x$rel_bias_pct[x$method == ms[i]]
-      points(v, rep(i, length(v)), pch = 19, col = method_col[ms[i]])
-      segments(min(v), i, max(v), i, col = method_col[ms[i]])
+  plot(NA, xlim = xl, ylim = c(0.5, length(ord) + 0.5), xaxt = "n",
+       yaxt = "n", xlab = "", ylab = "", bty = "n")
+  rect(-2, 0.4, 2, length(ord) + 0.6, col = "grey94", border = NA)
+  abline(v = ticks, col = "grey90", lwd = 0.6)
+  abline(v = 0, col = "grey40", lwd = 1.2)
+  for (i in seq_along(ord)) {
+    if (i %% 2 == 0) {
+      rect(xl[1], i - 0.5, xl[2], i + 0.5,
+           col = adjustcolor("grey50", 0.05), border = NA)
+    }
+    for (l in names(offset)) {
+      x <- d[d$method == ord[i] & d$level == l, ]
+      if (!nrow(x)) next
+      y <- i + offset[[l]]
+      segments(min(x$rel_bias_pct), y, max(x$rel_bias_pct), y,
+               col = adjustcolor(level_col[[l]], 0.5), lwd = 3)
+      points(x$rel_bias_pct, rep(y, nrow(x)), pch = site_pch[x$site],
+             bg = level_col[[l]], col = "white", cex = 1.15, lwd = 0.8)
     }
   }
+  axis(1, at = ticks, labels = paste0(ifelse(ticks > 0, "+", ""), ticks, "%"),
+       col = NA, col.ticks = "grey60", cex.axis = 0.85)
+  axis(2, at = seq_along(ord), labels = method_label[ord], las = 1,
+       tick = FALSE, cex.axis = 0.95)
+  mtext("Relative bias of the heat-season total vs the hourly integral",
+        side = 1, line = 2.6, cex = 0.9)
+  mtext("Underestimates", side = 3, line = 0.1, adj = 0.12, cex = 0.8,
+        col = "grey40")
+  mtext("Overestimates", side = 3, line = 0.1, adj = 0.88, cex = 0.8,
+        col = "grey40")
+  text(0, length(ord) + 0.62, expression("" %+-% "2 %"), cex = 0.75,
+       col = "grey45", pos = 3, xpd = NA)
+  legend("topright", inset = c(0, -0.11), xpd = NA, horiz = TRUE, bty = "n",
+         legend = level_label, pch = 15, col = level_col, cex = 0.85,
+         pt.cex = 1.6)
+  legend("bottomleft", inset = c(0.01, 0.02), bty = "n", title = "Site",
+         legend = names(site_pch), pch = site_pch, pt.bg = "grey40",
+         col = "white", pt.cex = 1.2, cex = 0.8)
 }
 plot_bias(10, "none")
 ```
 
-Each point is one site; the line spans the four sites. Dashed lines mark
-±2 %.
+Each method has three rows, one per level of information; each symbol is a
+site and the line spans the four sites. The grey band marks ±2 %. Methods
+are ordered by their bias with daily extremes.
 
 ```{r table-b10}
 tab <- function(base, upper, level) {
@@ -150,7 +191,7 @@ knitr::kable(w, digits = 0, caption = paste(
 
 ## Results: base 5 degrees C
 
-```{r bias-b5, fig.height = 5.2}
+```{r bias-b5, fig.width = 9, fig.height = 6.2}
 plot_bias(5, "none")
 ```
 
@@ -178,7 +219,7 @@ matplot(seq_along(mo), mat, type = "b", pch = 19, lty = 1, lwd = 1.5,
         ylab = "Mean bias (degrees C day per month)")
 axis(1, at = seq_along(mo), labels = month.abb[mo])
 abline(h = 0, col = "grey60")
-legend("topright", legend = ms, col = method_col[ms], pch = 19, lty = 1,
+legend("topright", legend = method_label[ms], col = method_col[ms], pch = 19, lty = 1,
        bty = "n", cex = 0.8, ncol = 2)
 ```
 

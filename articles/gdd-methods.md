@@ -41,14 +41,13 @@ Double methods split the day into a rising half
 ``` r
 
 tmin <- 8; tmax <- seq(10, 40, by = 1)
-methods <- c("average", "single_sine", "single_triangle")
+methods <- c("average", "modified_average", "single_sine", "single_triangle")
+cols <- c("grey40", "#8E5BA8", "#0B5563", "#E8702A")
 gdd <- sapply(methods, function(m) degree_days(rep(tmin, length(tmax)), tmax,
                                                method = m, base = 10))
-matplot(tmax, gdd, type = "l", lty = 1, lwd = 2,
-        col = c("grey40", "#0B5563", "#E8702A"),
+matplot(tmax, gdd, type = "l", lty = 1, lwd = 2, col = cols,
         xlab = "Tmax (degC), Tmin = 8 degC", ylab = "GDD base 10 (degC day)")
-legend("topleft", legend = methods, lty = 1, lwd = 2, bty = "n",
-       col = c("grey40", "#0B5563", "#E8702A"))
+legend("topleft", legend = methods, lty = 1, lwd = 2, bty = "n", col = cols)
 ```
 
 ![](gdd-methods_files/figure-html/unnamed-chunk-2-1.png)
@@ -56,6 +55,16 @@ legend("topleft", legend = methods, lty = 1, lwd = 2, bty = "n",
 When $`T_{min} < T_b < T_{max}`$ the averaging method underestimates
 heat accumulation because it ignores the warm hours (a consequence of
 Jensen’s inequality for the convex function $`\max(0, T - T_b)`$).
+
+The **modified average** (McMaster & Wilhelm 1997, method 2) raises
+$`T_{min}`$ to $`T_b`$ and caps $`T_{max}`$ at $`T_u`$ before averaging.
+It counts part of the warm hours on cool days, but it is not an integral
+of the diurnal profile: with $`T_{min} < T_b`$ it lies above the
+averaging method and, in this example, also above the sine and triangle
+methods, because replacing $`T_{min}`$ by $`T_b`$ assigns the base
+temperature to the whole cool part of the day. It is the standard method
+for maize in the United States ($`T_b = 10`$, $`T_u = 30`$ degrees C,
+the “86/50” rule).
 
 ## Cutoffs are not interchangeable
 
@@ -87,6 +96,22 @@ temp <- 12 + 9 * sin(2 * pi * (0:47 - 9) / 24)
 degree_hours(temp, base = 10, by_day = TRUE)
 #> [1] 3.931741 3.931741
 ```
+
+## Which method?
+
+The differences above are exact consequences of each formula. How large
+they are in practice depends on the climate and on the data available
+(hourly, daily or monthly). The article [Degree-day methods compared on
+synthetic
+temperatures](https://djwillichile.github.io/thermify/articles/gdd-synthetic.html)
+quantifies them with synthetic hourly series for four sites in the Maule
+Region. With daily extremes, the triangle methods and the hourly
+reconstruction stayed within about 1 % of the hourly integral, the sine
+methods overestimated by about 2 %, the averaging method underestimated
+by 2-6 % and the modified average overestimated by 7-11 % (base 10
+degrees C, heat season). These results are synthetic and must be
+confirmed with observed hourly records
+([`vignette("validation")`](https://djwillichile.github.io/thermify/articles/validation.md)).
 
 ## References
 

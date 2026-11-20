@@ -2,8 +2,28 @@
 
 ## thermify (development version)
 
+### New features
+
+- [`degree_days()`](https://djwillichile.github.io/thermify/reference/degree_days.md)
+  gains `method = "modified_average"` (McMaster & Wilhelm 1997, method
+  2): the daily extremes are bounded by the base and upper thresholds
+  before averaging, as in the “86/50” rule for maize. It is also
+  available in
+  [`thermify()`](https://djwillichile.github.io/thermify/reference/thermify.md),
+  [`thermify_rast()`](https://djwillichile.github.io/thermify/reference/thermify_rast.md)
+  and
+  [`validate_station()`](https://djwillichile.github.io/thermify/reference/validate_station.md)
+  through `gdd_methods`.
+
 ### Documentation
 
+- New article “Degree-day methods compared on synthetic temperatures”: a
+  controlled experiment with **synthetic** daily and hourly temperatures
+  generated from WorldClim normals at four sites in the Maule Region
+  (Parton & Logan diurnal model), comparing every GDD method at the
+  daily, monthly and climatological levels. Reproducible with
+  `data-raw/gdd-synthetic/run.R`. It complements, and does not replace,
+  validation against observed station data.
 - README with an animated demo, a one-line summary, the install command
   and a link to the live Cauquenes example; social preview image
   (`man/figures/social-preview.png`), rebuilt with

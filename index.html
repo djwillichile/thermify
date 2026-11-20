@@ -44,6 +44,7 @@
 <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Methods</h6></li>
     <li><a class="dropdown-item" href="articles/gdd-methods.html">Growing degree-day methods</a></li>
+    <li><a class="dropdown-item" href="articles/gdd-synthetic.html">Degree-day methods compared on synthetic temperatures</a></li>
     <li><a class="dropdown-item" href="articles/chill-models.html">Chill models: chilling hours, Utah and Dynamic</a></li>
     <li><a class="dropdown-item" href="articles/tempify-integration.html">Monthly to daily: tempify integration</a></li>
     <li><hr class="dropdown-divider"></li>
@@ -92,7 +93,7 @@
 <tbody>
 <tr>
 <td>Growing degree-days</td>
-<td>average, single sine, single triangle, double sine, double triangle; horizontal, vertical and intermediate upper cutoffs; degree-hours</td>
+<td>average, modified average (McMaster &amp; Wilhelm 1997, method 2), single sine, single triangle, double sine, double triangle; horizontal, vertical and intermediate upper cutoffs; degree-hours</td>
 </tr>
 <tr>
 <td>Chilling hours</td>
@@ -183,6 +184,7 @@
 <li><p>Unit tests cover every method against closed forms, numerical integration, an independent transcription of the Dynamic model equations, block equivalence and raster geometry.</p></li>
 <li><p><code>inst/verification/verify_references.R</code> cross-checks thermify against <code>chillR</code> (Dynamic, Utah, chilling hours, day length, Linvill hours) and <code>degday</code> (UC IPM degree-day formulas). Current differences are below 1e-12, except for one documented convention in the pre-dawn Linvill curve (<code>night = "chillr"</code> reproduces chillR exactly).</p></li>
 <li><p>The native <code>pchip_mp</code> engine reproduces tempify to within 1e-13 degC.</p></li>
+<li><p>A controlled experiment on <strong>synthetic</strong> temperatures (generated from WorldClim normals at four Maule sites) compares every degree-day method against hourly integrals at the daily, monthly and climatological levels: <a href="https://djwillichile.github.io/thermify/articles/gdd-synthetic.html">Degree-day methods compared on synthetic temperatures</a>. It complements, and does not replace, validation against observed stations.</p></li>
 <li><p>About 400 expectations in unit, acceptance (one per <a href="docs/USER_STORIES.html">user story</a>), integration and error-path tests, with 94 % line coverage; see <a href="docs/TESTING.html">docs/TESTING.md</a>.</p></li>
 </ul>
 <p>Computational verification is not empirical validation; see <code><a href="articles/validation.html">vignette("validation")</a></code> for the station-based protocol.</p>

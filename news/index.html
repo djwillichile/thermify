@@ -22,6 +22,7 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Methods</h6></li>
     <li><a class="dropdown-item" href="../articles/gdd-methods.html">Growing degree-day methods</a></li>
+    <li><a class="dropdown-item" href="../articles/gdd-synthetic.html">Degree-day methods compared on synthetic temperatures</a></li>
     <li><a class="dropdown-item" href="../articles/chill-models.html">Chill models: chilling hours, Utah and Dynamic</a></li>
     <li><a class="dropdown-item" href="../articles/tempify-integration.html">Monthly to daily: tempify integration</a></li>
     <li><hr class="dropdown-divider"></li>
@@ -47,8 +48,14 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="thermify-development-version">thermify (development version)<a class="anchor" aria-label="anchor" href="#thermify-development-version"></a></h2>
 <div class="section level3">
+<h3 id="new-features-development-version">New features<a class="anchor" aria-label="anchor" href="#new-features-development-version"></a></h3>
+<ul><li>
+<code><a href="../reference/degree_days.html">degree_days()</a></code> gains <code>method = "modified_average"</code> (McMaster &amp; Wilhelm 1997, method 2): the daily extremes are bounded by the base and upper thresholds before averaging, as in the “86/50” rule for maize. It is also available in <code><a href="../reference/thermify.html">thermify()</a></code>, <code><a href="../reference/thermify_rast.html">thermify_rast()</a></code> and <code><a href="../reference/validate_station.html">validate_station()</a></code> through <code>gdd_methods</code>.</li>
+</ul></div>
+<div class="section level3">
 <h3 id="documentation-development-version">Documentation<a class="anchor" aria-label="anchor" href="#documentation-development-version"></a></h3>
-<ul><li>README with an animated demo, a one-line summary, the install command and a link to the live Cauquenes example; social preview image (<code>man/figures/social-preview.png</code>), rebuilt with <code>data-raw/readme-figures.R</code>.</li>
+<ul><li>New article “Degree-day methods compared on synthetic temperatures”: a controlled experiment with <strong>synthetic</strong> daily and hourly temperatures generated from WorldClim normals at four sites in the Maule Region (Parton &amp; Logan diurnal model), comparing every GDD method at the daily, monthly and climatological levels. Reproducible with <code>data-raw/gdd-synthetic/run.R</code>. It complements, and does not replace, validation against observed station data.</li>
+<li>README with an animated demo, a one-line summary, the install command and a link to the live Cauquenes example; social preview image (<code>man/figures/social-preview.png</code>), rebuilt with <code>data-raw/readme-figures.R</code>.</li>
 <li>Contributing guide, Contributor Covenant code of conduct, issue forms (bug report, feature request) and a pull request template.</li>
 </ul></div>
 </div>

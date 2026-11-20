@@ -4,6 +4,8 @@
 
 - [Growing degree-day
   methods](https://djwillichile.github.io/thermify/articles/gdd-methods.md):
+- [Degree-day methods compared on synthetic
+  temperatures](https://djwillichile.github.io/thermify/articles/gdd-synthetic.md):
 - [Chill models: chilling hours, Utah and
   Dynamic](https://djwillichile.github.io/thermify/articles/chill-models.md):
 - [Monthly to daily: tempify

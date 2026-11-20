@@ -81,9 +81,10 @@ thermify(
 
 - gdd_methods:
 
-  GDD methods, see
-  [`degree_days()`](https://djwillichile.github.io/thermify/reference/degree_days.md);
-  `"hourly"` uses
+  GDD methods: `"average"`, `"modified_average"`, `"single_sine"`,
+  `"single_triangle"`, `"double_sine"`, `"double_triangle"` (see
+  [`degree_days()`](https://djwillichile.github.io/thermify/reference/degree_days.md))
+  or `"hourly"`, which uses
   [`degree_hours()`](https://djwillichile.github.io/thermify/reference/degree_hours.md)
   on observed or reconstructed hourly temperatures.
 

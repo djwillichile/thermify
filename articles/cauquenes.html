@@ -41,6 +41,7 @@
 <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Methods</h6></li>
     <li><a class="dropdown-item" href="../articles/gdd-methods.html">Growing degree-day methods</a></li>
+    <li><a class="dropdown-item" href="../articles/gdd-synthetic.html">Degree-day methods compared on synthetic temperatures</a></li>
     <li><a class="dropdown-item" href="../articles/chill-models.html">Chill models: chilling hours, Utah and Dynamic</a></li>
     <li><a class="dropdown-item" href="../articles/tempify-integration.html">Monthly to daily: tempify integration</a></li>
     <li><hr class="dropdown-divider"></li>
@@ -268,7 +269,7 @@ summarises the indices, their units and layers:</p>
 <span><span class="co">#&gt;   ch_hourly                [h]            season annual m01 m02 m03 m04 m05 m06 m07 m08 m09 m10 m11 m12</span></span>
 <span><span class="co">#&gt;   cu_utah                  [chill units]  season m01 m02 m03 m04 m05 m06 m07 m08 m09 m10 m11 m12</span></span>
 <span><span class="co">#&gt;   cp_dynamic               [portions]     season m01 m02 m03 m04 m05 m06 m07 m08 m09 m10 m11 m12</span></span>
-<span><span class="co">#&gt; files in: /tmp/Rtmp5LJ3zn/cauquenes-rasters</span></span></code></pre></div>
+<span><span class="co">#&gt; files in: /tmp/Rtmp73wb8W/cauquenes-rasters</span></span></code></pre></div>
 <p>Spatial summary of the seasonal totals over the province:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">stats</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">rbind</span>, <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">maps</span><span class="op">)</span>, <span class="kw">function</span><span class="op">(</span><span class="va">k</span><span class="op">)</span> <span class="op">{</span></span>

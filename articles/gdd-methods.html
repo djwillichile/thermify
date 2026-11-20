@@ -41,6 +41,7 @@
 <li><hr class="dropdown-divider"></li>
     <li><h6 class="dropdown-header" data-toc-skip>Methods</h6></li>
     <li><a class="dropdown-item" href="../articles/gdd-methods.html">Growing degree-day methods</a></li>
+    <li><a class="dropdown-item" href="../articles/gdd-synthetic.html">Degree-day methods compared on synthetic temperatures</a></li>
     <li><a class="dropdown-item" href="../articles/chill-models.html">Chill models: chilling hours, Utah and Dynamic</a></li>
     <li><a class="dropdown-item" href="../articles/tempify-integration.html">Monthly to daily: tempify integration</a></li>
     <li><hr class="dropdown-divider"></li>
@@ -163,14 +164,13 @@ each contributing half a day.</p>
 </h2>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">tmin</span> <span class="op">&lt;-</span> <span class="fl">8</span>; <span class="va">tmax</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fl">40</span>, by <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
-<span><span class="va">methods</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"average"</span>, <span class="st">"single_sine"</span>, <span class="st">"single_triangle"</span><span class="op">)</span></span>
+<span><span class="va">methods</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"average"</span>, <span class="st">"modified_average"</span>, <span class="st">"single_sine"</span>, <span class="st">"single_triangle"</span><span class="op">)</span></span>
+<span><span class="va">cols</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"grey40"</span>, <span class="st">"#8E5BA8"</span>, <span class="st">"#0B5563"</span>, <span class="st">"#E8702A"</span><span class="op">)</span></span>
 <span><span class="va">gdd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">methods</span>, <span class="kw">function</span><span class="op">(</span><span class="va">m</span><span class="op">)</span> <span class="fu"><a href="../reference/degree_days.html">degree_days</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="va">tmin</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">tmax</span><span class="op">)</span><span class="op">)</span>, <span class="va">tmax</span>,</span>
 <span>                                               method <span class="op">=</span> <span class="va">m</span>, base <span class="op">=</span> <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/matplot.html" class="external-link">matplot</a></span><span class="op">(</span><span class="va">tmax</span>, <span class="va">gdd</span>, type <span class="op">=</span> <span class="st">"l"</span>, lty <span class="op">=</span> <span class="fl">1</span>, lwd <span class="op">=</span> <span class="fl">2</span>,</span>
-<span>        col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"grey40"</span>, <span class="st">"#0B5563"</span>, <span class="st">"#E8702A"</span><span class="op">)</span>,</span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/matplot.html" class="external-link">matplot</a></span><span class="op">(</span><span class="va">tmax</span>, <span class="va">gdd</span>, type <span class="op">=</span> <span class="st">"l"</span>, lty <span class="op">=</span> <span class="fl">1</span>, lwd <span class="op">=</span> <span class="fl">2</span>, col <span class="op">=</span> <span class="va">cols</span>,</span>
 <span>        xlab <span class="op">=</span> <span class="st">"Tmax (degC), Tmin = 8 degC"</span>, ylab <span class="op">=</span> <span class="st">"GDD base 10 (degC day)"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"topleft"</span>, legend <span class="op">=</span> <span class="va">methods</span>, lty <span class="op">=</span> <span class="fl">1</span>, lwd <span class="op">=</span> <span class="fl">2</span>, bty <span class="op">=</span> <span class="st">"n"</span>,</span>
-<span>       col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"grey40"</span>, <span class="st">"#0B5563"</span>, <span class="st">"#E8702A"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html" class="external-link">legend</a></span><span class="op">(</span><span class="st">"topleft"</span>, legend <span class="op">=</span> <span class="va">methods</span>, lty <span class="op">=</span> <span class="fl">1</span>, lwd <span class="op">=</span> <span class="fl">2</span>, bty <span class="op">=</span> <span class="st">"n"</span>, col <span class="op">=</span> <span class="va">cols</span><span class="op">)</span></span></code></pre></div>
 <p><img src="gdd-methods_files/figure-html/unnamed-chunk-2-1.png" class="r-plt" alt="" width="672"></p>
 <p>When
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>T</mi><mrow><mi>m</mi><mi>i</mi><mi>n</mi></mrow></msub><mo>&lt;</mo><msub><mi>T</mi><mi>b</mi></msub><mo>&lt;</mo><msub><mi>T</mi><mrow><mi>m</mi><mi>a</mi><mi>x</mi></mrow></msub></mrow><annotation encoding="application/x-tex">T_{min} &lt; T_b &lt; T_{max}</annotation></semantics></math>
@@ -178,6 +178,28 @@ the averaging method underestimates heat accumulation because it ignores
 the warm hours (a consequence of Jensen’s inequality for the convex
 function
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">max</mi><mo>⁡</mo></mrow><mo stretchy="false" form="prefix">(</mo><mn>0</mn><mo>,</mo><mi>T</mi><mo>−</mo><msub><mi>T</mi><mi>b</mi></msub><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\max(0, T - T_b)</annotation></semantics></math>).</p>
+<p>The <strong>modified average</strong> (McMaster &amp; Wilhelm 1997,
+method 2) raises
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>T</mi><mrow><mi>m</mi><mi>i</mi><mi>n</mi></mrow></msub><annotation encoding="application/x-tex">T_{min}</annotation></semantics></math>
+to
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>T</mi><mi>b</mi></msub><annotation encoding="application/x-tex">T_b</annotation></semantics></math>
+and caps
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>T</mi><mrow><mi>m</mi><mi>a</mi><mi>x</mi></mrow></msub><annotation encoding="application/x-tex">T_{max}</annotation></semantics></math>
+at
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>T</mi><mi>u</mi></msub><annotation encoding="application/x-tex">T_u</annotation></semantics></math>
+before averaging. It counts part of the warm hours on cool days, but it
+is not an integral of the diurnal profile: with
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>T</mi><mrow><mi>m</mi><mi>i</mi><mi>n</mi></mrow></msub><mo>&lt;</mo><msub><mi>T</mi><mi>b</mi></msub></mrow><annotation encoding="application/x-tex">T_{min} &lt; T_b</annotation></semantics></math>
+it lies above the averaging method and, in this example, also above the
+sine and triangle methods, because replacing
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>T</mi><mrow><mi>m</mi><mi>i</mi><mi>n</mi></mrow></msub><annotation encoding="application/x-tex">T_{min}</annotation></semantics></math>
+by
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>T</mi><mi>b</mi></msub><annotation encoding="application/x-tex">T_b</annotation></semantics></math>
+assigns the base temperature to the whole cool part of the day. It is
+the standard method for maize in the United States
+(<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>T</mi><mi>b</mi></msub><mo>=</mo><mn>10</mn></mrow><annotation encoding="application/x-tex">T_b = 10</annotation></semantics></math>,
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>T</mi><mi>u</mi></msub><mo>=</mo><mn>30</mn></mrow><annotation encoding="application/x-tex">T_u = 30</annotation></semantics></math>
+degrees C, the “86/50” rule).</p>
 </div>
 <div class="section level2">
 <h2 id="cutoffs-are-not-interchangeable">Cutoffs are not interchangeable<a class="anchor" aria-label="anchor" href="#cutoffs-are-not-interchangeable"></a>
@@ -204,6 +226,21 @@ conversion to degree-days divides the daily sum by 24:</p>
 <code class="sourceCode R"><span><span class="va">temp</span> <span class="op">&lt;-</span> <span class="fl">12</span> <span class="op">+</span> <span class="fl">9</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="fl">2</span> <span class="op">*</span> <span class="va">pi</span> <span class="op">*</span> <span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="fl">47</span> <span class="op">-</span> <span class="fl">9</span><span class="op">)</span> <span class="op">/</span> <span class="fl">24</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/degree_hours.html">degree_hours</a></span><span class="op">(</span><span class="va">temp</span>, base <span class="op">=</span> <span class="fl">10</span>, by_day <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [1] 3.931741 3.931741</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="which-method">Which method?<a class="anchor" aria-label="anchor" href="#which-method"></a>
+</h2>
+<p>The differences above are exact consequences of each formula. How
+large they are in practice depends on the climate and on the data
+available (hourly, daily or monthly). The article <a href="https://djwillichile.github.io/thermify/articles/gdd-synthetic.html">Degree-day
+methods compared on synthetic temperatures</a> quantifies them with
+synthetic hourly series for four sites in the Maule Region. With daily
+extremes, the triangle methods and the hourly reconstruction stayed
+within about 1 % of the hourly integral, the sine methods overestimated
+by about 2 %, the averaging method underestimated by 2-6 % and the
+modified average overestimated by 7-11 % (base 10 degrees C, heat
+season). These results are synthetic and must be confirmed with observed
+hourly records (<code><a href="../articles/validation.html">vignette("validation")</a></code>).</p>
 </div>
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>

@@ -23,7 +23,7 @@ after a mean-preserving temporal densification.
 
 | Family | Methods |
 |----|----|
-| Growing degree-days | average, single sine, single triangle, double sine, double triangle; horizontal, vertical and intermediate upper cutoffs; degree-hours |
+| Growing degree-days | average, modified average (McMaster & Wilhelm 1997, method 2), single sine, single triangle, double sine, double triangle; horizontal, vertical and intermediate upper cutoffs; degree-hours |
 | Chilling hours | analytical sine and triangle estimates from daily extremes; counts on hourly data |
 | Chill units | Utah model (Richardson et al. 1974) |
 | Chill portions | Dynamic model (Fishman et al. 1987; Erez et al. 1990), resumable across blocks |
@@ -141,6 +141,14 @@ time and estimated time remaining).
   Linvill curve (`night = "chillr"` reproduces chillR exactly).
 
 - The native `pchip_mp` engine reproduces tempify to within 1e-13 degC.
+
+- A controlled experiment on **synthetic** temperatures (generated from
+  WorldClim normals at four Maule sites) compares every degree-day
+  method against hourly integrals at the daily, monthly and
+  climatological levels: [Degree-day methods compared on synthetic
+  temperatures](https://djwillichile.github.io/thermify/articles/gdd-synthetic.html).
+  It complements, and does not replace, validation against observed
+  stations.
 
 - About 400 expectations in unit, acceptance (one per [user
   story](https://djwillichile.github.io/thermify/docs/USER_STORIES.md)),

@@ -20,6 +20,8 @@ CEAZA
 CMD
 CMIP6
 CRS
+Caleta
+CanESM5
 Cauquenes
 Chanco
 ColorBrewer
@@ -81,6 +83,7 @@ Luedeling
 Lygus
 Límites
 Maule
+Molles
 Multimodel
 Nacional
 NetCDF
@@ -101,13 +104,16 @@ Rymes
 S0022
 SIRGAS
 SSP2
+SSP5
 SUBDERE
 Scientia
 Sevacherian
 Subsecretaría
 Talca
 Tf
+Toro
 UC
+UKESM1
 Unidad
 Vehtari
 WGS84
@@ -132,6 +138,7 @@ densifying
 doi
 dryland
 dt
+e20155
 e6166
 ed
 ee

@@ -169,11 +169,19 @@ knitr::kable(tab, row.names = FALSE, caption = sprintf(paste(
   warm$delta_tmin[warm$ssp == 585], warm$delta_tmax[warm$ssp == 585]))
 ```
 
-In the semi-arid north, where winters are already mild, the same warming
-removes a much larger share of the chill than in Cauquenes: chill portions
-fall by about half, and at several low-elevation stations chill disappears.
-Utah units can become negative because the Utah model subtracts chill for
-warm hours, so their relative changes exceed -100 % at some stations.
+With a similar warming at the stations (about +1.9 degrees C under SSP2-4.5),
+the semi-arid north loses a much larger share of its chill than Cauquenes:
+the median station loses about **a third of its chill portions** (37 % under
+SSP2-4.5, 42 % under SSP5-8.5), against less than a tenth in Cauquenes. The
+losses are largest on the coast (about two thirds at Caleta El Toro, La
+Serena and Coquimbo, below 130 m) and smallest at the highest station
+(about 10 % at Los Molles, 2,543 m). No station loses all its chill
+portions. Chilling hours, which already fall by about half at the median
+station, disappear at the coastal stations whose baseline is only 2-13 hours per
+season (two stations under SSP2-4.5, three under SSP5-8.5). Utah units can be negative because the Utah model
+subtracts chill for warm hours, so their relative changes are unstable near
+zero and exceed -100 % at some stations; use them with care in mild
+climates.
 
 ## Limitations
 

@@ -176,7 +176,7 @@ citation("thermify")
 
 This DOI always resolves to the latest version. To cite a specific version,
 use its own DOI from the [Zenodo record](https://doi.org/10.5281/zenodo.23841856)
-(for example v0.4.0: 10.5281/zenodo.24385014) and the version reported by
+(for example v0.5.0: 10.5281/zenodo.24407244) and the version reported by
 `packageVersion("thermify")`.
 
 Please also cite the original publications of the methods you use; they are

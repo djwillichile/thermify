@@ -1,5 +1,7 @@
 # Changelog
 
+## thermify (development version)
+
 ## thermify 0.5.0
 
 First release validated against observed hourly temperatures (30
@@ -10,6 +12,7 @@ and
 [`thermify_rast()`](https://djwillichile.github.io/thermify/reference/thermify_rast.md)
 change only for chilling hours when `ch_methods` is not set (see
 “Breaking changes”); all other methods and indices are unchanged.
+Archived on Zenodo: <https://doi.org/10.5281/zenodo.24407244>.
 
 The validation covers the semi-arid north-central Chile (Coquimbo and
 Atacama regions, from the coast to 2,543 m). It has not yet been

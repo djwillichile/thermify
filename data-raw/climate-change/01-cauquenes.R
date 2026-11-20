@@ -1,31 +1,24 @@
 # Projected change of agroclimatic thermal indices under CMIP6 (WorldClim 2.1)
 #
-# Part A: province of Cauquenes (Maule): maps of the change of each index
+# Province of Cauquenes (Maule): maps of the change of each index
 #         between the WorldClim 1970-2000 baseline and 2041-2060, for 14
 #         global climate models (GCMs) and two scenarios (SSP2-4.5,
 #         SSP5-8.5). Changes are reported, not future absolute values,
 #         because WorldClim baseline errors partly cancel in the difference.
-# Part B: 30 CEAZA-Met stations (north-central Chile): delta method. The
-#         monthly change of each GCM at the station's cell is added to the
-#         station's own observed monthly climatology, and the indices are
-#         recomputed. Needs the hourly cache of
-#         data-raw/validation-ceaza/02-download.R (CEAZA data, not stored).
+# Part B (CEAZA-Met stations) is in 02-ceaza-stations.R.
 #
 # Indices: degree-days base 10 degC (average method), chilling hours
 # 0-7.2 degC, Utah units and chill portions, all with the Linvill hourly
 # reconstruction (ch_methods = "hourly"), as recommended by the CEAZA-Met
 # validation. Seasons: heat 1 Sep - 30 Apr, chill 1 May - 31 Aug.
 #
-#   Rscript data-raw/climate-change/run.R
+#   Rscript data-raw/climate-change/01-cauquenes.R
 #
 # Data: WorldClim 2.1 (Fick & Hijmans 2017) and its CMIP6 downscaled
-# projections; Centro de Estudios Avanzados en Zonas Aridas (CEAZA),
-# www.ceazamet.cl.
+# projections.
 
 library(thermify)
 wc_dir <- Sys.getenv("THERMIFY_DATA", file.path(tempdir(), "worldclim"))
-cache <- Sys.getenv("THERMIFY_CEAZA_CACHE",
-                    file.path(tools::R_user_dir("thermify", "cache"), "ceaza"))
 out_dir <- "vignettes/articles/data"
 dir.create(out_dir, recursive = TRUE, showWarnings = FALSE)
 
@@ -95,74 +88,6 @@ province$value <- round(province$value, 2)
 utils::write.csv(province, file.path(out_dir, "cc-cauquenes-province.csv"),
                  row.names = FALSE)
 
-# Part B: CEAZA-Met stations, delta method ------------------------------------
-stations <- utils::read.csv("data-raw/validation-ceaza/results/ceaza-stations.csv",
-                            encoding = "UTF-8")
-stations <- stations[stations$selected, ]
-stations <- stations[file.exists(file.path(cache,
-                                           paste0(stations$station, ".rds"))), ]
-message("Part B: ", nrow(stations), " stations")
-pts <- terra::vect(stations, geom = c("lon", "lat"), crs = "EPSG:4326")
-region <- terra::ext(terra::buffer(pts, 2000))
-cell <- function(r) as.matrix(terra::extract(r, pts, ID = FALSE))
-wc_now <- list(tmin = cell(worldclim_region("tmin", region, wc_dir,
-                                            mask = FALSE)),
-               tmax = cell(worldclim_region("tmax", region, wc_dir,
-                                            mask = FALSE)))
-
-# Observed monthly climatology of each station: monthly means of the daily
-# extremes of the hourly series, over days with 24 hours.
-station_clim <- lapply(stations$station, function(code) {
-  h <- readRDS(file.path(cache, paste0(code, ".rds")))
-  day <- format(h$time, "%Y-%m-%d")
-  ok <- tapply(!is.na(h$prom), day, sum) == 24
-  h <- h[day %in% names(ok)[ok], ]
-  day <- format(h$time, "%Y-%m-%d")
-  dmin <- tapply(h$prom, day, min)
-  dmax <- tapply(h$prom, day, max)
-  mon <- as.integer(substr(names(dmin), 6, 7))
-  list(tmin = as.vector(tapply(dmin, mon, mean)),
-       tmax = as.vector(tapply(dmax, mon, mean)))
-})
-
-season_point <- function(tmin, tmax, lat) {
-  r <- thermify(tmin, tmax, input = "monthly", latitude = lat,
-                temporal = "native", indices = indices,
-                gdd_methods = "average", base = 10, ch_methods = "hourly",
-                hourly_method = "linvill")
-  s <- r$summary[r$summary$aggregation == "season", ]
-  stats::setNames(s$value[match(keys, s$key)], names(keys))
-}
-
-station_rows <- list()
-for (s in ssps) for (g in gcms) {
-  message("Part B: SSP", s, " ", g)
-  fut <- list(
-    tmin = cell(worldclim_future_region("tmin", region, gcm = g, ssp = s,
-                                        period = period, path = wc_dir,
-                                        mask = FALSE)),
-    tmax = cell(worldclim_future_region("tmax", region, gcm = g, ssp = s,
-                                        period = period, path = wc_dir,
-                                        mask = FALSE)))
-  for (i in seq_len(nrow(stations))) {
-    d_min <- fut$tmin[i, ] - wc_now$tmin[i, ]
-    d_max <- fut$tmax[i, ] - wc_now$tmax[i, ]
-    if (anyNA(c(d_min, d_max))) next
-    cl <- station_clim[[i]]
-    now <- season_point(cl$tmin, cl$tmax, stations$lat[i])
-    new <- season_point(cl$tmin + d_min, cl$tmax + d_max, stations$lat[i])
-    station_rows[[length(station_rows) + 1L]] <- data.frame(
-      station = stations$station[i], ssp = s, gcm = g, index = names(keys),
-      baseline = now, future = new, change = new - now,
-      delta_tmin = mean(d_min), delta_tmax = mean(d_max))
-  }
-}
-station_cc <- do.call(rbind, station_rows)
-rownames(station_cc) <- NULL
-num <- vapply(station_cc, is.numeric, TRUE)
-station_cc[num] <- lapply(station_cc[num], round, 3)
-utils::write.csv(station_cc, file.path(out_dir, "cc-ceaza-stations.csv"),
-                 row.names = FALSE)
 writeLines(c(paste("thermify", as.character(utils::packageVersion("thermify"))),
              paste("GCMs:", paste(gcms, collapse = ", ")),
              paste("scenarios: SSP", paste(ssps, collapse = ", SSP"),

@@ -9,7 +9,7 @@ Cauquenes, Chile, computed by thermify from WorldClim
 
 ``` r
 
-remotes::install_github("djwillichile/thermify@v0.3.1")
+remotes::install_github("djwillichile/thermify@v0.4.0")
 ```
 
 **Live demo:** [worked example for the province of Cauquenes,
@@ -39,7 +39,7 @@ after a mean-preserving temporal densification.
 
 ``` r
 
-remotes::install_github("djwillichile/thermify@v0.3.1")   # release
+remotes::install_github("djwillichile/thermify@v0.4.0")   # release
 remotes::install_github("djwillichile/thermify")          # development
 ```
 
@@ -216,9 +216,9 @@ MIT. Copyright (c) 2026 Guillermo Fuentes-Jaque.
 - [`degree_hours()`](https://djwillichile.github.io/thermify/reference/degree_hours.md)
   : Degree-hours from hourly temperatures
 - [`gdd_ensemble()`](https://djwillichile.github.io/thermify/reference/gdd_ensemble.md)
-  : Growing degree-days from an ensemble of methods
+  **\[experimental\]** : Growing degree-days from an ensemble of methods
 - [`gdd_ensemble_weights()`](https://djwillichile.github.io/thermify/reference/gdd_ensemble_weights.md)
-  : Ensemble weights for growing degree-day methods
+  **\[experimental\]** : Ensemble weights for growing degree-day methods
 
 ## Chill models
 

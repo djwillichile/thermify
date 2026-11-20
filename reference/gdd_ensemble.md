@@ -1,10 +1,6 @@
 # Growing degree-days from an ensemble of methods
 
-Computes the daily degree-days of each member method and their weighted
-mean, with the spread between members as a measure of method
-uncertainty.
-[`degree_days()`](https://djwillichile.github.io/thermify/reference/degree_days.md)
-with `method = "ensemble"` returns only the weighted mean.
+**\[experimental\]**
 
 ## Usage
 
@@ -59,6 +55,14 @@ A data frame with one row per day and columns `ensemble` (weighted
 mean), `sd` (weighted standard deviation between members), `min` and
 `max` (range of the members with non-zero weight) and one column per
 member method.
+
+## Details
+
+Computes the daily degree-days of each member method and their weighted
+mean, with the spread between members as a measure of method
+uncertainty.
+[`degree_days()`](https://djwillichile.github.io/thermify/reference/degree_days.md)
+with `method = "ensemble"` returns only the weighted mean.
 
 ## See also
 

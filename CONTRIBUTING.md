@@ -44,10 +44,11 @@ implementations) are described in
     against closed forms, numerical integration or an independent
     implementation, and new code should follow that standard.
 4.  Document functions with roxygen2 (`#'` comments) and run
-    `devtools::document()`.
+    [`devtools::document()`](https://devtools.r-lib.org/reference/document.html).
 5.  Add a bullet to the top section of `NEWS.md`.
-6.  Run `devtools::check()` and make sure it passes without errors or
-    warnings.
+6.  Run
+    [`devtools::check()`](https://devtools.r-lib.org/reference/check.html)
+    and make sure it passes without errors or warnings.
 7.  Open a pull request. The CI runs `R CMD check` on Linux, Windows and
     macOS plus the full test battery; please make sure it is green.
 

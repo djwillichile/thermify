@@ -1,18 +1,6 @@
 # Ensemble weights for growing degree-day methods
 
-Estimates the weights of a growing degree-day ensemble from validation
-results, that is, from estimates of each method compared with values
-computed from **observed** hourly temperature (see
-[`validate_station()`](https://djwillichile.github.io/thermify/reference/validate_station.md)).
-The weights are then used by
-[`degree_days()`](https://djwillichile.github.io/thermify/reference/degree_days.md)
-with `method = "ensemble"`, by
-[`gdd_ensemble()`](https://djwillichile.github.io/thermify/reference/gdd_ensemble.md)
-and by
-[`thermify()`](https://djwillichile.github.io/thermify/reference/thermify.md)
-and
-[`thermify_rast()`](https://djwillichile.github.io/thermify/reference/thermify_rast.md)
-through `gdd_weights`.
+**\[experimental\]**
 
 ## Usage
 
@@ -75,10 +63,27 @@ ensemble and of each member on the estimation cases), `cv`
 
 ## Details
 
+Estimates the weights of a growing degree-day ensemble from validation
+results, that is, from estimates of each method compared with values
+computed from **observed** hourly temperature (see
+[`validate_station()`](https://djwillichile.github.io/thermify/reference/validate_station.md)).
+The weights are then used by
+[`degree_days()`](https://djwillichile.github.io/thermify/reference/degree_days.md)
+with `method = "ensemble"`, by
+[`gdd_ensemble()`](https://djwillichile.github.io/thermify/reference/gdd_ensemble.md)
+and by
+[`thermify()`](https://djwillichile.github.io/thermify/reference/thermify.md)
+and
+[`thermify_rast()`](https://djwillichile.github.io/thermify/reference/thermify_rast.md)
+through `gdd_weights`.
+
 thermify does not ship default weights: they depend on the climate, the
 base temperature and the data available (daily extremes or monthly
 climatologies), so they must be estimated from stations that represent
 the area of use.
+
+The ensemble is experimental: its interface may change once it has been
+assessed with observed station networks.
 
 ## Schemes
 

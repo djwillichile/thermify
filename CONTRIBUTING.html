@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="index.html">thermify</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.1.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -64,9 +64,9 @@
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages(c("devtools", "testthat", "roxygen2"))</span></span>
 <span><span class="co"># clone https://github.com/djwillichile/thermify and open the project, then:</span></span>
-<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_deps</span><span class="op">(</span>dependencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">load_all</span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">test</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/install_deps.html" class="external-link">install_deps</a></span><span class="op">(</span>dependencies <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/load_all.html" class="external-link">load_all</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org/reference/test.html" class="external-link">test</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>Optional test groups (network reads, the tempify backend, reference implementations) are described in <a href="../docs/TESTING.html"><code>docs/TESTING.md</code></a>.</p>
 </div>
 <div class="section level2">
@@ -74,9 +74,9 @@
 <ol style="list-style-type: decimal"><li>Open an issue first for anything larger than a small fix, so we can agree on the approach.</li>
 <li>Create a branch from <code>main</code> named <code>code/&lt;short-description&gt;</code>.</li>
 <li>Keep the change focused. Add or update tests in <code>tests/testthat/</code> for any change in behaviour: every method in thermify is tested against closed forms, numerical integration or an independent implementation, and new code should follow that standard.</li>
-<li>Document functions with roxygen2 (<code>#'</code> comments) and run <code>devtools::document()</code>.</li>
+<li>Document functions with roxygen2 (<code>#'</code> comments) and run <code><a href="https://devtools.r-lib.org/reference/document.html" class="external-link">devtools::document()</a></code>.</li>
 <li>Add a bullet to the top section of <code>NEWS.md</code>.</li>
-<li>Run <code>devtools::check()</code> and make sure it passes without errors or warnings.</li>
+<li>Run <code><a href="https://devtools.r-lib.org/reference/check.html" class="external-link">devtools::check()</a></code> and make sure it passes without errors or warnings.</li>
 <li>Open a pull request. The CI runs <code>R CMD check</code> on Linux, Windows and macOS plus the full test battery; please make sure it is green.</li>
 </ol></div>
 <div class="section level2">

@@ -1,6 +1,16 @@
 # Changelog
 
-## thermify (development version)
+## thermify 0.4.0
+
+Adds the modified average degree-day method and experimental ensembles
+of degree-day methods, and documents a controlled comparison of all
+methods on synthetic temperatures. Results of the existing methods are
+unchanged.
+
+Not yet included: validation against observed hourly station records
+(data requested from CEAZA and INIA, issue
+[\#3](https://github.com/djwillichile/thermify/issues/3)), and the
+Winkler and Huglin viticultural indices.
 
 ### New features
 
@@ -14,7 +24,7 @@
   and
   [`validate_station()`](https://djwillichile.github.io/thermify/reference/validate_station.md)
   through `gdd_methods`.
-- GDD ensembles:
+- GDD ensembles (experimental):
   [`gdd_ensemble_weights()`](https://djwillichile.github.io/thermify/reference/gdd_ensemble_weights.md)
   estimates the weights of a combination of daily GDD methods from
   [`validate_station()`](https://djwillichile.github.io/thermify/reference/validate_station.md)
@@ -39,7 +49,9 @@
   (Parton & Logan diurnal model), comparing every GDD method at the
   daily, monthly and climatological levels. Reproducible with
   `data-raw/gdd-synthetic/run.R`. It complements, and does not replace,
-  validation against observed station data.
+  validation against observed station data. Its figures show the bias of
+  each method by level of information and site, and the seasonal bias
+  next to the monthly reference degree-days.
 - README with an animated demo, a one-line summary, the install command
   and a link to the live Cauquenes example; social preview image
   (`man/figures/social-preview.png`), rebuilt with

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">thermify</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.1.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -46,16 +46,18 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="development version" id="thermify-development-version">thermify (development version)<a class="anchor" aria-label="anchor" href="#thermify-development-version"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.4.0" id="thermify-040">thermify 0.4.0<a class="anchor" aria-label="anchor" href="#thermify-040"></a></h2>
+<p>Adds the modified average degree-day method and experimental ensembles of degree-day methods, and documents a controlled comparison of all methods on synthetic temperatures. Results of the existing methods are unchanged.</p>
+<p>Not yet included: validation against observed hourly station records (data requested from CEAZA and INIA, issue <a href="https://github.com/djwillichile/thermify/issues/3" class="external-link">#3</a>), and the Winkler and Huglin viticultural indices.</p>
 <div class="section level3">
-<h3 id="new-features-development-version">New features<a class="anchor" aria-label="anchor" href="#new-features-development-version"></a></h3>
+<h3 id="new-features-0-4-0">New features<a class="anchor" aria-label="anchor" href="#new-features-0-4-0"></a></h3>
 <ul><li>
 <code><a href="../reference/degree_days.html">degree_days()</a></code> gains <code>method = "modified_average"</code> (McMaster &amp; Wilhelm 1997, method 2): the daily extremes are bounded by the base and upper thresholds before averaging, as in the “86/50” rule for maize. It is also available in <code><a href="../reference/thermify.html">thermify()</a></code>, <code><a href="../reference/thermify_rast.html">thermify_rast()</a></code> and <code><a href="../reference/validate_station.html">validate_station()</a></code> through <code>gdd_methods</code>.</li>
-<li>GDD ensembles: <code><a href="../reference/gdd_ensemble_weights.html">gdd_ensemble_weights()</a></code> estimates the weights of a combination of daily GDD methods from <code><a href="../reference/validate_station.html">validate_station()</a></code> results with observed hourly data, by stacking (default), Bayesian model averaging or Akaike weights, and assesses it by leave-one-station-out cross-validation. <code>degree_days(method = "ensemble")</code>, <code><a href="../reference/gdd_ensemble.html">gdd_ensemble()</a></code> (weighted mean plus the spread between members) and <code>gdd_methods = "ensemble"</code> with <code>gdd_weights</code> in <code><a href="../reference/thermify.html">thermify()</a></code> and <code><a href="../reference/thermify_rast.html">thermify_rast()</a></code> apply the weights. No default weights are shipped: they depend on the climate, the base temperature and the data available.</li>
+<li>GDD ensembles (experimental): <code><a href="../reference/gdd_ensemble_weights.html">gdd_ensemble_weights()</a></code> estimates the weights of a combination of daily GDD methods from <code><a href="../reference/validate_station.html">validate_station()</a></code> results with observed hourly data, by stacking (default), Bayesian model averaging or Akaike weights, and assesses it by leave-one-station-out cross-validation. <code>degree_days(method = "ensemble")</code>, <code><a href="../reference/gdd_ensemble.html">gdd_ensemble()</a></code> (weighted mean plus the spread between members) and <code>gdd_methods = "ensemble"</code> with <code>gdd_weights</code> in <code><a href="../reference/thermify.html">thermify()</a></code> and <code><a href="../reference/thermify_rast.html">thermify_rast()</a></code> apply the weights. No default weights are shipped: they depend on the climate, the base temperature and the data available.</li>
 </ul></div>
 <div class="section level3">
-<h3 id="documentation-development-version">Documentation<a class="anchor" aria-label="anchor" href="#documentation-development-version"></a></h3>
-<ul><li>New article “Degree-day methods compared on synthetic temperatures”: a controlled experiment with <strong>synthetic</strong> daily and hourly temperatures generated from WorldClim normals at four sites in the Maule Region (Parton &amp; Logan diurnal model), comparing every GDD method at the daily, monthly and climatological levels. Reproducible with <code>data-raw/gdd-synthetic/run.R</code>. It complements, and does not replace, validation against observed station data.</li>
+<h3 id="documentation-0-4-0">Documentation<a class="anchor" aria-label="anchor" href="#documentation-0-4-0"></a></h3>
+<ul><li>New article “Degree-day methods compared on synthetic temperatures”: a controlled experiment with <strong>synthetic</strong> daily and hourly temperatures generated from WorldClim normals at four sites in the Maule Region (Parton &amp; Logan diurnal model), comparing every GDD method at the daily, monthly and climatological levels. Reproducible with <code>data-raw/gdd-synthetic/run.R</code>. It complements, and does not replace, validation against observed station data. Its figures show the bias of each method by level of information and site, and the seasonal bias next to the monthly reference degree-days.</li>
 <li>README with an animated demo, a one-line summary, the install command and a link to the live Cauquenes example; social preview image (<code>man/figures/social-preview.png</code>), rebuilt with <code>data-raw/readme-figures.R</code>.</li>
 <li>Contributing guide, Contributor Covenant code of conduct, issue forms (bug report, feature request) and a pull request template.</li>
 </ul></div>

@@ -1,0 +1,16 @@
+"scheme","method","weight","cv_rmse","cv_bias"
+"stacking","average",1,117.695,87.62
+"stacking","single_sine",0,117.695,87.62
+"stacking","single_triangle",0,117.695,87.62
+"stacking","double_sine",0,117.695,87.62
+"stacking","double_triangle",0,117.695,87.62
+"bma","average",1,117.695,87.62
+"bma","single_sine",0,117.695,87.62
+"bma","single_triangle",0,117.695,87.62
+"bma","double_sine",0,117.695,87.62
+"bma","double_triangle",0,117.695,87.62
+"akaike","average",1,117.695,87.62
+"akaike","single_sine",0,117.695,87.62
+"akaike","single_triangle",0,117.695,87.62
+"akaike","double_sine",0,117.695,87.62
+"akaike","double_triangle",0,117.695,87.62

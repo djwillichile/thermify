@@ -6,6 +6,15 @@
   reconstructions from daily extremes (`"hourly_linvill"`,
   `"hourly_sine"`), at the daily, monthly and gridded levels.
 
+## Documentation
+
+* New article "Validation with observed hourly temperature: CEAZA-Met
+  network" with the results of the 30-station validation, per-station
+  figures and practical guidance; `vignette("validation")` summarises them.
+* `vignette("gdd-methods")` ("Which method?") and the synthetic comparison
+  article are updated: the observed stations contradict the synthetic
+  ranking of degree-day methods in semi-arid climates.
+
 ## Validation
 
 * First empirical validation with observed hourly temperature: 30 stations of

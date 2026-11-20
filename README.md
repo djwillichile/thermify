@@ -139,6 +139,13 @@ progress (blocks done, elapsed time and estimated time remaining).
   [Degree-day methods compared on synthetic temperatures](https://djwillichile.github.io/thermify/articles/gdd-synthetic.html).
   It complements, and does not replace, validation against observed
   stations.
+* **Empirical validation** against observed hourly temperature at 30
+  CEAZA-Met stations in north-central Chile (264 heat and 313 chill
+  seasons):
+  [results](https://djwillichile.github.io/thermify/articles/validation-ceaza.html).
+  From daily extremes, chilling hours with the Linvill reconstruction are
+  within 1 % and degree-days are overestimated by 5-8 % depending on the
+  method.
 
 * About 400 expectations in unit, acceptance (one per
   [user story](docs/USER_STORIES.md)), integration and error-path tests,

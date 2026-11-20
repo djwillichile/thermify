@@ -137,8 +137,9 @@ validation_metrics <- function(estimate, observed) {
 #'
 #' * level `"daily"`: daily extremes of the same station, with the analytical
 #'   daily methods (GDD, chilling hours) and with hourly reconstructions
-#'   (Linvill, sine) for chilling hours, Utah units and chill portions. This
-#'   isolates the error of the diurnal model.
+#'   (Linvill, sine) for every index, including degree-hours (methods
+#'   `"hourly_linvill"`, `"hourly_sine"`). This isolates the error of the
+#'   diurnal model.
 #' * level `"monthly"`: the station's own monthly climatology (mean daily
 #'   extremes per calendar month over all valid days), densified with
 #'   `pchip_mp`. This adds the loss of day-to-day variability and of
@@ -271,6 +272,14 @@ validate_station <- function(station, latitude,
           add(s, "gdd", paste(window, collapse = "/"), "daily", m, est,
               observed)
         }
+        # Degree-hours on the hourly reconstructions from daily extremes.
+        for (m in hourly_methods) {
+          rh <- flat(recon[[m]][days, , drop = FALSE])
+          est <- sum(degree_hours(rh, base = base, upper = upper,
+                                  cutoff = cutoff)) / 24
+          add(s, "gdd", paste(window, collapse = "/"), "daily",
+              paste0("hourly_", m), est, observed)
+        }
       } else {
         observed <- switch(idx_name,
           ch = sum(chill_hours_hourly(obs_h, ch_lower, ch_upper,
@@ -323,7 +332,8 @@ validate_station <- function(station, latitude,
       for (m in hourly_methods) {
         res <- thermify(cl$tmin, cl$tmax, input = "monthly",
                         latitude = latitude, temporal = temporal,
-                        indices = cfg$indices, gdd_methods = cfg$gdd_methods,
+                        indices = cfg$indices,
+                        gdd_methods = unique(c(cfg$gdd_methods, "hourly")),
                         base = base, upper = upper, cutoff = cutoff,
                         ch_methods = c("sine", "hourly"),
                         ch_lower = ch_lower, ch_upper = ch_upper,
@@ -334,12 +344,16 @@ validate_station <- function(station, latitude,
           key <- sm$key[k]
           idx_name <- sub("_.*", "", key)
           method <- switch(idx_name,
-            gdd = sub("^gdd_(.*)_b.*$", "\\1", key),
+            gdd = {
+              g <- sub("^gdd_(.*)_b.*$", "\\1", key)
+              if (g == "hourly") paste0("hourly_", m) else g
+            },
             ch = if (key == "ch_sine") "sine" else paste0("hourly_", m),
             paste0("hourly_", m))
           # Daily analytical methods do not depend on the hourly model: add
           # them only once.
-          if (idx_name == "gdd" && m != hourly_methods[1]) next
+          if (idx_name == "gdd" && !startsWith(method, "hourly_") &&
+              m != hourly_methods[1]) next
           if (key == "ch_sine" && m != hourly_methods[1]) next
           ev <- evaluated[evaluated$index == idx_name, ]
           for (j in seq_len(nrow(ev))) {

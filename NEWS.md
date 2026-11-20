@@ -1,5 +1,18 @@
 # thermify (development version)
 
+## Changes
+
+* `validate_station()` also evaluates degree-days computed on the hourly
+  reconstructions from daily extremes (`"hourly_linvill"`,
+  `"hourly_sine"`), at the daily, monthly and gridded levels.
+
+## Validation
+
+* First empirical validation with observed hourly temperature: 30 stations of
+  the CEAZA-Met network (Coquimbo and Atacama regions), with scripts in
+  `data-raw/validation-ceaza/`. Only derived seasonal totals and metrics are
+  stored in the repository; the hourly records stay with CEAZA.
+
 # thermify 0.4.0
 
 Adds the modified average degree-day method and experimental ensembles of

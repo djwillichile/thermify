@@ -185,6 +185,15 @@ Please note that this project is released with a
 [Contributor Code of Conduct](.github/CODE_OF_CONDUCT.md); by participating
 you agree to abide by its terms.
 
+## Acknowledgements
+
+Hourly temperature records for the validation of thermify were provided by
+the [Centro de Estudios Avanzados en Zonas Áridas (CEAZA)](https://www.ceaza.cl)
+through the CEAZA-Met network ([www.ceazamet.cl](https://www.ceazamet.cl)).
+Monthly climate normals come from
+[WorldClim 2.1](https://www.worldclim.org) (Fick & Hijmans 2017).
+
 ## License
 
-MIT. Copyright (c) 2026 Guillermo Fuentes-Jaque.
+MIT. Copyright (c) 2026 Guillermo Fuentes-Jaque. The MIT licence covers the
+code; data from third parties keep their own terms of use.

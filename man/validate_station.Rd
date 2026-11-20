@@ -61,8 +61,9 @@ information:
 \itemize{
 \item level \code{"daily"}: daily extremes of the same station, with the analytical
 daily methods (GDD, chilling hours) and with hourly reconstructions
-(Linvill, sine) for chilling hours, Utah units and chill portions. This
-isolates the error of the diurnal model.
+(Linvill, sine) for every index, including degree-hours (methods
+\code{"hourly_linvill"}, \code{"hourly_sine"}). This isolates the error of the
+diurnal model.
 \item level \code{"monthly"}: the station's own monthly climatology (mean daily
 extremes per calendar month over all valid days), densified with
 \code{pchip_mp}. This adds the loss of day-to-day variability and of

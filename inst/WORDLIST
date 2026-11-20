@@ -9,6 +9,9 @@ A0
 ABI
 Administrativa
 Agromet
+BMA
+Balabdaoui
+Breiman
 Butland
 CEAZA
 CMD
@@ -37,8 +40,10 @@ Fuentes
 GDAL
 GDAL's
 GDD
+Gelman
 GeoTIFF
 Girvetz
+Gneiting
 Goodell
 HORTSCI
 Hermite
@@ -56,6 +61,7 @@ Linvill
 Luedeling
 Lygus
 Maule
+Multimodel
 NetCDF
 Noakes
 NumPy
@@ -64,6 +70,8 @@ ORCID
 PCHIP
 PLoS
 PROJ
+Polakowski
+Raftery
 Redhaven
 Resolución
 Rymes
@@ -75,6 +83,7 @@ Sevacherian
 Talca
 Tf
 UC
+Vehtari
 WGS84
 WorldClim
 Zalom
@@ -95,6 +104,7 @@ doi
 dryland
 dt
 e6166
+ed
 ee
 float64
 frac
@@ -107,6 +117,7 @@ jsonlite
 km2
 oldrel
 parameterised
+propto
 qquad
 rast
 resumable

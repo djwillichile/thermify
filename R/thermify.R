@@ -34,8 +34,9 @@
 #' @param indices Any of `"gdd"`, `"ch"`, `"cu"`, `"cp"`.
 #' @param gdd_methods GDD methods: `"average"`, `"modified_average"`,
 #'   `"single_sine"`, `"single_triangle"`, `"double_sine"`,
-#'   `"double_triangle"` (see [degree_days()]) or `"hourly"`, which uses
-#'   [degree_hours()] on observed or reconstructed hourly temperatures.
+#'   `"double_triangle"`, `"ensemble"` (see [degree_days()]) or `"hourly"`,
+#'   which uses [degree_hours()] on observed or reconstructed hourly
+#'   temperatures.
 #' @param base Lower GDD thresholds (degrees Celsius); one result per value.
 #' @param upper,cutoff Upper GDD threshold and cutoff (see [degree_days()]).
 #' @param ch_methods Chilling-hours methods: `"sine"`, `"triangle"` (from
@@ -45,6 +46,10 @@
 #' @param chill_period,heat_period Accumulation windows as
 #'   `c("MM-DD", "MM-DD")`. Defaults are southern-hemisphere conventions:
 #'   chill from 1 May to 31 August, heat from 1 September to 30 April.
+#' @param gdd_weights Weights for `gdd_methods = "ensemble"`, from
+#'   [gdd_ensemble_weights()] (estimated from observed data for the same
+#'   base and upper threshold) or a named numeric vector. Required by the
+#'   ensemble; there are no default weights.
 #'
 #' @return An object of class `"thermify"`: a list with `daily` (data frame of
 #'   daily temperatures and index values), `hourly` (data frame, when hourly
@@ -72,14 +77,15 @@ thermify <- function(tmin = NULL, tmax = NULL, temperature = NULL,
                      ch_methods = "sine", ch_lower = 0, ch_upper = 7.2,
                      hourly_method = c("linvill", "sine"),
                      chill_period = c("05-01", "08-31"),
-                     heat_period = c("09-01", "04-30")) {
+                     heat_period = c("09-01", "04-30"),
+                     gdd_weights = NULL) {
   input <- match.arg(input)
   temporal <- match.arg(temporal)
   consistency <- match.arg(consistency)
   hourly_method <- match.arg(hourly_method)
   cfg <- thermal_config(indices, gdd_methods, base, upper, cutoff,
                         ch_methods, ch_lower, ch_upper, hourly_method,
-                        chill_period, heat_period)
+                        chill_period, heat_period, gdd_weights)
   provenance <- list(input = input, thermify = as.character(
     utils::packageVersion("thermify")), created = format(Sys.time(),
                                                          tz = "UTC"))

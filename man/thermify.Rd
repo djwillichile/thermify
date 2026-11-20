@@ -25,7 +25,8 @@ thermify(
   ch_upper = 7.2,
   hourly_method = c("linvill", "sine"),
   chill_period = c("05-01", "08-31"),
-  heat_period = c("09-01", "04-30")
+  heat_period = c("09-01", "04-30"),
+  gdd_weights = NULL
 )
 }
 \arguments{
@@ -56,8 +57,9 @@ hourly model.}
 
 \item{gdd_methods}{GDD methods: \code{"average"}, \code{"modified_average"},
 \code{"single_sine"}, \code{"single_triangle"}, \code{"double_sine"},
-\code{"double_triangle"} (see \code{\link[=degree_days]{degree_days()}}) or \code{"hourly"}, which uses
-\code{\link[=degree_hours]{degree_hours()}} on observed or reconstructed hourly temperatures.}
+\code{"double_triangle"}, \code{"ensemble"} (see \code{\link[=degree_days]{degree_days()}}) or \code{"hourly"},
+which uses \code{\link[=degree_hours]{degree_hours()}} on observed or reconstructed hourly
+temperatures.}
 
 \item{base}{Lower GDD thresholds (degrees Celsius); one result per value.}
 
@@ -73,6 +75,11 @@ daily extremes) and/or \code{"hourly"} (counted on hourly temperatures).}
 \item{chill_period, heat_period}{Accumulation windows as
 \code{c("MM-DD", "MM-DD")}. Defaults are southern-hemisphere conventions:
 chill from 1 May to 31 August, heat from 1 September to 30 April.}
+
+\item{gdd_weights}{Weights for \code{gdd_methods = "ensemble"}, from
+\code{\link[=gdd_ensemble_weights]{gdd_ensemble_weights()}} (estimated from observed data for the same
+base and upper threshold) or a named numeric vector. Required by the
+ensemble; there are no default weights.}
 }
 \value{
 An object of class \code{"thermify"}: a list with \code{daily} (data frame of

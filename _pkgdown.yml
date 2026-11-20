@@ -20,6 +20,8 @@ reference:
     contents:
       - degree_days
       - degree_hours
+      - gdd_ensemble
+      - gdd_ensemble_weights
   - title: Chill models
     contents:
       - chill_hours

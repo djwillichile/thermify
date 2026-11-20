@@ -11,12 +11,14 @@ thermal_config <- function(indices = c("gdd", "ch", "cu", "cp"),
                            ch_methods = "sine", ch_lower = 0, ch_upper = 7.2,
                            hourly_method = "linvill",
                            chill_period = c("05-01", "08-31"),
-                           heat_period = c("09-01", "04-30")) {
+                           heat_period = c("09-01", "04-30"),
+                           gdd_weights = NULL) {
   indices <- unique(match.arg(indices, c("gdd", "ch", "cu", "cp"),
                               several.ok = TRUE))
   gdd_methods <- unique(match.arg(gdd_methods,
     c("average", "modified_average", "single_sine", "single_triangle",
-      "double_sine", "double_triangle", "hourly"), several.ok = TRUE))
+      "double_sine", "double_triangle", "ensemble", "hourly"),
+    several.ok = TRUE))
   ch_methods <- unique(match.arg(ch_methods, c("sine", "triangle", "hourly"),
                                  several.ok = TRUE))
   cutoff <- match.arg(cutoff, c("horizontal", "vertical", "intermediate"))
@@ -25,6 +27,9 @@ thermal_config <- function(indices = c("gdd", "ch", "cu", "cp"),
   if (anyDuplicated(base)) stop("`base` values must be unique.", call. = FALSE)
   for (b in base) check_thresholds(b, upper)
   check_chill_bounds(ch_lower, ch_upper)
+  if ("gdd" %in% indices && "ensemble" %in% gdd_methods) {
+    for (b in base) check_ensemble_weights(gdd_weights, b, upper, cutoff)
+  }
   for (p in list(chill_period, heat_period)) {
     if (length(p) != 2L) stop("Periods must be c(\"MM-DD\", \"MM-DD\").",
                               call. = FALSE)
@@ -35,7 +40,7 @@ thermal_config <- function(indices = c("gdd", "ch", "cu", "cp"),
        upper = upper, cutoff = cutoff, ch_methods = ch_methods,
        ch_lower = ch_lower, ch_upper = ch_upper,
        hourly_method = hourly_method, chill_period = chill_period,
-       heat_period = heat_period)
+       heat_period = heat_period, gdd_weights = gdd_weights)
 }
 
 needs_hourly <- function(cfg) {
@@ -84,7 +89,8 @@ compute_daily <- function(dmin, dmax, dates, cyclic, cfg, hourly = NULL,
         matrix_like(degree_days(as.vector(dmin), as.vector(dmax), method = m,
                                 base = b, upper = cfg$upper,
                                 cutoff = cfg$cutoff,
-                                tmin_next = as.vector(nxt)), dmin)
+                                tmin_next = as.vector(nxt),
+                                weights = cfg$gdd_weights), dmin)
       }
     }
   }

@@ -7,6 +7,15 @@
   thresholds before averaging, as in the "86/50" rule for maize. It is also
   available in `thermify()`, `thermify_rast()` and `validate_station()`
   through `gdd_methods`.
+* GDD ensembles: `gdd_ensemble_weights()` estimates the weights of a
+  combination of daily GDD methods from `validate_station()` results with
+  observed hourly data, by stacking (default), Bayesian model averaging or
+  Akaike weights, and assesses it by leave-one-station-out
+  cross-validation. `degree_days(method = "ensemble")`, `gdd_ensemble()`
+  (weighted mean plus the spread between members) and `gdd_methods =
+  "ensemble"` with `gdd_weights` in `thermify()` and `thermify_rast()` apply
+  the weights. No default weights are shipped: they depend on the climate,
+  the base temperature and the data available.
 
 ## Documentation
 

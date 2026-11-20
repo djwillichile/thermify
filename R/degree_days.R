@@ -22,6 +22,10 @@
 #'   below the base when \eqn{T_{max} > T_b}, unlike `"average"`. The bound
 #'   on the extremes is the method's own upper-threshold rule, so only
 #'   `cutoff = "horizontal"` is accepted.
+#' * `"ensemble"`: a weighted mean of the daily methods above, with weights
+#'   estimated from observed data by [gdd_ensemble_weights()] and passed in
+#'   `weights`. There are no default weights. [gdd_ensemble()] also returns
+#'   the members and their spread.
 #' * `"single_sine"`: a sine wave between `tmin` and `tmax` over 24 h
 #'   (Baskerville & Emin 1969).
 #' * `"single_triangle"`: a symmetric triangle between `tmin` and `tmax`
@@ -57,14 +61,17 @@
 #' @param tmin,tmax Numeric vectors of daily minimum and maximum temperatures
 #'   (degrees Celsius), of equal length, ordered in time for double methods.
 #' @param method One of `"single_sine"` (default), `"average"`,
-#'   `"modified_average"`, `"single_triangle"`, `"double_sine"` or
-#'   `"double_triangle"`.
+#'   `"modified_average"`, `"single_triangle"`, `"double_sine"`,
+#'   `"double_triangle"` or `"ensemble"`.
 #' @param base Lower developmental threshold (degrees Celsius).
 #' @param upper Optional upper developmental threshold (degrees Celsius).
 #' @param cutoff Upper threshold treatment: `"horizontal"` (default),
 #'   `"vertical"` or `"intermediate"`. Ignored when `upper` is `NULL`.
 #' @param tmin_next Optional numeric vector with the minimum temperature of the
 #'   following day, used only by double methods.
+#' @param weights Ensemble weights for `method = "ensemble"`: an object from
+#'   [gdd_ensemble_weights()] or a named numeric vector (see
+#'   [gdd_ensemble()]). Ignored by the other methods.
 #'
 #' @return Numeric vector of daily degree-days (degree Celsius day), same length
 #'   as `tmin`.
@@ -107,10 +114,11 @@
 degree_days <- function(tmin, tmax,
                         method = c("single_sine", "average",
                                    "modified_average", "single_triangle",
-                                   "double_sine", "double_triangle"),
+                                   "double_sine", "double_triangle",
+                                   "ensemble"),
                         base = 10, upper = NULL,
                         cutoff = c("horizontal", "vertical", "intermediate"),
-                        tmin_next = NULL) {
+                        tmin_next = NULL, weights = NULL) {
   method <- match.arg(method)
   cutoff <- match.arg(cutoff)
   check_tmin_tmax(tmin, tmax)
@@ -118,6 +126,11 @@ degree_days <- function(tmin, tmax,
 
   if (method == "average") {
     return(average_degree_days(tmin, tmax, base, upper, cutoff))
+  }
+  if (method == "ensemble") {
+    return(gdd_ensemble(tmin, tmax, weights = weights, base = base,
+                        upper = upper, cutoff = cutoff,
+                        tmin_next = tmin_next)$ensemble)
   }
   if (method == "modified_average") {
     if (!is.null(upper) && cutoff != "horizontal") {

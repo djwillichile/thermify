@@ -1,8 +1,11 @@
+# thermify (development version)
+
 # thermify 0.4.0
 
 Adds the modified average degree-day method and experimental ensembles of
 degree-day methods, and documents a controlled comparison of all methods on
 synthetic temperatures. Results of the existing methods are unchanged.
+Archived on Zenodo: <https://doi.org/10.5281/zenodo.24385014>.
 
 Not yet included: validation against observed hourly station records (data
 requested from CEAZA and INIA, issue #3), and the Winkler and Huglin

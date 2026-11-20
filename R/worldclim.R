@@ -169,24 +169,10 @@ worldclim_region <- function(var = c("tmin", "tmax", "tavg", "prec", "srad",
                              region, path, mask = TRUE, touches = TRUE,
                              overwrite = FALSE) {
   var <- match.arg(var)
-  polygons <- NULL
-  if (inherits(region, "SpatVector")) {
-    region_ll <- terra::project(region, "EPSG:4326")
-    if (terra::geomtype(region_ll) == "polygons") polygons <- region_ll
-    e <- terra::ext(region_ll)
-  } else if (inherits(region, "SpatExtent")) {
-    e <- region
-  } else if (is.numeric(region) && length(region) == 4L) {
-    e <- terra::ext(region)
-  } else {
-    stop("`region` must be a SpatExtent, SpatVector or c(xmin, xmax, ymin, ",
-         "ymax).", call. = FALSE)
-  }
+  region_info <- worldclim_region_info(region)
+  e <- region_info$extent
+  polygons <- region_info$polygons
   v <- as.vector(e)
-  if (v[1] < -180 || v[2] > 180 || v[3] < -90 || v[4] > 90 ||
-      v[1] >= v[2] || v[3] >= v[4]) {
-    stop("`region` must be a valid longitude/latitude extent.", call. = FALSE)
-  }
   do_mask <- isTRUE(mask) && !is.null(polygons)
 
   dir.create(path, recursive = TRUE, showWarnings = FALSE)
@@ -331,3 +317,148 @@ check_monthly_climate <- function(tmin, tmax) {
   out$ok <- as.logical(out$ok)
   out
 }
+
+#' Read WorldClim 2.1 CMIP6 future climate for a region
+#'
+#' Reads the part of a WorldClim 2.1 downscaled CMIP6 projection (monthly
+#' minimum or maximum temperature, or precipitation, at 30 arc-seconds) that
+#' covers a region, without downloading the global file (about 5 GB per
+#' variable, model, scenario and period). Only the bytes of the region are
+#' read with GDAL `/vsicurl/`, and the result is cached in `path`.
+#'
+#' WorldClim derives the future surfaces from each global climate model
+#' (GCM) by adding the model's change to the WorldClim 2.1 baseline
+#' (1970-2000) and applying a bias correction. Differences between a future
+#' layer and [worldclim_region()] are therefore the projected change of that
+#' model. Single models can be far from the multi-model consensus: use
+#' several GCMs and report their spread.
+#'
+#' Not every model provides every scenario; a missing combination gives an
+#' informative error.
+#'
+#' @inheritParams worldclim_region
+#' @param var `"tmin"`, `"tmax"` or `"prec"`.
+#' @param gcm Global climate model, for example `"MPI-ESM1-2-HR"`. See
+#'   `worldclim_cmip6_gcms` for the models listed by WorldClim.
+#' @param ssp Shared socio-economic pathway: `"126"`, `"245"`, `"370"` or
+#'   `"585"`.
+#' @param period `"2021-2040"`, `"2041-2060"`, `"2061-2080"` or
+#'   `"2081-2100"`.
+#' @return A `SpatRaster` in EPSG:4326 at 30 arc-seconds with 12 layers
+#'   `m01` to `m12`. Attribute `"source"` gives the remote file read.
+#' @references
+#' Fick, S. E., & Hijmans, R. J. (2017). WorldClim 2: new 1-km spatial
+#' resolution climate surfaces for global land areas. *International Journal
+#' of Climatology*, 37(12), 4302-4315. \doi{10.1002/joc.5086}
+#'
+#' Eyring, V., et al. (2016). Overview of the Coupled Model Intercomparison
+#' Project Phase 6 (CMIP6) experimental design and organization.
+#' *Geoscientific Model Development*, 9(5), 1937-1958.
+#' \doi{10.5194/gmd-9-1937-2016}
+#' @seealso [worldclim_region()] for the 1970-2000 baseline.
+#' @examples
+#' \dontrun{
+#' prov <- cauquenes_boundary("provincia")
+#' now <- worldclim_region("tmin", prov, path = tempdir())
+#' fut <- worldclim_future_region("tmin", prov, gcm = "MPI-ESM1-2-HR",
+#'                                ssp = "245", period = "2041-2060",
+#'                                path = tempdir())
+#' fut - now   # projected change of this model, degrees C
+#' }
+#' @export
+worldclim_future_region <- function(var = c("tmin", "tmax", "prec"), region,
+                                    gcm, ssp = c("245", "126", "370", "585"),
+                                    period = c("2041-2060", "2021-2040",
+                                               "2061-2080", "2081-2100"),
+                                    path, mask = TRUE, touches = TRUE,
+                                    overwrite = FALSE) {
+  var <- match.arg(var)
+  ssp <- sub("^ssp", "", as.character(ssp))
+  ssp <- match.arg(ssp)
+  period <- match.arg(period)
+  if (missing(gcm) || !is.character(gcm) || length(gcm) != 1L ||
+      !grepl("^[A-Za-z0-9-]+$", gcm)) {
+    stop("`gcm` must be one model name, for example \"MPI-ESM1-2-HR\".",
+         call. = FALSE)
+  }
+  region_info <- worldclim_region_info(region)
+  e <- region_info$extent
+  polygons <- region_info$polygons
+  do_mask <- isTRUE(mask) && !is.null(polygons)
+
+  dir.create(path, recursive = TRUE, showWarnings = FALSE)
+  key <- paste(c(sprintf("%.6f", as.vector(e)), gcm, ssp, period),
+               collapse = "_")
+  if (do_mask) {
+    key <- paste0(key, "_mask", if (touches) "t" else "c",
+                  sprintf("%08x", checksum32(terra::geom(polygons, wkt = TRUE))))
+  }
+  cache <- file.path(path, sprintf("wc2.1_30s_%s_%s_ssp%s_%s_region_%s.tif",
+                                   var, gcm, ssp, period, checksum_name(key)))
+  if (!overwrite && file.exists(cache)) {
+    r <- terra::rast(cache)
+    attr(r, "source") <- "cache"
+    return(r)
+  }
+
+  url <- sprintf(paste0("https://geodata.ucdavis.edu/cmip6/30s/%s/ssp%s/",
+                        "wc2.1_30s_%s_%s_ssp%s_%s.tif"),
+                 gcm, ssp, var, gcm, ssp, period)
+  old <- set_gdal_remote()
+  on.exit(restore_gdal(old), add = TRUE)
+  r <- tryCatch(suppressWarnings(terra::rast(paste0("/vsicurl/", url))),
+                error = function(err) {
+    stop("WorldClim has no ", var, " projection for GCM ", gcm, ", SSP",
+         ssp, ", ", period, " (", url, "). Check the model name and that ",
+         "this model provides this scenario.", call. = FALSE)
+  })
+  if (is.null(terra::intersect(terra::ext(r), e))) {
+    stop("The region is outside the WorldClim grid.", call. = FALSE)
+  }
+  r <- terra::crop(r, e, snap = "out")
+  if (do_mask) r <- terra::mask(r, polygons, touches = touches)
+  names(r) <- sprintf("m%02d", seq_len(terra::nlyr(r)))
+  r <- terra::writeRaster(r, cache, overwrite = TRUE,
+                          gdal = c("COMPRESS=DEFLATE"))
+  attr(r, "source") <- url
+  r
+}
+
+# Extent and optional polygons (EPSG:4326) of a region argument.
+worldclim_region_info <- function(region) {
+  polygons <- NULL
+  if (inherits(region, "SpatVector")) {
+    region_ll <- terra::project(region, "EPSG:4326")
+    if (terra::geomtype(region_ll) == "polygons") polygons <- region_ll
+    e <- terra::ext(region_ll)
+  } else if (inherits(region, "SpatExtent")) {
+    e <- region
+  } else if (is.numeric(region) && length(region) == 4L) {
+    e <- terra::ext(region)
+  } else {
+    stop("`region` must be a SpatExtent, SpatVector or c(xmin, xmax, ymin, ",
+         "ymax).", call. = FALSE)
+  }
+  v <- as.vector(e)
+  if (v[1] < -180 || v[2] > 180 || v[3] < -90 || v[4] > 90 ||
+      v[1] >= v[2] || v[3] >= v[4]) {
+    stop("`region` must be a valid longitude/latitude extent.", call. = FALSE)
+  }
+  list(extent = e, polygons = polygons)
+}
+
+#' Global climate models of the WorldClim 2.1 CMIP6 projections
+#'
+#' Names of the CMIP6 global climate models distributed by WorldClim 2.1 at
+#' 30 arc-seconds (checked on 2026-11-20 for SSP2-4.5, 2041-2060). Not every
+#' model provides every scenario or period.
+#'
+#' @format A character vector.
+#' @seealso [worldclim_future_region()]
+#' @export
+worldclim_cmip6_gcms <- c(
+  "ACCESS-CM2", "BCC-CSM2-MR", "CanESM5", "CanESM5-CanOE", "CMCC-ESM2",
+  "CNRM-CM6-1", "CNRM-CM6-1-HR", "CNRM-ESM2-1", "EC-Earth3-Veg",
+  "EC-Earth3-Veg-LR", "FIO-ESM-2-0", "GISS-E2-1-G", "GISS-E2-1-H",
+  "HadGEM3-GC31-LL", "INM-CM4-8", "INM-CM5-0", "IPSL-CM6A-LR", "MIROC-ES2L",
+  "MIROC6", "MPI-ESM1-2-HR", "MPI-ESM1-2-LR", "MRI-ESM2-0", "UKESM1-0-LL")

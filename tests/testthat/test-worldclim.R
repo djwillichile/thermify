@@ -71,3 +71,45 @@ test_that("worldclim_region masks WorldClim with the commune polygon", {
   expect_equal(inside * 0.68, 2124.5, tolerance = 0.1)
   expect_lt(inside, terra::ncell(r))
 })
+
+test_that("worldclim_future_region validates its arguments offline", {
+  expect_error(worldclim_future_region("tmin", c(-72, -71, -36, -35),
+                                       path = tempfile()), "gcm")
+  expect_error(worldclim_future_region("tmin", c(-72, -71, -36, -35),
+                                       gcm = "bad name!", path = tempfile()),
+               "gcm")
+  expect_error(worldclim_future_region("tmin", c(-72, -71, -36, -35),
+                                       gcm = "MIROC6", ssp = "999",
+                                       path = tempfile()), "arg")
+  expect_error(worldclim_future_region("tavg", c(-72, -71, -36, -35),
+                                       gcm = "MIROC6", path = tempfile()),
+               "arg")
+  expect_error(worldclim_future_region("tmin", "Chile", gcm = "MIROC6",
+                                       path = tempfile()), "region")
+  expect_true(is.character(worldclim_cmip6_gcms))
+  expect_true("MPI-ESM1-2-HR" %in% worldclim_cmip6_gcms)
+  expect_false(anyDuplicated(worldclim_cmip6_gcms) > 0)
+})
+
+test_that("worldclim_future_region reads a window remotely and caches it", {
+  skip_on_cran()
+  skip_if_not(identical(Sys.getenv("THERMIFY_ONLINE_TESTS"), "true"),
+              "set THERMIFY_ONLINE_TESTS=true to run network tests")
+  dir <- tempfile()
+  e <- c(-72.36, -72.30, -36.00, -35.94)
+  r <- worldclim_future_region("tmin", e, gcm = "MPI-ESM1-2-HR",
+                               ssp = "ssp245", period = "2041-2060",
+                               path = dir)
+  expect_equal(terra::nlyr(r), 12)
+  expect_equal(names(r), sprintf("m%02d", 1:12))
+  expect_match(attr(r, "source"), "MPI-ESM1-2-HR_ssp245_2041-2060")
+  again <- worldclim_future_region("tmin", e, gcm = "MPI-ESM1-2-HR",
+                                   ssp = "245", period = "2041-2060",
+                                   path = dir)
+  expect_identical(attr(again, "source"), "cache")
+  # The projection is warmer than the 1970-2000 baseline.
+  now <- worldclim_region("tmin", e, dir)
+  expect_gt(mean(terra::values(r) - terra::values(now), na.rm = TRUE), 0)
+  expect_error(worldclim_future_region("tmin", e, gcm = "NOT-A-MODEL",
+                                       path = dir), "no tmin projection")
+})

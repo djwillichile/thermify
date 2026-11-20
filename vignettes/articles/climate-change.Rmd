@@ -1,0 +1,215 @@
+---
+title: "Projected change of thermal indices: WorldClim CMIP6"
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", echo = FALSE,
+                      fig.width = 9, fig.height = 6, dpi = 96,
+                      out.width = "100%")
+library(thermify)
+province <- read.csv("data/cc-cauquenes-province.csv")
+stations_cc <- read.csv("data/cc-ceaza-stations.csv")
+stations <- read.csv("data/ceaza-stations.csv", encoding = "UTF-8")
+index_label <- c(gdd = "Degree-days (base 10 degC)",
+                 ch = "Chilling hours (0-7.2 degC)", cu = "Utah chill units",
+                 cp = "Chill portions (Dynamic)")
+unit <- c(gdd = "degC day", ch = "h", cu = "units", cp = "portions")
+ssp_label <- c("245" = "SSP2-4.5", "585" = "SSP5-8.5")
+```
+
+How much would degree-days and winter chill change by mid-century? This page
+uses the WorldClim 2.1 downscaled CMIP6 projections, read with
+`worldclim_future_region()`, for **14 global climate models (GCMs)**, two
+scenarios (SSP2-4.5 and SSP5-8.5) and the period **2041-2060**, against the
+WorldClim 1970-2000 baseline.
+
+> **Read these numbers as changes, not as future values.** The validation
+> with observed stations
+> ([CEAZA-Met article](validation-ceaza.html)) showed that WorldClim and
+> monthly climatologies have large errors for chill, so this page reports
+> the **change** between the future and the baseline of the same data,
+> where much of that error cancels. It also reports the spread between
+> models: a single GCM can be far from the consensus.
+
+Scripts: `data-raw/climate-change/`. Heat season 1 September - 30 April;
+chill season 1 May - 31 August.
+
+## Province of Cauquenes (Maule)
+
+Indices computed with `thermify_rast()` from the monthly WorldClim surfaces
+(degree-days with the averaging method; chill with the Linvill hourly
+reconstruction, `ch_methods = "hourly"`).
+
+```{r province-table}
+base <- province[province$ssp == "baseline", ]
+rows <- list()
+for (s in c("245", "585")) for (ix in names(index_label)) {
+  b <- base$value[base$index == ix]
+  d <- province$value[province$ssp == s & province$index == ix] - b
+  rows[[length(rows) + 1]] <- data.frame(
+    Scenario = ssp_label[[s]], Index = index_label[[ix]],
+    Baseline = sprintf("%.0f %s", b, unit[[ix]]),
+    `Median change` = sprintf("%+.0f (%+.0f %%)", stats::median(d),
+                              100 * stats::median(d) / b),
+    `Range of 14 GCMs` = sprintf("%+.0f to %+.0f", min(d), max(d)),
+    check.names = FALSE)
+}
+knitr::kable(do.call(rbind, rows), row.names = FALSE, caption = paste(
+  "Province mean, 2041-2060 against 1970-2000. Baselines are WorldClim",
+  "values and inherit their errors; use the changes."))
+```
+
+```{r maps, fig.height = 7}
+prov <- cauquenes_boundary("provincia", crs = "EPSG:4326")
+ix_show <- c("gdd", "ch", "cp")
+pal <- list(gdd = grDevices::hcl.colors(30, "YlOrRd", rev = TRUE),
+            ch = grDevices::hcl.colors(30, "Blues", rev = FALSE),
+            cp = grDevices::hcl.colors(30, "Blues", rev = FALSE))
+op <- par(mfrow = c(2, 3), mar = c(1, 1, 3, 5))
+for (s in c("245", "585")) for (ix in ix_show) {
+  r <- terra::rast(sprintf("data/cc-cauquenes-%s-ssp%s.tif", ix, s))
+  rng <- range(unlist(lapply(c("245", "585"), function(ss) {
+    terra::minmax(terra::rast(sprintf("data/cc-cauquenes-%s-ssp%s.tif",
+                                      ix, ss))[["median_change"]])
+  })))
+  terra::plot(r[["median_change"]], col = pal[[ix]], range = rng,
+              axes = FALSE, mar = c(1, 1, 3, 5),
+              main = sprintf("%s\n%s (%s)", ssp_label[[s]],
+                             sub(" \\(.*", "", index_label[[ix]]),
+                             unit[[ix]]), cex.main = 0.95)
+  terra::lines(prov)
+}
+par(op)
+```
+
+Median change across the 14 GCMs, 2041-2060. For degree-days, chilling
+hours and Utah units all 14 models agree on the sign of the change in every
+cell. For chill portions they do not everywhere: in the coldest fifth of the
+province (winter mean temperature of about 6-8 degrees C) the median change
+is close to zero, sometimes slightly positive, and the models split; in the
+rest every model projects a loss, larger where winters are milder. This is
+expected from the Dynamic model, in which chill accumulates most efficiently
+at moderate temperatures: a cold site can lose little chill, or even gain
+some, from a moderate warming.
+
+### The choice of chill model changes the conclusion
+
+Under the same warming, **chilling hours fall by about half, but chill
+portions fall by less than a tenth**. Chilling hours count every hour
+between 0 and 7.2 degrees C and ignore that slightly warmer hours still
+contribute to chill accumulation; the Dynamic model, which describes chill
+accumulation and its reversal by heat, responds much less to a moderate
+warming. Studies that report future chill only as chilling hours therefore
+tend to overstate the loss (Luedeling et al. 2011). For planning,
+**prefer chill portions**, and report chilling hours only for comparison
+with older literature.
+
+## CEAZA-Met stations (north-central Chile): delta method
+
+At 29 of the 30 stations of the [validation](validation-ceaza.html), each model's
+monthly change at the station's WorldClim cell (future minus 1970-2000) is
+applied to **every hour of the station's observed record**: the shift goes
+from the change of the minimum at the daily minimum to the change of the
+maximum at the daily maximum. The indices are then computed from the
+modified hourly series, season by season, exactly as the reference of the
+validation. This keeps the observed day-to-day and year-to-year variability,
+and the present-day baseline is the observed index. Punta de Choros is
+excluded: the station is on the shoreline and its WorldClim cell is sea
+(no data), so there is no model change to apply.
+
+A simpler variant, adding the change to the station's monthly climatology,
+is **not** used: monthly climatologies lose the cold nights, give zero chill
+portions at several interior stations that actually accumulate 27-31
+portions per season, and make marginal sites lose all their chill under any
+warming.
+
+```{r stations, fig.height = 5}
+st <- merge(stations_cc, stations, by = "station")
+gcm_median <- stats::aggregate(
+  cbind(baseline, change) ~ station + name + elevation + ssp + index,
+  data = st, FUN = stats::median)
+op <- par(mfrow = c(1, 2), mar = c(4.5, 4.5, 3, 1))
+for (ix in c("gdd", "cp")) {
+  d <- gcm_median[gcm_median$index == ix, ]
+  rel <- ifelse(abs(d$baseline) > 1e-9, 100 * d$change / d$baseline, NA)
+  cols <- ifelse(d$ssp == 245, "#0B5563", "#E8702A")
+  plot(d$elevation, rel, pch = 21, bg = adjustcolor(cols, 0.75),
+       col = "white", cex = 1.3, las = 1, xlab = "Station elevation (m)",
+       ylab = "Median relative change (%)", main = index_label[[ix]],
+       cex.main = 0.95)
+  abline(h = 0, col = "grey50")
+  legend(if (ix == "gdd") "topright" else "bottomright",
+         legend = ssp_label, pt.bg = c("#0B5563", "#E8702A"), pch = 21,
+         col = "white", pt.cex = 1.3, bty = "n")
+}
+par(op)
+```
+
+Each point is a station and scenario (median of the 14 GCMs).
+
+```{r stations-table}
+d <- gcm_median
+d$rel <- ifelse(abs(d$baseline) > 1e-9, 100 * d$change / d$baseline, NA)
+tab <- do.call(rbind, lapply(c("245", "585"), function(s) {
+  do.call(rbind, lapply(names(index_label), function(ix) {
+    x <- d[d$ssp == as.integer(s) & d$index == ix, ]
+    data.frame(Scenario = ssp_label[[s]], Index = index_label[[ix]],
+               `Median over stations` = sprintf("%+.0f %%",
+                 stats::median(x$rel, na.rm = TRUE)),
+               `Stations losing all chill` = if (ix == "gdd") "-" else
+                 as.character(sum(x$baseline > 0 & x$baseline + x$change <= 0)),
+               check.names = FALSE)
+  }))
+}))
+warm <- stats::aggregate(cbind(delta_tmin, delta_tmax) ~ ssp,
+                         data = stations_cc, FUN = stats::median)
+knitr::kable(tab, row.names = FALSE, caption = sprintf(paste(
+  "Median relative change over the stations (each station: median of 14",
+  "GCMs). Median warming at the stations: SSP2-4.5 %+.1f degC (Tmin) and",
+  "%+.1f degC (Tmax); SSP5-8.5 %+.1f and %+.1f degC."),
+  warm$delta_tmin[warm$ssp == 245], warm$delta_tmax[warm$ssp == 245],
+  warm$delta_tmin[warm$ssp == 585], warm$delta_tmax[warm$ssp == 585]))
+```
+
+With a similar warming at the stations (about +1.9 degrees C under SSP2-4.5),
+the semi-arid north loses a much larger share of its chill than Cauquenes:
+the median station loses about **a third of its chill portions** (37 % under
+SSP2-4.5, 42 % under SSP5-8.5), against less than a tenth in Cauquenes. The
+losses are largest on the coast (about two thirds at Caleta El Toro, La
+Serena and Coquimbo, below 130 m) and smallest at the highest station
+(about 10 % at Los Molles, 2,543 m). No station loses all its chill
+portions. Chilling hours, which already fall by about half at the median
+station, disappear at the coastal stations whose baseline is only 2-13 hours per
+season (two stations under SSP2-4.5, three under SSP5-8.5). Utah units can be negative because the Utah model
+subtracts chill for warm hours, so their relative changes are unstable near
+zero and exceed -100 % at some stations; use them with care in mild
+climates.
+
+## Limitations
+
+* **Changes, not forecasts.** WorldClim future surfaces add each model's
+  change to the 1970-2000 baseline; the results describe a climate
+  centred on 2041-2060, not any particular year.
+* **Monthly data in Cauquenes.** The province maps are computed from
+  monthly climatologies, which lose day-to-day variability and bias absolute
+  chill values (about -25 % for chilling hours in the validation); changes
+  are less affected but not immune. The station analysis avoids this by
+  using the observed hourly records, but assumes that day-to-day and
+  diurnal variability stay as they are.
+* **Model spread.** The table shows the range of 14 GCMs; some (for
+  example CanESM5 and UKESM1-0-LL) warm more than most models. The median
+  is the summary to use.
+* **Baseline period.** The baseline is 1970-2000; part of the projected
+  change has already happened.
+* **Validation.** Chill estimates have been validated only in semi-arid
+  north-central Chile; the central-south is pending.
+
+## References
+
+Luedeling, E., Girvetz, E. H., Semenov, M. A., & Brown, P. H. (2011).
+Climate change affects winter chill for temperate fruit and nut trees.
+*PLoS ONE*, 6(5), e20155. <https://doi.org/10.1371/journal.pone.0020155>
+
+Fick, S. E., & Hijmans, R. J. (2017). WorldClim 2: new 1-km spatial
+resolution climate surfaces for global land areas. *International Journal
+of Climatology*, 37(12), 4302-4315. <https://doi.org/10.1002/joc.5086>

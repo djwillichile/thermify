@@ -18,7 +18,7 @@ thermify_rast(
   base = c(5, 10),
   upper = NULL,
   cutoff = "horizontal",
-  ch_methods = "sine",
+  ch_methods = "hourly",
   ch_lower = 0,
   ch_upper = 7.2,
   hourly_method = c("linvill", "sine"),
@@ -64,8 +64,11 @@ temperatures.}
 
 \item{upper, cutoff}{Upper GDD threshold and cutoff (see \code{\link[=degree_days]{degree_days()}}).}
 
-\item{ch_methods}{Chilling-hours methods: \code{"sine"}, \code{"triangle"} (from
-daily extremes) and/or \code{"hourly"} (counted on hourly temperatures).}
+\item{ch_methods}{Chilling-hours methods: \code{"hourly"} (the default;
+counted on observed or reconstructed hourly temperatures), and/or
+\code{"sine"}, \code{"triangle"} (analytical estimates from daily extremes). The
+default was \code{"sine"} before thermify 0.5.0; validation against observed
+hourly records showed that the hourly count is much less biased.}
 
 \item{ch_lower, ch_upper}{Chilling interval (degrees Celsius).}
 

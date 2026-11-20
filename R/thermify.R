@@ -39,8 +39,11 @@
 #'   temperatures.
 #' @param base Lower GDD thresholds (degrees Celsius); one result per value.
 #' @param upper,cutoff Upper GDD threshold and cutoff (see [degree_days()]).
-#' @param ch_methods Chilling-hours methods: `"sine"`, `"triangle"` (from
-#'   daily extremes) and/or `"hourly"` (counted on hourly temperatures).
+#' @param ch_methods Chilling-hours methods: `"hourly"` (the default;
+#'   counted on observed or reconstructed hourly temperatures), and/or
+#'   `"sine"`, `"triangle"` (analytical estimates from daily extremes). The
+#'   default was `"sine"` before thermify 0.5.0; validation against observed
+#'   hourly records showed that the hourly count is much less biased.
 #' @param ch_lower,ch_upper Chilling interval (degrees Celsius).
 #' @param hourly_method Hourly reconstruction, `"linvill"` or `"sine"`.
 #' @param chill_period,heat_period Accumulation windows as
@@ -74,11 +77,12 @@ thermify <- function(tmin = NULL, tmax = NULL, temperature = NULL,
                      indices = c("gdd", "ch", "cu", "cp"),
                      gdd_methods = c("average", "single_sine"),
                      base = c(5, 10), upper = NULL, cutoff = "horizontal",
-                     ch_methods = "sine", ch_lower = 0, ch_upper = 7.2,
+                     ch_methods = "hourly", ch_lower = 0, ch_upper = 7.2,
                      hourly_method = c("linvill", "sine"),
                      chill_period = c("05-01", "08-31"),
                      heat_period = c("09-01", "04-30"),
                      gdd_weights = NULL) {
+  if (missing(ch_methods) && "ch" %in% indices) note_ch_default()
   input <- match.arg(input)
   temporal <- match.arg(temporal)
   consistency <- match.arg(consistency)

@@ -66,7 +66,7 @@ thermify_rast <- function(tmin, tmax, output_dir, year = 2023,
                           indices = c("gdd", "ch", "cu", "cp"),
                           gdd_methods = c("average", "single_sine"),
                           base = c(5, 10), upper = NULL,
-                          cutoff = "horizontal", ch_methods = "sine",
+                          cutoff = "horizontal", ch_methods = "hourly",
                           ch_lower = 0, ch_upper = 7.2,
                           hourly_method = c("linvill", "sine"),
                           chill_period = c("05-01", "08-31"),
@@ -78,6 +78,7 @@ thermify_rast <- function(tmin, tmax, output_dir, year = 2023,
                           keep_daily = FALSE, overwrite = FALSE,
                           progress = getOption("thermify.progress",
                                                interactive())) {
+  if (missing(ch_methods) && "ch" %in% indices) note_ch_default()
   temporal <- match.arg(temporal)
   consistency <- match.arg(consistency)
   hourly_method <- match.arg(hourly_method)

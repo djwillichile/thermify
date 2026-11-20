@@ -46,3 +46,26 @@ test_that("daily and hourly inputs are explicit", {
                         dates = dates), "24 values")
   expect_error(thermify(tmin_m, tmax_m, temporal = "native"), "latitude")
 })
+
+test_that("chilling hours default to the hourly count, with a one-time note", {
+  tmin <- c(11.4, 11.1, 9.2, 6.8, 5.3, 3.9, 3.1, 3.6, 4.6, 6.3, 8.4, 10.3)
+  tmax <- c(28.9, 28.6, 26.2, 21.9, 17.6, 14.4, 14.0, 15.4, 17.6, 20.8, 24.2,
+            27.3)
+  the <- getFromNamespace("the", "thermify")
+  old <- the$ch_default_noted
+  on.exit(the$ch_default_noted <- old)
+  the$ch_default_noted <- NULL
+  expect_message(
+    res <- thermify(tmin, tmax, input = "monthly", latitude = -35.97,
+                    temporal = "native", indices = "ch"),
+    "now defaults to \"hourly\"")
+  expect_true("ch_hourly" %in% unique(res$summary$key))
+  expect_false("ch_sine" %in% unique(res$summary$key))
+  # Shown once per session, and never when the method is chosen explicitly.
+  expect_no_message(thermify(tmin, tmax, input = "monthly", latitude = -35.97,
+                             temporal = "native", indices = "ch"))
+  the$ch_default_noted <- NULL
+  expect_no_message(thermify(tmin, tmax, input = "monthly", latitude = -35.97,
+                             temporal = "native", indices = "ch",
+                             ch_methods = "sine"))
+})

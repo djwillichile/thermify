@@ -8,7 +8,7 @@ thermal_config <- function(indices = c("gdd", "ch", "cu", "cp"),
                            gdd_methods = c("average", "single_sine"),
                            base = c(5, 10), upper = NULL,
                            cutoff = "horizontal",
-                           ch_methods = "sine", ch_lower = 0, ch_upper = 7.2,
+                           ch_methods = "hourly", ch_lower = 0, ch_upper = 7.2,
                            hourly_method = "linvill",
                            chill_period = c("05-01", "08-31"),
                            heat_period = c("09-01", "04-30"),
@@ -181,4 +181,14 @@ aggregate_daily <- function(daily, dates, cyclic, cfg,
 index_units <- function(key) {
   if (startsWith(key, "gdd_")) return("degC day")
   switch(sub("_.*", "", key), ch = "h", cu = "chill units", cp = "portions")
+}
+
+# Once per session: tell users who rely on the default that it changed.
+note_ch_default <- function() {
+  if (isTRUE(the$ch_default_noted)) return(invisible())
+  the$ch_default_noted <- TRUE
+  message("`ch_methods` now defaults to \"hourly\" (thermify 0.5.0). ",
+          "Set `ch_methods = \"sine\"` for the previous estimate. ",
+          "This message is shown once per session.")
+  invisible()
 }

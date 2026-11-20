@@ -9,7 +9,7 @@ Cauquenes, Chile, computed by thermify from WorldClim
 
 ``` r
 
-remotes::install_github("djwillichile/thermify@v0.4.0")
+remotes::install_github("djwillichile/thermify@v0.5.0")
 ```
 
 **Live demo:** [worked example for the province of Cauquenes,
@@ -39,7 +39,7 @@ after a mean-preserving temporal densification.
 
 ``` r
 
-remotes::install_github("djwillichile/thermify@v0.4.0")   # release
+remotes::install_github("djwillichile/thermify@v0.5.0")   # release
 remotes::install_github("djwillichile/thermify")          # development
 ```
 

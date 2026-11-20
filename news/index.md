@@ -1,6 +1,23 @@
 # Changelog
 
-## thermify (development version)
+## thermify 0.5.0
+
+First release validated against observed hourly temperatures (30
+CEAZA-Met stations), with a change of default that follows from that
+validation, and WorldClim CMIP6 projections. Results of
+[`thermify()`](https://djwillichile.github.io/thermify/reference/thermify.md)
+and
+[`thermify_rast()`](https://djwillichile.github.io/thermify/reference/thermify_rast.md)
+change only for chilling hours when `ch_methods` is not set (see
+“Breaking changes”); all other methods and indices are unchanged.
+
+The validation covers the semi-arid north-central Chile (Coquimbo and
+Atacama regions, from the coast to 2,543 m). It has not yet been
+repeated in the central-south: hourly records were requested from INIA,
+and the recommendations may need revision for wetter or colder climates.
+
+Not yet included: the Winkler, Huglin and Cool Night viticultural
+indices.
 
 ### Breaking changes
 

@@ -158,9 +158,9 @@ time and estimated time remaining).
   the method.
 
 - About 400 expectations in unit, acceptance (one per [user
-  story](https://djwillichile.github.io/thermify/docs/USER_STORIES.md)),
+  story](https://github.com/djwillichile/thermify/blob/main/docs/USER_STORIES.md)),
   integration and error-path tests, with 94 % line coverage; see
-  [docs/TESTING.md](https://djwillichile.github.io/thermify/docs/TESTING.md).
+  [docs/TESTING.md](https://github.com/djwillichile/thermify/blob/main/docs/TESTING.md).
 
 Computational verification is not empirical validation; see
 [`vignette("validation")`](https://djwillichile.github.io/thermify/articles/validation.md)
@@ -168,7 +168,7 @@ for the station-based protocol.
 
 ## Case study
 
-[`examples/cauquenes`](https://djwillichile.github.io/thermify/examples/cauquenes)
+[`examples/cauquenes`](https://github.com/djwillichile/thermify/tree/main/examples/cauquenes)
 computes all indices for a 20 x 20 km window around Cauquenes (Maule,
 Chile) from WorldClim 2.1.
 
@@ -201,14 +201,14 @@ are listed in each function’s help page.
 ## Contributing
 
 Bug reports, ideas and pull requests are welcome: see the [contributing
-guide](https://djwillichile.github.io/thermify/CONTRIBUTING.md) and the
-issues labelled
+guide](https://github.com/djwillichile/thermify/blob/main/.github/CONTRIBUTING.md)
+and the issues labelled
 [`good first issue`](https://github.com/djwillichile/thermify/labels/good%20first%20issue).
 Questions go to
 [Discussions](https://github.com/djwillichile/thermify/discussions).
 Please note that this project is released with a [Contributor Code of
-Conduct](https://djwillichile.github.io/thermify/CODE_OF_CONDUCT.md); by
-participating you agree to abide by its terms.
+Conduct](https://github.com/djwillichile/thermify/blob/main/.github/CODE_OF_CONDUCT.md);
+by participating you agree to abide by its terms.
 
 ## Acknowledgements
 

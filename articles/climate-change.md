@@ -139,11 +139,19 @@ hours, so their relative changes are unstable near zero and exceed -100
 The figure below follows degree-days and chill portions through time, in
 the style of the CMIP6 projection plots of Brunner et al. (2020), for
 four scenarios (SSP1-2.6, SSP2-4.5, SSP3-7.0 and SSP5-8.5) and the four
-20-year periods of WorldClim (2021-2040 to 2081-2100). Each box spans
-its period: the line is the median of the GCMs and the shaded box the
-likely range (17th to 83rd percentile, 66 % of the models). WorldClim
-provides 20-year means, not yearly projections, so the boxes describe
-the climate of each period, not a forecast of individual years.
+20-year periods of WorldClim (2021-2040 to 2081-2100). WorldClim
+provides 20-year means, not yearly projections. Each model’s trajectory
+is therefore drawn through its four period means, placed at the centre
+of each period (2030, 2050, 2070 and 2090), from a common starting point
+(the WorldClim 1970-2000 value, centred on 1985, for the province; the
+observed mean, centred on the record’s midpoint, for the station), with
+a monotone spline; the curves end in 2090, the centre of the last
+period. The line is the median of the models’ trajectories and the
+shaded band the likely range (17th to 83rd percentile, 66 % of the
+models), year by year. The curves describe the climate around each year,
+not a forecast of individual years: unlike yearly model runs, they carry
+no year-to-year variability, which the historical and observed series
+show.
 
 - **Cauquenes (left).** The historical series 1951-2023 comes from the
   WorldClim 2.1 historical monthly weather data (CRU-TS 4.09 downscaled
@@ -152,11 +160,20 @@ the climate of each period, not a forecast of individual years.
   the province-mean temperatures, so the past and the projections are
   directly comparable. As monthly-based estimates, their absolute values
   carry the biases measured in the validation.
-- **Vicuna (right; CEAZA-Met, Elqui valley, 634 m).** Observed seasons
-  from the station’s hourly record and projections with the delta method
-  on that record. Each model’s change is taken from the period of the
-  record (centred on about 2015) to each future period, so that the
-  warming already contained in the record is not counted twice.
+- **Vicuna (right; CEAZA-Met, Elqui valley, 634 m).** The historical
+  series 1951-2023 at the station’s WorldClim cell (same monthly method
+  as for the province), the observed seasons of the station’s hourly
+  record, and projections with the delta method on that record. Each
+  model’s change is taken from the period of the record (centred on
+  about 2015) to each future period, so that the warming already
+  contained in the record is not counted twice. All three are shown as
+  **relative change from 2005-2023**, the period of the record: the
+  historical series and the observed record differ in level (about 76
+  chill portions per season at the 2.5-arc-minute cell with the monthly
+  method, against 37 observed at the station; the cell averages about
+  4.6 km of terrain around a station on the valley floor, and the
+  monthly method has its own biases), so only their changes and
+  variability are comparable.
 
 ![](climate-change_files/figure-html/timeseries-1.png)
 
@@ -167,15 +184,26 @@ What the figure shows:
   and the 2021-2040 projections continue that trend. After mid-century
   the scenarios separate: by 2081-2100 the median reaches 1553
   degree-days under SSP1-2.6 and 2252 under SSP5-8.5.
+
 - **Chill has not yet changed in Cauquenes, but it will under high
   emissions.** Chill portions have stayed near 91 per season since 1951.
   Under SSP1-2.6 they hardly change (89 in 2081-2100); under SSP5-8.5
   they fall to 60 by 2081-2100.
+
 - **The semi-arid north is far more exposed.** At Vicuna the observed
   mean is 37 chill portions per season; by 2081-2100 the median is 28
   under SSP1-2.6 and 7 under SSP5-8.5, too few for most temperate fruit
-  trees. The scenario chosen matters far more than the model: the boxes
+  trees. The scenario chosen matters far more than the model: the bands
   of SSP1-2.6 and SSP5-8.5 do not overlap after 2060.
+
+- **Monthly data hide the year-to-year variability of chill.** At Vicuna
+  the historical series and the observed seasons agree on degree-days
+  (year-to-year standard deviation of about 6 % and 5 % in 2005-2023),
+  but the observed chill portions vary far more than the monthly series
+  (21 % against 8 %): monthly means smooth out the cold spells that
+  drive chill accumulation. The historical series also shows that
+  degree-days at Vicuna have risen by about 12 % since 1971-1980, while
+  chill has not changed.
 
 Two details are worth reading correctly. The WorldClim 1970-2000 value
 of chill portions (95) is higher than the mean of the historical seasons
@@ -183,10 +211,9 @@ over the same years (91), while for degree-days both agree: the Dynamic
 model is non-linear, and the index of a mean climate is not the mean of
 the indices of individual years. The projections are built on the
 WorldClim climatology, so compare them with the dashed line rather than
-with single historical seasons. Second, at Vicuna the first box
-(2021-2040) already sits below the observed mean: the record is centred
-on about 2015, and the 2021-2040 box describes the models’ climate some
-15 years later.
+with single historical seasons. Second, the interpolation between period
+centres is a smooth guide, not a model result in its own right: only the
+values at 2030, 2050, 2070 and 2090 come from the projections.
 
 ## Limitations
 

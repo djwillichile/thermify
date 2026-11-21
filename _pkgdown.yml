@@ -6,9 +6,14 @@ template:
   bslib:
     primary: "#0B5563"
     link-color: "#0B5563"
+  opengraph:
+    image:
+      src: man/figures/social-preview.png
+      alt: "thermify: degree-days and winter chill in R"
 
 home:
   title: "thermify: agroclimatic thermal indices in R"
+  description: "R package for growing degree-days, chilling hours and chill portions from hourly, daily or monthly temperatures and WorldClim rasters, validated with station data."
 
 navbar:
   structure:

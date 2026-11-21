@@ -61,40 +61,14 @@ hist_url <- function(var, year, month) {
                  "wc2.1_cruts4.09_2.5m_%s_%d-%02d.tif"),
           var, dec, var, year, month)
 }
-hist_points_monthly <- function(pts, years, file, cores = 4) {
-  if (file.exists(file)) return(utils::read.csv(file))
-  box <- terra::ext(terra::buffer(pts, 10000))
-  grid <- expand.grid(month = 1:12, year = years, var = c("tmin", "tmax"),
-                      stringsAsFactors = FALSE)
-  vals <- parallel::mclapply(seq_len(nrow(grid)), function(i) {
-    g <- grid[i, ]
-    for (attempt in 1:3) {
-      v <- tryCatch({
-        r <- terra::crop(terra::rast(hist_url(g$var, g$year, g$month)), box)
-        as.vector(as.matrix(terra::extract(r, pts, ID = FALSE)))
-      }, error = function(e) NULL)
-      if (!is.null(v)) return(v)
-      Sys.sleep(5 * attempt)
-    }
-    stop("Could not read ", hist_url(g$var, g$year, g$month))
-  }, mc.cores = cores)
-  out <- do.call(rbind, lapply(seq_len(nrow(grid)), function(i) {
-    data.frame(point = seq_along(vals[[i]]), var = grid$var[i],
-               year = grid$year[i], month = grid$month[i], value = vals[[i]])
-  }))
-  utils::write.csv(out, file, row.names = FALSE)
-  out
-}
-
-# Monthly warming already present in a station record: mean of the record
-# years minus the 1970-2000 mean, from the historical series of one point.
-# The CMIP6 changes of WorldClim are relative to 1970-2000, so this part is
-# subtracted before they are applied to a recent record.
-recent_warming <- function(hist, var, record_years) {
-  h <- hist[hist$var == var, ]
-  rec <- tapply(h$value[h$year %in% record_years],
-                h$month[h$year %in% record_years], mean)
-  ref <- tapply(h$value[h$year %in% 1970:2000],
-                h$month[h$year %in% 1970:2000], mean)
-  as.vector(rec - ref)
+# Delta method relative to the period of a station record. The CMIP6 changes
+# of WorldClim are relative to 1970-2000 (centred on 1985); the record is
+# recent (centred on `record_mid`, about 2015). Each model's change at the
+# record's midpoint is interpolated linearly between 1985 (no change) and its
+# 2021-2040 change (centred on 2030), and subtracted from its change for the
+# target period, so that the shift applied to the record is the model's own
+# change from the record period to the target period.
+change_from_record <- function(delta_period, delta_2030, record_mid) {
+  w <- min(max((record_mid - 1985) / (2030 - 1985), 0), 1)
+  delta_period - w * delta_2030
 }

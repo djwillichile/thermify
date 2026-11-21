@@ -18,11 +18,11 @@
 # the present-day baseline equals the observed indices.
 #
 # The CMIP6 changes are relative to 1970-2000, while the records cover about
-# 2004-2025 and already contain part of that warming. The monthly warming of
-# the record years relative to 1970-2000, from the WorldClim historical
-# monthly weather (CRU-TS 4.09) at the station's cell, is therefore
-# subtracted from each model's change before it is applied, so that it is not
-# counted twice.
+# 2004-2025 and already contain part of that warming. Each model's change is
+# therefore taken from the record period to 2041-2060: its change at the
+# record's midpoint is interpolated between 1985 and its 2021-2040 change and
+# subtracted (change_from_record() in helpers.R), so that the warming already
+# in the record is not counted twice.
 #
 #   Rscript data-raw/climate-change/02-ceaza-stations.R
 #
@@ -57,9 +57,6 @@ wc_now <- list(tmin = cell(worldclim_region("tmin", region, wc_dir,
                                             mask = FALSE)))
 
 source("data-raw/climate-change/helpers.R")
-hist <- hist_points_monthly(pts, 1970:2024,
-                            file.path(work, "hist-stations-monthly.csv"),
-                            cores = cores)
 
 run_station <- function(i) {
   code <- stations$station[i]
@@ -74,11 +71,7 @@ run_station <- function(i) {
   if (is.null(base)) return(NULL)
   base_mean <- tapply(base$value, base$index, mean)
   n_seasons <- tapply(base$value, base$index, length)
-  record_years <- sort(unique(as.integer(format(h$time, "%Y"))))
-  record_years <- record_years[record_years <= 2024]
-  hist_i <- hist[hist$point == i, ]
-  past_min <- recent_warming(hist_i, "tmin", record_years)
-  past_max <- recent_warming(hist_i, "tmax", record_years)
+  record_mid <- mean(as.integer(format(h$time, "%Y")))
   for (s in ssps) for (g in gcms) {
     fut_tmin <- cell(worldclim_future_region("tmin", region, gcm = g,
                                              ssp = s, period = period,
@@ -86,8 +79,16 @@ run_station <- function(i) {
     fut_tmax <- cell(worldclim_future_region("tmax", region, gcm = g,
                                              ssp = s, period = period,
                                              path = wc_dir, mask = FALSE))
-    d_min <- fut_tmin[i, ] - wc_now$tmin[i, ] - past_min
-    d_max <- fut_tmax[i, ] - wc_now$tmax[i, ] - past_max
+    t30 <- cell(worldclim_future_region("tmin", region, gcm = g, ssp = s,
+                                        period = "2021-2040", path = wc_dir,
+                                        mask = FALSE))
+    x30 <- cell(worldclim_future_region("tmax", region, gcm = g, ssp = s,
+                                        period = "2021-2040", path = wc_dir,
+                                        mask = FALSE))
+    d_min <- change_from_record(fut_tmin[i, ] - wc_now$tmin[i, ],
+                                t30[i, ] - wc_now$tmin[i, ], record_mid)
+    d_max <- change_from_record(fut_tmax[i, ] - wc_now$tmax[i, ],
+                                x30[i, ] - wc_now$tmax[i, ], record_mid)
     if (anyNA(c(d_min, d_max))) next
     fut <- season_indices(h$time, shift_hourly(h, d_min, d_max))
     fut_mean <- tapply(fut$value, fut$index, mean)
@@ -99,7 +100,7 @@ run_station <- function(i) {
       future = as.vector(fut_mean[ix]),
       change = as.vector(fut_mean[ix] - base_mean[ix]),
       delta_tmin = mean(d_min), delta_tmax = mean(d_max),
-      past_tmin = mean(past_min), past_tmax = mean(past_max))
+      record_mid = round(record_mid, 1))
   }
   message(stations$name[i], ": done")
   do.call(rbind, rows)

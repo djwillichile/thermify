@@ -17,9 +17,9 @@
 #  * Vicuna (CEAZA-Met station 6, Elqui valley, 634 m). Observed seasons
 #    from the station's hourly record, and projections with the delta
 #    method on that record (see 02-ceaza-stations.R) for the same scenarios
-#    and periods. The warming already present in the record (relative to
-#    1970-2000, from the historical series at the station's cell) is
-#    subtracted from each model's change, so that it is not counted twice.
+#    and periods. Each model's change is taken from the record period
+#    (about 2015) to the target period, not from 1970-2000, so that the
+#    warming already contained in the record is not counted twice.
 #
 # Each season is labelled by the year in which it starts (heat season
 # 1 Sep - 30 Apr, chill season 1 May - 31 Aug).
@@ -157,16 +157,8 @@ now_tmin <- cell(worldclim_region("tmin", region, wc_dir, mask = FALSE))
 now_tmax <- cell(worldclim_region("tmax", region, wc_dir, mask = FALSE))
 h <- readRDS(file.path(cache, "6.rds"))
 obs <- season_indices(h$time, h$prom, which = c("gdd", "cp"))
-# The CMIP6 changes are relative to 1970-2000, but the record is recent: the
-# warming already present in the record years (historical series at the
-# station's cell) is subtracted so that it is not counted twice.
-record_years <- sort(unique(as.integer(format(h$time, "%Y"))))
-record_years <- record_years[record_years <= 2024]
-hist_st <- hist_points_monthly(pt, 1970:2024,
-                               file.path(work, "hist-vicuna-monthly.csv"),
-                               cores = cores)
-past_tmin <- recent_warming(hist_st, "tmin", record_years)
-past_tmax <- recent_warming(hist_st, "tmax", record_years)
+# Changes are applied relative to the record period (change_from_record()).
+record_mid <- mean(as.integer(format(h$time, "%Y")))
 rows <- list(data.frame(source = "observed", ssp = NA, gcm = NA, period = NA,
                         year = as.integer(obs$season), index = obs$index,
                         value = obs$value))
@@ -175,10 +167,14 @@ proj <- parallel::mclapply(seq_len(nrow(combos)), function(k) {
   g <- combos$gcm[k]; s <- combos$ssp[k]; p <- combos$period[k]
   ft <- read_future("tmin", region, g, s, p, mask = FALSE)
   fx <- read_future("tmax", region, g, s, p, mask = FALSE)
-  if (is.null(ft) || is.null(fx)) return(NULL)
-  fut <- season_indices(h$time,
-                        shift_hourly(h, cell(ft) - now_tmin - past_tmin,
-                                     cell(fx) - now_tmax - past_tmax),
+  t30 <- read_future("tmin", region, g, s, "2021-2040", mask = FALSE)
+  x30 <- read_future("tmax", region, g, s, "2021-2040", mask = FALSE)
+  if (is.null(ft) || is.null(fx) || is.null(t30) || is.null(x30)) return(NULL)
+  d_min <- change_from_record(cell(ft) - now_tmin, cell(t30) - now_tmin,
+                              record_mid)
+  d_max <- change_from_record(cell(fx) - now_tmax, cell(x30) - now_tmax,
+                              record_mid)
+  fut <- season_indices(h$time, shift_hourly(h, d_min, d_max),
                         which = c("gdd", "cp"))
   m <- tapply(fut$value, fut$index, mean)
   data.frame(source = "projection", ssp = s, gcm = g, period = p, year = NA,

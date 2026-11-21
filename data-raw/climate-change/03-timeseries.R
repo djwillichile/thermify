@@ -162,6 +162,15 @@ record_mid <- mean(as.integer(format(h$time, "%Y")))
 rows <- list(data.frame(source = "observed", ssp = NA, gcm = NA, period = NA,
                         year = as.integer(obs$season), index = obs$index,
                         value = obs$value))
+# Fill the raster cache serially, so that the parallel workers below only
+# read it and never write the same cache file at the same time.
+for (k in seq_len(nrow(combos))) {
+  for (p in unique(c(combos$period[k], "2021-2040"))) {
+    for (v in c("tmin", "tmax")) {
+      read_future(v, region, combos$gcm[k], combos$ssp[k], p, mask = FALSE)
+    }
+  }
+}
 message("Vicuna: ", nrow(combos), " projections")
 proj <- parallel::mclapply(seq_len(nrow(combos)), function(k) {
   g <- combos$gcm[k]; s <- combos$ssp[k]; p <- combos$period[k]

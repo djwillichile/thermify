@@ -59,6 +59,15 @@ wc_now <- list(tmin = cell(worldclim_region("tmin", region, wc_dir,
 
 source("data-raw/climate-change/helpers.R")
 
+# Fill the raster cache serially: the parallel workers below then only read
+# it, and never write the same cache file at the same time.
+for (s in ssps) for (g in gcms) for (p in unique(c(period, "2021-2040"))) {
+  for (v in c("tmin", "tmax")) {
+    worldclim_future_region(v, region, gcm = g, ssp = s, period = p,
+                            path = wc_dir, mask = FALSE)
+  }
+}
+
 run_station <- function(i) {
   code <- stations$station[i]
   rows <- list()

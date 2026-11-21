@@ -6,6 +6,9 @@ This is a new submission.
 
 * GitHub Actions: Ubuntu (R release and oldrel-1), Windows (R release),
   macOS (R release).
+* R-hub v2: Linux, Windows, macOS (x86_64) and macOS (arm64), all with
+  R-devel.
+* win-builder: Windows, R-devel.
 * Local: Ubuntu 24.04, R release, `R CMD check --as-cran`.
 
 ## R CMD check results
@@ -48,3 +51,7 @@ This is a new submission.
   installed, a note says once per session how to install it; it is never
   shown during package checks and can be turned off with
   `options(thermify.tempify_hint = FALSE)`.
+* Spelling. The words flagged in the DESCRIPTION are spelled correctly:
+  surnames of cited authors (Fick, Fishman, Hijmans, Linvill), "et al.",
+  and the technical terms "agroclimatic", "climatologies", "densified"
+  and "natively".

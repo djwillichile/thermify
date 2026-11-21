@@ -147,15 +147,15 @@ progress (blocks done, elapsed time and estimated time remaining).
   method.
 
 * About 400 expectations in unit, acceptance (one per
-  [user story](docs/USER_STORIES.md)), integration and error-path tests,
-  with 94 % line coverage; see [docs/TESTING.md](docs/TESTING.md).
+  [user story](https://github.com/djwillichile/thermify/blob/main/docs/USER_STORIES.md)), integration and error-path tests,
+  with 94 % line coverage; see [docs/TESTING.md](https://github.com/djwillichile/thermify/blob/main/docs/TESTING.md).
 
 Computational verification is not empirical validation; see
 `vignette("validation")` for the station-based protocol.
 
 ## Case study
 
-[`examples/cauquenes`](examples/cauquenes) computes all indices for a
+[`examples/cauquenes`](https://github.com/djwillichile/thermify/tree/main/examples/cauquenes) computes all indices for a
 20 x 20 km window around Cauquenes (Maule, Chile) from WorldClim 2.1.
 
 ## Documentation
@@ -184,11 +184,11 @@ listed in each function's help page.
 ## Contributing
 
 Bug reports, ideas and pull requests are welcome: see the
-[contributing guide](.github/CONTRIBUTING.md) and the issues labelled
+[contributing guide](https://github.com/djwillichile/thermify/blob/main/.github/CONTRIBUTING.md) and the issues labelled
 [`good first issue`](https://github.com/djwillichile/thermify/labels/good%20first%20issue).
 Questions go to [Discussions](https://github.com/djwillichile/thermify/discussions).
 Please note that this project is released with a
-[Contributor Code of Conduct](.github/CODE_OF_CONDUCT.md); by participating
+[Contributor Code of Conduct](https://github.com/djwillichile/thermify/blob/main/.github/CODE_OF_CONDUCT.md); by participating
 you agree to abide by its terms.
 
 ## Acknowledgements

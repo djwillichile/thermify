@@ -1,4 +1,14 @@
-# thermify (development version)
+# thermify 0.5.1
+
+Prepares the package for CRAN and corrects the station results of the
+climate-change article. Computed results of the package functions are
+unchanged.
+
+* thermify no longer downloads Python or tempify without the user's
+  explicit request (see "Changes").
+* The station results of the climate-change article published with 0.5.0
+  counted part of the recent warming twice; they are corrected here (see
+  "Documentation"). The province results are unchanged.
 
 ## Changes
 
@@ -31,6 +41,11 @@
   counted the warming already contained in the records twice. The median
   loss of chill portions at the CEAZA-Met stations is 19 % under SSP2-4.5
   and 25 % under SSP5-8.5 (previously reported as 37 % and 42 %).
+* The Vicuna panel of that figure adds the WorldClim historical series
+  1951-2023 at the station's cell and shows the observed seasons as a
+  curve, as relative change from 2005-2023.
+* README links to files outside the source package now point to GitHub, and
+  the documentation site has a short description and a link-preview image.
 
 # thermify 0.5.0
 

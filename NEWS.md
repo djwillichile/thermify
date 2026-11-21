@@ -22,6 +22,9 @@
   portions through time: the province of Cauquenes (WorldClim historical
   monthly weather 1951-2023 and CMIP6 projections) and the Vicuna station
   (observed seasons and projections), for four scenarios and four periods.
+  Each model's trajectory is interpolated through its 20-year period means
+  with a monotone spline, and the figure shows the median and likely range
+  of the models year by year.
 * Correction of the station results of the climate-change article: the
   delta method now applies each model's change from the period of the
   station record (about 2015) to 2041-2060, instead of from 1970-2000, which

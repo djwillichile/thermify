@@ -148,7 +148,7 @@ progress (blocks done, elapsed time and estimated time remaining).
 
 * About 400 expectations in unit, acceptance (one per
   [user story](https://github.com/djwillichile/thermify/blob/main/docs/USER_STORIES.md)), integration and error-path tests,
-  with 94 % line coverage; see [docs/TESTING.md](https://github.com/djwillichile/thermify/blob/main/docs/TESTING.md).
+  with 94 % line coverage; see [`docs/TESTING.md`](https://github.com/djwillichile/thermify/blob/main/docs/TESTING.md).
 
 Computational verification is not empirical validation; see
 `vignette("validation")` for the station-based protocol.

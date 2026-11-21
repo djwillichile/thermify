@@ -206,11 +206,18 @@ care in mild climates.
 The figure below follows degree-days and chill portions through time, in
 the style of the CMIP6 projection plots of Brunner et al. (2020), for four
 scenarios (SSP1-2.6, SSP2-4.5, SSP3-7.0 and SSP5-8.5) and the four 20-year
-periods of WorldClim (2021-2040 to 2081-2100). Each box spans its period:
-the line is the median of the GCMs and the shaded box the likely range
-(17th to 83rd percentile, 66 % of the models). WorldClim provides 20-year
-means, not yearly projections, so the boxes describe the climate of each
-period, not a forecast of individual years.
+periods of WorldClim (2021-2040 to 2081-2100). WorldClim provides 20-year
+means, not yearly projections. Each model's trajectory is therefore drawn
+through its four period means, placed at the centre of each period (2030,
+2050, 2070 and 2090), from a common starting point (the WorldClim
+1970-2000 value, centred on 1985, for the province; the observed mean,
+centred on the record's midpoint, for the station), with a monotone
+spline; the curves end in 2090, the centre of the last period. The line is
+the median of the models' trajectories and the shaded band the likely
+range (17th to 83rd percentile, 66 % of the models), year by year. The
+curves describe the climate around each year, not a forecast of
+individual years: unlike yearly model runs, they carry no year-to-year
+variability, which the historical and observed series show.
 
 * **Cauquenes (left).** The historical series 1951-2023 comes from the
   WorldClim 2.1 historical monthly weather data (CRU-TS 4.09 downscaled
@@ -243,16 +250,29 @@ ts_panel <- function(d, ix, title, ylab, xlim = c(1950, 2101)) {
   plot(NA, xlim = xlim, ylim = rng + c(-0.04, 0.04) * diff(rng),
        xlab = "", ylab = ylab, main = title, las = 1, cex.main = 1,
        panel.first = abline(h = pretty(rng), col = "grey92"))
-  for (s in names(ssp_cols)) for (p in unique(proj$period)) {
-    v <- proj$value[proj$ssp == s & proj$period == p]
-    if (length(v) < 3) next
-    x <- period_span(p)
-    q <- stats::quantile(v, c(0.17, 0.5, 0.83))
-    rect(x[1], q[1], x[2], q[3], col = adjustcolor(ssp_cols[[s]], 0.22),
-         border = NA)
-    segments(x[1], q[2], x[2], q[2], col = ssp_cols[[s]], lwd = 2.2)
-  }
   base <- d[d$source == "baseline", ]
+  # Starting point shared by all models: the WorldClim 1970-2000 value
+  # (centred on 1985) for the province, the observed mean (centred on the
+  # record's midpoint) for a station.
+  anchor <- if (nrow(base)) c(1985, base$value) else
+    c(mean(past$year), mean(past$value))
+  from <- if (nrow(base)) 2015 else anchor[1]
+  years <- seq(from, 2090, by = 0.5)
+  for (s in names(ssp_cols)) {
+    traj <- lapply(unique(proj$gcm[proj$ssp == s]), function(g) {
+      v <- proj[proj$ssp == s & proj$gcm == g, ]
+      if (nrow(v) < 4) return(NULL)
+      x <- c(anchor[1], vapply(v$period, function(p) mean(period_span(p)) - 0.5, 1))
+      f <- stats::splinefun(x, c(anchor[2], v$value), method = "monoH.FC")
+      f(years)
+    })
+    traj <- do.call(rbind, traj)
+    if (is.null(traj) || nrow(traj) < 3) next
+    q <- apply(traj, 2, stats::quantile, c(0.17, 0.5, 0.83))
+    polygon(c(years, rev(years)), c(q[1, ], rev(q[3, ])), border = NA,
+            col = adjustcolor(ssp_cols[[s]], 0.2))
+    lines(years, q[2, ], col = ssp_cols[[s]], lwd = 2.2)
+  }
   if (nrow(base)) segments(1970, base$value, 2001, base$value, lwd = 2,
                            lty = 2, col = "grey30")
   if (any(past$source == "historical")) {
@@ -334,7 +354,7 @@ What the figure shows:
   is `r round(proj_median(ts_vic, "cp", "126", "2081-2100"))` under SSP1-2.6
   and `r round(proj_median(ts_vic, "cp", "585", "2081-2100"))` under
   SSP5-8.5, too few for most temperate fruit trees. The scenario chosen
-  matters far more than the model: the boxes of SSP1-2.6 and SSP5-8.5 do
+  matters far more than the model: the bands of SSP1-2.6 and SSP5-8.5 do
   not overlap after 2060.
 
 Two details are worth reading correctly. The WorldClim 1970-2000 value of
@@ -343,10 +363,10 @@ historical seasons over the same years (`r round(cp_hist)`), while for
 degree-days both agree: the Dynamic model is non-linear, and the index of
 a mean climate is not the mean of the indices of individual years. The
 projections are built on the WorldClim climatology, so compare them with
-the dashed line rather than with single historical seasons. Second, at
-Vicuna the first box (2021-2040) already sits below the observed mean:
-the record is centred on about 2015, and the 2021-2040 box describes the
-models' climate some 15 years later.
+the dashed line rather than with single historical seasons. Second, the
+interpolation between period centres is a smooth guide, not a model
+result in its own right: only the values at 2030, 2050, 2070 and 2090 come
+from the projections.
 
 ## Limitations
 

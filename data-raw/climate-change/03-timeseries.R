@@ -17,7 +17,9 @@
 #  * Vicuna (CEAZA-Met station 6, Elqui valley, 634 m). Observed seasons
 #    from the station's hourly record, and projections with the delta
 #    method on that record (see 02-ceaza-stations.R) for the same scenarios
-#    and periods.
+#    and periods. The warming already present in the record (relative to
+#    1970-2000, from the historical series at the station's cell) is
+#    subtracted from each model's change, so that it is not counted twice.
 #
 # Each season is labelled by the year in which it starts (heat season
 # 1 Sep - 30 Apr, chill season 1 May - 31 Aug).
@@ -64,16 +66,8 @@ layer_means <- function(r) {
   as.vector(unlist(terra::global(r, "mean", na.rm = TRUE)))
 }
 
-# Historical monthly weather, one file per month inside decade archives,
-# read for the province only.
-hist_url <- function(var, year, month) {
-  dec <- if (year >= 2020) "2020-2024" else
-    sprintf("%d-%d", year %/% 10 * 10, year %/% 10 * 10 + 9)
-  sprintf(paste0("/vsizip//vsicurl/https://geodata.ucdavis.edu/climate/",
-                 "worldclim/2_1/hist/cts4.09/wc2.1_cruts4.09_2.5m_%s_%s.zip/",
-                 "wc2.1_cruts4.09_2.5m_%s_%d-%02d.tif"),
-          var, dec, var, year, month)
-}
+# Historical monthly weather (hist_url() in helpers.R), read for the
+# province only.
 hist_csv <- file.path(work, "hist-province-monthly.csv")
 if (!file.exists(hist_csv)) {
   grid <- expand.grid(month = 1:12, year = (min(hist_years)):(max(hist_years) + 1),
@@ -119,10 +113,20 @@ rows[[length(rows) + 1L]] <- data.frame(
   index = names(ix), value = unname(ix))
 combos <- expand.grid(gcm = gcms, ssp = ssps, period = periods,
                       stringsAsFactors = FALSE)
+# NULL when WorldClim has no projection for the combination; other errors
+# (network) are retried.
 read_future <- function(var, region, g, s, p, mask = TRUE) {
-  tryCatch(worldclim_future_region(var, region, gcm = g, ssp = s, period = p,
-                                   path = wc_dir, mask = mask),
-           error = function(e) NULL)
+  for (attempt in 1:4) {
+    r <- tryCatch(worldclim_future_region(var, region, gcm = g, ssp = s,
+                                          period = p, path = wc_dir,
+                                          mask = mask),
+                  error = function(e) e)
+    if (!inherits(r, "error")) return(r)
+    if (grepl("has no", conditionMessage(r))) return(NULL)
+    Sys.sleep(5 * attempt)
+  }
+  stop("Could not read ", var, " ", g, " SSP", s, " ", p, ": ",
+       conditionMessage(r))
 }
 for (k in seq_len(nrow(combos))) {
   g <- combos$gcm[k]; s <- combos$ssp[k]; p <- combos$period[k]
@@ -153,6 +157,16 @@ now_tmin <- cell(worldclim_region("tmin", region, wc_dir, mask = FALSE))
 now_tmax <- cell(worldclim_region("tmax", region, wc_dir, mask = FALSE))
 h <- readRDS(file.path(cache, "6.rds"))
 obs <- season_indices(h$time, h$prom, which = c("gdd", "cp"))
+# The CMIP6 changes are relative to 1970-2000, but the record is recent: the
+# warming already present in the record years (historical series at the
+# station's cell) is subtracted so that it is not counted twice.
+record_years <- sort(unique(as.integer(format(h$time, "%Y"))))
+record_years <- record_years[record_years <= 2024]
+hist_st <- hist_points_monthly(pt, 1970:2024,
+                               file.path(work, "hist-vicuna-monthly.csv"),
+                               cores = cores)
+past_tmin <- recent_warming(hist_st, "tmin", record_years)
+past_tmax <- recent_warming(hist_st, "tmax", record_years)
 rows <- list(data.frame(source = "observed", ssp = NA, gcm = NA, period = NA,
                         year = as.integer(obs$season), index = obs$index,
                         value = obs$value))
@@ -162,8 +176,9 @@ proj <- parallel::mclapply(seq_len(nrow(combos)), function(k) {
   ft <- read_future("tmin", region, g, s, p, mask = FALSE)
   fx <- read_future("tmax", region, g, s, p, mask = FALSE)
   if (is.null(ft) || is.null(fx)) return(NULL)
-  fut <- season_indices(h$time, shift_hourly(h, cell(ft) - now_tmin,
-                                             cell(fx) - now_tmax),
+  fut <- season_indices(h$time,
+                        shift_hourly(h, cell(ft) - now_tmin - past_tmin,
+                                     cell(fx) - now_tmax - past_tmax),
                         which = c("gdd", "cp"))
   m <- tapply(fut$value, fut$index, mean)
   data.frame(source = "projection", ssp = s, gcm = g, period = p, year = NA,

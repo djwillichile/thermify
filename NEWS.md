@@ -1,5 +1,13 @@
 # thermify (development version)
 
+## Documentation
+
+* New article "How to validate thermify with your own stations": a
+  step-by-step guide (reading the data, quality control, seasons in either
+  hemisphere, the three levels of `validate_station()`, interpretation,
+  several stations) with a reproducible synthetic example, and how to share
+  the results.
+
 # thermify 0.5.1
 
 Prepares the package for CRAN and corrects the station results of the

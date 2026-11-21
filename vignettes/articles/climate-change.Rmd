@@ -107,13 +107,25 @@ with older literature.
 ## CEAZA-Met stations (north-central Chile): delta method
 
 At 29 of the 30 stations of the [validation](validation-ceaza.html), each model's
-monthly change at the station's WorldClim cell (future minus 1970-2000) is
-applied to **every hour of the station's observed record**: the shift goes
+monthly change at the station's WorldClim cell is applied to **every hour
+of the station's observed record**: the shift goes
 from the change of the minimum at the daily minimum to the change of the
 maximum at the daily maximum. The indices are then computed from the
 modified hourly series, season by season, exactly as the reference of the
 validation. This keeps the observed day-to-day and year-to-year variability,
-and the present-day baseline is the observed index. Punta de Choros is
+and the present-day baseline is the observed index.
+
+The change applied is each model's change **from the period of the record
+to 2041-2060**, not from 1970-2000: the records cover about 2004-2025 and
+already contain part of the warming since 1970-2000, which would otherwise
+be counted twice. WorldClim gives each model's change from 1970-2000
+(centred on 1985) to each future period; the change at the record's
+midpoint (about 2015) is interpolated linearly between 1985 and the model's
+2021-2040 change and subtracted. The model's own trajectory is used, not
+the observed warming, because the two differ: in the semi-arid north the
+historical series shows almost no winter warming since 1970-2000, while the
+models warm winters, and mixing both would exaggerate the projected loss
+of chill. Punta de Choros is
 excluded: the station is on the shoreline and its WorldClim cell is sea
 (no data), so there is no model change to apply.
 
@@ -165,25 +177,29 @@ warm <- stats::aggregate(cbind(delta_tmin, delta_tmax) ~ ssp,
                          data = stations_cc, FUN = stats::median)
 knitr::kable(tab, row.names = FALSE, caption = sprintf(paste(
   "Median relative change over the stations (each station: median of 14",
-  "GCMs). Median warming at the stations: SSP2-4.5 %+.1f degC (Tmin) and",
-  "%+.1f degC (Tmax); SSP5-8.5 %+.1f and %+.1f degC."),
+  "GCMs). Median warming at the stations from the record period to",
+  "2041-2060: SSP2-4.5 %+.1f degC (Tmin) and %+.1f degC (Tmax); SSP5-8.5",
+  "%+.1f and %+.1f degC."),
   warm$delta_tmin[warm$ssp == 245], warm$delta_tmax[warm$ssp == 245],
   warm$delta_tmin[warm$ssp == 585], warm$delta_tmax[warm$ssp == 585]))
 ```
 
-With a similar warming at the stations (about +1.9 degrees C under SSP2-4.5),
-the semi-arid north loses a much larger share of its chill than Cauquenes:
-the median station loses about **a third of its chill portions** (37 % under
-SSP2-4.5, 42 % under SSP5-8.5), against less than a tenth in Cauquenes. The
-losses are largest on the coast (about two thirds at Caleta El Toro, La
-Serena and Coquimbo, below 130 m) and smallest at the highest station
-(about 10 % at Los Molles, 2,543 m). No station loses all its chill
-portions. Chilling hours, which already fall by about half at the median
-station, disappear at the coastal stations whose baseline is only 2-13 hours per
-season (two stations under SSP2-4.5, three under SSP5-8.5). Utah units can be negative because the Utah model
-subtracts chill for warm hours, so their relative changes are unstable near
-zero and exceed -100 % at some stations; use them with care in mild
-climates.
+Because the changes are measured from the period of the records (about
+2015), the warming applied at the stations, about +1.0 degrees C under
+SSP2-4.5 and +1.4 degrees C under SSP5-8.5, is smaller than in the
+Cauquenes maps, which are measured from 1970-2000. Even so, the semi-arid
+north loses a larger share of its chill: the median station loses about
+**a fifth of its chill portions** (19 % under SSP2-4.5, 25 % under
+SSP5-8.5), against less than a tenth in Cauquenes for a larger warming.
+Under SSP2-4.5 the losses are largest on the coast (about 37 % at Coquimbo
+and Caleta El Toro and 31-33 % at La Serena, below 170 m) and smallest at
+the highest station (4 % at Los Molles, 2,543 m). No station loses all its chill
+portions. Chilling hours fall by about a third at the median station and
+disappear only at Caleta El Toro under SSP5-8.5, where the observed
+baseline is below 2 hours per season. Utah units can be negative because
+the Utah model subtracts chill for warm hours, so their relative changes
+are unstable near zero and exceed -100 % at some stations; use them with
+care in mild climates.
 
 ## Through time: historical series and four scenarios
 
@@ -311,8 +327,8 @@ What the figure shows:
   emissions.** Chill portions have stayed near
   `r round(cp_hist)` per season since 1951. Under SSP1-2.6 they hardly
   change (`r round(proj_median(ts_prov, "cp", "126", "2081-2100"))` in
-  2081-2100); under SSP5-8.5 they fall to
-  `r round(proj_median(ts_prov, "cp", "585", "2081-2100"))`.
+  2081-2100); under SSP5-8.5 they fall to `r round(proj_median(ts_prov, "cp", "585", "2081-2100"))`
+  by 2081-2100.
 * **The semi-arid north is far more exposed.** At Vicuna the observed mean
   is `r round(vic_cp)` chill portions per season; by 2081-2100 the median
   is `r round(proj_median(ts_vic, "cp", "126", "2081-2100"))` under SSP1-2.6
@@ -346,8 +362,11 @@ models' climate some 15 years later.
 * **Model spread.** The table shows the range of 14 GCMs; some (for
   example CanESM5 and UKESM1-0-LL) warm more than most models. The median
   is the summary to use.
-* **Baseline period.** The baseline is 1970-2000; part of the projected
-  change has already happened.
+* **Baseline period.** The Cauquenes maps and table measure changes from
+  1970-2000, part of which has already happened. The station analysis
+  measures them from the period of each record, interpolating each model's
+  trajectory between 1985 and 2021-2040; this assumes that the model's
+  warming is roughly linear over those decades.
 * **Validation.** Chill estimates have been validated only in semi-arid
   north-central Chile; the central-south is pending.
 

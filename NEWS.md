@@ -16,6 +16,19 @@
   that tempify is optional and how to install it. It is not shown during
   package checks, and `options(thermify.tempify_hint = FALSE)` hides it.
 
+## Documentation
+
+* The climate-change article has a new section with degree-days and chill
+  portions through time: the province of Cauquenes (WorldClim historical
+  monthly weather 1951-2023 and CMIP6 projections) and the Vicuna station
+  (observed seasons and projections), for four scenarios and four periods.
+* Correction of the station results of the climate-change article: the
+  delta method now applies each model's change from the period of the
+  station record (about 2015) to 2041-2060, instead of from 1970-2000, which
+  counted the warming already contained in the records twice. The median
+  loss of chill portions at the CEAZA-Met stations is 19 % under SSP2-4.5
+  and 25 % under SSP5-8.5 (previously reported as 37 % and 42 %).
+
 # thermify 0.5.0
 
 First release validated against observed hourly temperatures (30 CEAZA-Met

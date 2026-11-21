@@ -62,7 +62,9 @@ Both are skipped when you have already chosen a Python
 (`RETICULATE_PYTHON`,
 [`reticulate::use_python()`](https://rstudio.github.io/reticulate/reference/use_python.html)
 and similar), which is used as is. Without tempify, thermify uses an
-equivalent native R engine.
+equivalent native R engine; the first time that happens in a session
+with `temporal = "auto"` (or `engine = "auto"`), a note says how to
+install tempify. Hide it with `options(thermify.tempify_hint = FALSE)`.
 
 Installing from GitHub needs `git` on the system path.
 

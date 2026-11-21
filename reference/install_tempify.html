@@ -108,7 +108,10 @@ tempify engine is used reticulate builds and caches a Python environment
 with it (one or two minutes and about 100 MB, once).</p></li>
 </ul><p>Both are skipped when you have already chosen a Python
 (<code>RETICULATE_PYTHON</code>, <code><a href="https://rstudio.github.io/reticulate/reference/use_python.html" class="external-link">reticulate::use_python()</a></code> and similar), which is
-used as is. Without tempify, thermify uses an equivalent native R engine.</p>
+used as is. Without tempify, thermify uses an equivalent native R engine;
+the first time that happens in a session with <code>temporal = "auto"</code> (or
+<code>engine = "auto"</code>), a note says how to install tempify. Hide it with
+<code>options(thermify.tempify_hint = FALSE)</code>.</p>
 <p>Installing from GitHub needs <code>git</code> on the system path.</p>
     </div>
     <div class="section level2">

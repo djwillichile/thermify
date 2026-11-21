@@ -35,8 +35,6 @@ gcms <- c("ACCESS-CM2", "BCC-CSM2-MR", "CanESM5", "CMCC-ESM2",
           "MRI-ESM2-0", "UKESM1-0-LL")
 ssps <- c("245", "585")
 period <- "2041-2060"
-heat <- c("09-01", "04-30")
-chill <- c("05-01", "08-31")
 
 stations <- utils::read.csv("data-raw/validation-ceaza/results/ceaza-stations.csv",
                             encoding = "UTF-8")
@@ -51,44 +49,7 @@ wc_now <- list(tmin = cell(worldclim_region("tmin", region, wc_dir,
                tmax = cell(worldclim_region("tmax", region, wc_dir,
                                             mask = FALSE)))
 
-# Season totals of the four indices from an hourly record, for complete
-# seasons only (every day valid after filling gaps of up to 2 hours).
-season_indices <- function(time, temperature) {
-  st <- prepare_station_hourly(time, temperature, max_gap = 2)
-  flat <- function(days) as.vector(t(st$hourly[days, , drop = FALSE]))
-  out <- list()
-  for (w in list(heat = heat, chill = chill)) {
-    sel <- season_days(st$dates, w[1], w[2])
-    lab <- attr(sel, "season")
-    for (s in unique(lab)) {
-      days <- sel[lab == s]
-      if (length(days) != thermify:::window_length(s, w) ||
-          !all(st$valid[days])) next
-      h <- flat(days)
-      vals <- if (identical(w, heat)) {
-        c(gdd = sum(degree_hours(h, base = 10)) / 24)
-      } else {
-        c(ch = sum(chill_hours_hourly(h, 0, 7.2, output = "hourly")),
-          cu = as.vector(chill_units(h, output = "total")),
-          cp = as.vector(chill_portions(h, output = "total")))
-      }
-      out[[length(out) + 1L]] <- data.frame(season = s, index = names(vals),
-                                            value = unname(vals))
-    }
-  }
-  do.call(rbind, out)
-}
-
-shift_hourly <- function(h, d_min, d_max) {
-  day <- format(h$time, "%Y-%m-%d")
-  t <- h$prom
-  lo <- stats::ave(t, day, FUN = function(v) suppressWarnings(min(v, na.rm = TRUE)))
-  hi <- stats::ave(t, day, FUN = function(v) suppressWarnings(max(v, na.rm = TRUE)))
-  f <- ifelse(is.finite(hi - lo) & hi > lo, (t - lo) / (hi - lo), 0.5)
-  f <- pmin(pmax(f, 0), 1)
-  m <- as.integer(format(h$time, "%m"))
-  t + d_min[m] + f * (d_max[m] - d_min[m])
-}
+source("data-raw/climate-change/helpers.R")
 
 rows <- list()
 for (i in seq_len(nrow(stations))) {

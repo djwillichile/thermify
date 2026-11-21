@@ -226,11 +226,19 @@ variability, which the historical and observed series show.
   province-mean temperatures, so the past and the projections are directly
   comparable. As monthly-based estimates, their absolute values carry the
   biases measured in the validation.
-* **Vicuna (right; CEAZA-Met, Elqui valley, 634 m).** Observed seasons from
-  the station's hourly record and projections with the delta method on that
-  record. Each model's change is taken from the period of the record
-  (centred on about 2015) to each future period, so that the warming
-  already contained in the record is not counted twice.
+* **Vicuna (right; CEAZA-Met, Elqui valley, 634 m).** The historical series
+  1951-2023 at the station's WorldClim cell (same monthly method as for the
+  province), the observed seasons of the station's hourly record, and
+  projections with the delta method on that record. Each model's change is
+  taken from the period of the record (centred on about 2015) to each
+  future period, so that the warming already contained in the record is
+  not counted twice. All three are shown as **relative change from
+  2005-2023**, the period of the record: the historical series and the
+  observed record differ in level (about 76 chill portions per season at
+  the 2.5-arc-minute cell with the monthly method, against 37 observed at
+  the station; the cell averages about 4.6 km of terrain around a station
+  on the valley floor, and the monthly method has its own biases), so only
+  their changes and variability are comparable.
 
 ```{r timeseries, fig.height = 7.5}
 ts_prov <- read.csv("data/cc-timeseries-cauquenes.csv")
@@ -353,7 +361,7 @@ ts_panel_rel(ts_vic, "cp", "", "Chill portions, change from 2005-2023 (%)")
 par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0),
     new = TRUE)
 plot.new()
-legend("bottom", ncol = 4, bty = "n", cex = 0.82, inset = 0.005,
+legend("bottom", ncol = 3, bty = "n", cex = 0.82, inset = 0.005,
        legend = c(paste0(ssp_names, " (",
                          sapply(names(ssp_names), n_models, d = ts_prov),
                          " GCMs)"),
@@ -408,6 +416,15 @@ What the figure shows:
   SSP5-8.5, too few for most temperate fruit trees. The scenario chosen
   matters far more than the model: the bands of SSP1-2.6 and SSP5-8.5 do
   not overlap after 2060.
+
+* **Monthly data hide the year-to-year variability of chill.** At Vicuna
+  the historical series and the observed seasons agree on degree-days
+  (year-to-year standard deviation of about 6 % and 5 % in 2005-2023), but
+  the observed chill portions vary far more than the monthly series (21 %
+  against 8 %): monthly means smooth out the cold spells that drive chill
+  accumulation. The historical series also shows that degree-days at
+  Vicuna have risen by about 12 % since 1971-1980, while chill has not
+  changed.
 
 Two details are worth reading correctly. The WorldClim 1970-2000 value of
 chill portions (`r round(cp_base)`) is higher than the mean of the

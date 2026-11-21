@@ -287,6 +287,58 @@ ts_panel <- function(d, ix, title, ylab, xlim = c(1950, 2101)) {
   invisible(NULL)
 }
 
+# Station panel in relative change (%) from the record period, so that the
+# WorldClim historical series (monthly method, 2.5-arc-minute cell) and the
+# observed hourly record, which differ in level, can be compared in trend
+# and variability.
+ts_panel_rel <- function(d, ix, title, ylab, ref = 2005:2023,
+                         xlim = c(1950, 2101)) {
+  d <- d[d$index == ix, ]
+  hist <- d[d$source == "historical", ]
+  hist <- hist[order(hist$year), ]
+  obs <- d[d$source == "observed", ]
+  obs <- obs[order(obs$year), ]
+  proj <- d[d$source == "projection", ]
+  obs_mean <- mean(obs$value)
+  rel_hist <- 100 * (hist$value / mean(hist$value[hist$year %in% ref]) - 1)
+  rel_obs <- 100 * (obs$value / obs_mean - 1)
+  proj$value <- 100 * (proj$value / obs_mean - 1)
+  anchor <- c(mean(obs$year), 0)
+  years <- seq(anchor[1], 2090, by = 0.5)
+  bands <- list()
+  for (s in names(ssp_cols)) {
+    traj <- lapply(unique(proj$gcm[proj$ssp == s]), function(g) {
+      v <- proj[proj$ssp == s & proj$gcm == g, ]
+      if (nrow(v) < 4) return(NULL)
+      x <- c(anchor[1], vapply(v$period, function(p) mean(period_span(p)) - 0.5, 1))
+      stats::splinefun(x, c(anchor[2], v$value), method = "monoH.FC")(years)
+    })
+    traj <- do.call(rbind, traj)
+    if (!is.null(traj) && nrow(traj) >= 3)
+      bands[[s]] <- apply(traj, 2, stats::quantile, c(0.17, 0.5, 0.83))
+  }
+  rng <- range(c(rel_hist, rel_obs, unlist(bands)), na.rm = TRUE)
+  plot(NA, xlim = xlim, ylim = rng + c(-0.04, 0.04) * diff(rng), xlab = "",
+       ylab = ylab, main = title, las = 1, cex.main = 1,
+       panel.first = abline(h = pretty(rng), col = "grey92"))
+  abline(h = 0, col = "grey60")
+  for (s in names(bands)) {
+    q <- bands[[s]]
+    polygon(c(years, rev(years)), c(q[1, ], rev(q[3, ])), border = NA,
+            col = adjustcolor(ssp_cols[[s]], 0.2))
+    lines(years, q[2, ], col = ssp_cols[[s]], lwd = 2.2)
+  }
+  lines(hist$year, rel_hist, col = "grey35", lwd = 0.8)
+  lines(hist$year, stats::filter(rel_hist, rep(1 / 11, 11), sides = 2),
+        lwd = 2.4, col = "black")
+  # Observed seasons as a curve, broken where a season is missing.
+  full <- seq(min(obs$year), max(obs$year))
+  y <- rel_obs[match(full, obs$year)]
+  lines(full, y, col = "#0B8FA3", lwd = 1.6)
+  points(obs$year, rel_obs, pch = 16, cex = 0.55, col = "#0B8FA3")
+  invisible(NULL)
+}
+
 n_models <- function(d, s) {
   length(unique(d$gcm[d$source == "projection" & d$ssp == s]))
 }
@@ -294,10 +346,10 @@ n_models <- function(d, s) {
 op <- par(mfrow = c(2, 2), mar = c(3, 4.5, 2.5, 1), oma = c(4, 0, 0, 0))
 ts_panel(ts_prov, "gdd", "Cauquenes (province mean)",
          "Degree-days, base 10 degC")
-ts_panel(ts_vic, "gdd", "Vicuna (CEAZA-Met, 634 m)",
-         "Degree-days, base 10 degC", xlim = c(2000, 2101))
+ts_panel_rel(ts_vic, "gdd", "Vicuna (CEAZA-Met, 634 m)",
+             "Degree-days, change from 2005-2023 (%)")
 ts_panel(ts_prov, "cp", "", "Chill portions")
-ts_panel(ts_vic, "cp", "", "Chill portions", xlim = c(2000, 2101))
+ts_panel_rel(ts_vic, "cp", "", "Chill portions, change from 2005-2023 (%)")
 par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0),
     new = TRUE)
 plot.new()
@@ -306,11 +358,11 @@ legend("bottom", ncol = 4, bty = "n", cex = 0.82, inset = 0.005,
                          sapply(names(ssp_names), n_models, d = ts_prov),
                          " GCMs)"),
                   "WorldClim historical, 11-yr mean", "WorldClim 1970-2000",
-                  "Observed season", "Observed mean"),
-       col = c(ssp_cols, "black", "grey30", "black", "black"),
-       lwd = c(6, 6, 6, 6, 2.4, 2, NA, 2.4),
-       lty = c(1, 1, 1, 1, 1, 2, NA, 1),
-       pch = c(NA, NA, NA, NA, NA, NA, 21, NA), pt.bg = "white")
+                  "CEAZA-Met observed seasons"),
+       col = c(ssp_cols, "black", "grey30", "#0B8FA3"),
+       lwd = c(6, 6, 6, 6, 2.4, 2, 1.6),
+       lty = c(1, 1, 1, 1, 1, 2, 1),
+       pch = c(NA, NA, NA, NA, NA, NA, 16), pt.cex = 0.6)
 par(op)
 ```
 

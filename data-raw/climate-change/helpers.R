@@ -72,3 +72,31 @@ change_from_record <- function(delta_period, delta_2030, record_mid) {
   w <- min(max((record_mid - 1985) / (2030 - 1985), 0), 1)
   delta_period - w * delta_2030
 }
+
+# WorldClim 2.1 historical monthly weather (CRU-TS 4.09, 2.5 arc-minutes)
+# at the cells of `pts` (a SpatVector of points): a data frame with point,
+# var, year, month and value, cached in `file`.
+hist_points_monthly <- function(pts, years, file, cores = 4) {
+  if (file.exists(file)) return(utils::read.csv(file))
+  box <- terra::ext(terra::buffer(pts, 10000))
+  grid <- expand.grid(month = 1:12, year = years, var = c("tmin", "tmax"),
+                      stringsAsFactors = FALSE)
+  vals <- parallel::mclapply(seq_len(nrow(grid)), function(i) {
+    g <- grid[i, ]
+    for (attempt in 1:3) {
+      v <- tryCatch({
+        r <- terra::crop(terra::rast(hist_url(g$var, g$year, g$month)), box)
+        as.vector(as.matrix(terra::extract(r, pts, ID = FALSE)))
+      }, error = function(e) NULL)
+      if (!is.null(v)) return(v)
+      Sys.sleep(5 * attempt)
+    }
+    stop("Could not read ", hist_url(g$var, g$year, g$month))
+  }, mc.cores = cores)
+  out <- do.call(rbind, lapply(seq_len(nrow(grid)), function(i) {
+    data.frame(point = seq_along(vals[[i]]), var = grid$var[i],
+               year = grid$year[i], month = grid$month[i], value = vals[[i]])
+  }))
+  utils::write.csv(out, file, row.names = FALSE)
+  out
+}

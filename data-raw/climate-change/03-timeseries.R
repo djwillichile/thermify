@@ -15,7 +15,9 @@
 #    values carry the biases measured in the CEAZA-Met validation.
 #
 #  * Vicuna (CEAZA-Met station 6, Elqui valley, 634 m). Observed seasons
-#    from the station's hourly record, and projections with the delta
+#    from the station's hourly record, the historical series 1951-2023 at
+#    the station's WorldClim cell (same monthly method as for the province),
+#    and projections with the delta
 #    method on that record (see 02-ceaza-stations.R) for the same scenarios
 #    and periods. Each model's change is taken from the record period
 #    (about 2015) to the target period, not from 1970-2000, so that the
@@ -91,9 +93,9 @@ if (!file.exists(hist_csv)) {
   utils::write.csv(grid, hist_csv, row.names = FALSE)
 }
 hist <- utils::read.csv(hist_csv)
-monthly_of <- function(var, y) {
+monthly_of <- function(var, y, h = hist) {
   # Season year y: May-December of y and January-April of y + 1.
-  v <- hist[hist$var == var, ]
+  v <- h[h$var == var, ]
   c(v$value[v$year == y + 1 & v$month %in% 1:4],
     v$value[v$year == y & v$month %in% 5:12])
 }
@@ -162,6 +164,18 @@ record_mid <- mean(as.integer(format(h$time, "%Y")))
 rows <- list(data.frame(source = "observed", ssp = NA, gcm = NA, period = NA,
                         year = as.integer(obs$season), index = obs$index,
                         value = obs$value))
+# Historical monthly weather at the station's cell, same monthly method as
+# for the province.
+hist_st <- hist_points_monthly(pt, (min(hist_years)):(max(hist_years) + 1),
+                               file.path(work, "hist-vicuna-1951-2024.csv"),
+                               cores = cores)
+for (y in hist_years) {
+  ix <- monthly_indices(monthly_of("tmin", y, hist_st),
+                        monthly_of("tmax", y, hist_st), st$lat)
+  rows[[length(rows) + 1L]] <- data.frame(
+    source = "historical", ssp = NA, gcm = NA, period = NA, year = y,
+    index = names(ix), value = unname(ix))
+}
 # Fill the raster cache serially, so that the parallel workers below only
 # read it and never write the same cache file at the same time.
 for (k in seq_len(nrow(combos))) {

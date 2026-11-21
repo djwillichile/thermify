@@ -1,14 +1,12 @@
 # Is the tempify Python package available?
 
 Checks that `reticulate` is installed and that the active Python
-environment can import `tempify`. With `reticulate` (\>= 1.41), thermify
-declares tempify when it is loaded, so the first call builds and caches
-a Python environment with it; see
+environment can import `tempify`. Python is not started, and nothing is
+downloaded, unless a Python was chosen by the user, the environment of
 [`install_tempify()`](https://djwillichile.github.io/thermify/reference/install_tempify.md)
-for the alternatives and how to disable this. A Python chosen with
-`RETICULATE_PYTHON` or
-[`reticulate::use_virtualenv()`](https://rstudio.github.io/reticulate/reference/use_python.html)
-is respected.
+exists, or the automatic setup was enabled with
+`options(thermify.tempify_auto = TRUE)`; see
+[`install_tempify()`](https://djwillichile.github.io/thermify/reference/install_tempify.md).
 
 ## Usage
 

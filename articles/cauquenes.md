@@ -128,13 +128,13 @@ season (1 September - 30 April) and the chill season (1 May - 31
 August).
 
 The tutorial uses the native R engine (`temporal = "native"`), which
-reproduces tempify to within 1e-13 degC. With `reticulate` installed,
-`temporal = "auto"` uses the
-[tempify](https://github.com/djwillichile/tempify) Python package
-instead; it is set up automatically the first time (see
-[`install_tempify()`](https://djwillichile.github.io/thermify/reference/install_tempify.md)
-and
-[`vignette("tempify-integration")`](https://djwillichile.github.io/thermify/articles/tempify-integration.md)).
+reproduces tempify to within 1e-13 degC. Once the
+[tempify](https://github.com/djwillichile/tempify) Python package is
+installed
+([`install_tempify()`](https://djwillichile.github.io/thermify/reference/install_tempify.md),
+or `options(thermify.tempify_auto = TRUE)`; see
+[`vignette("tempify-integration")`](https://djwillichile.github.io/thermify/articles/tempify-integration.md)),
+`temporal = "auto"` uses it instead.
 
 ``` r
 
@@ -225,7 +225,7 @@ maps
 #>   ch_hourly                [h]            season annual m01 m02 m03 m04 m05 m06 m07 m08 m09 m10 m11 m12
 #>   cu_utah                  [chill units]  season m01 m02 m03 m04 m05 m06 m07 m08 m09 m10 m11 m12
 #>   cp_dynamic               [portions]     season m01 m02 m03 m04 m05 m06 m07 m08 m09 m10 m11 m12
-#> files in: /tmp/RtmpwNfDXa/cauquenes-rasters
+#> files in: /tmp/RtmpdLhgXX/cauquenes-rasters
 ```
 
 Spatial summary of the seasonal totals over the province:

@@ -51,13 +51,12 @@ attaches `terra`, so
 [`vect()`](https://rspatial.github.io/terra/reference/vect.html),
 [`plot()`](https://rspatial.github.io/terra/reference/plot.html) and the
 other `terra` functions are available directly. The optional
-[tempify](https://github.com/djwillichile/tempify) backend is set up
-automatically in interactive sessions when `reticulate` (\>= 1.41) is
-installed: the first use builds and caches a Python environment with it
-(see
+[tempify](https://github.com/djwillichile/tempify) backend is installed
+only when you ask for it, with
 [`install_tempify()`](https://djwillichile.github.io/thermify/reference/install_tempify.md)
-for a persistent environment). Without it, `thermify` uses an equivalent
-native R engine.
+or `options(thermify.tempify_auto = TRUE)` (see
+[`?install_tempify`](https://djwillichile.github.io/thermify/reference/install_tempify.md)).
+Without it, `thermify` uses an equivalent native R engine.
 
 ## Quick start
 

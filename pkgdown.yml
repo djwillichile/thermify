@@ -9,9 +9,10 @@ articles:
   articles/gdd-synthetic: gdd-synthetic.html
   tempify-integration: tempify-integration.html
   thermify: thermify.html
+  articles/validate-your-data: validate-your-data.html
   articles/validation-ceaza: validation-ceaza.html
   validation: validation.html
-last_built: 2026-11-21T15:31Z
+last_built: 2026-11-21T18:42Z
 urls:
   reference: https://djwillichile.github.io/thermify/reference
   article: https://djwillichile.github.io/thermify/articles

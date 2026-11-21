@@ -85,6 +85,10 @@ Chile has not been validated yet.
 
 ## Implementation
 
+A step-by-step guide for validating thermify with your own stations,
+with a reproducible example, is on the package website:
+<https://djwillichile.github.io/thermify/articles/validate-your-data.html>.
+
 The protocol is implemented by three functions:
 
 - [`prepare_station_hourly()`](https://djwillichile.github.io/thermify/reference/prepare_station_hourly.md)

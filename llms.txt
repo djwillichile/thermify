@@ -330,5 +330,7 @@ the code; data from third parties keep their own terms of use.
   protocol](https://djwillichile.github.io/thermify/articles/validation.md):
 - [Validation with observed hourly temperature: CEAZA-Met
   network](https://djwillichile.github.io/thermify/articles/validation-ceaza.md):
+- [How to validate thermify with your own
+  stations](https://djwillichile.github.io/thermify/articles/validate-your-data.md):
 - [Projected change of thermal indices: WorldClim
   CMIP6](https://djwillichile.github.io/thermify/articles/climate-change.md):

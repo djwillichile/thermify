@@ -1,8 +1,10 @@
+# thermify (development version)
+
 # thermify 0.5.1
 
 Prepares the package for CRAN and corrects the station results of the
 climate-change article. Computed results of the package functions are
-unchanged.
+unchanged. Archived on Zenodo: <https://doi.org/10.5281/zenodo.24421550>.
 
 * thermify no longer downloads Python or tempify without the user's
   explicit request (see "Changes").

@@ -129,3 +129,23 @@ test_that("install_tempify() creates the environment and installs tempify", {
   expect_message(install_tempify(requirement = "tempify==0.1.6"),
                  "Restart R")
 })
+
+test_that("the native fallback suggests tempify once per session", {
+  withr::local_envvar(`_R_CHECK_PACKAGE_NAME_` = "")
+  withr::defer(the$tempify_hint_shown <- NULL)
+  the$tempify_hint_shown <- NULL
+  expect_message(note_tempify_fallback(), "install_tempify\\(\\)")
+  expect_no_message(note_tempify_fallback())
+  # Opt-out, and never during package checks.
+  the$tempify_hint_shown <- NULL
+  withr::with_options(list(thermify.tempify_hint = FALSE),
+                      expect_no_message(note_tempify_fallback()))
+  withr::with_envvar(c(`_R_CHECK_PACKAGE_NAME_` = "thermify"),
+                     expect_no_message(note_tempify_fallback()))
+  # Through densify_monthly() with engine = "auto" and no tempify.
+  local_mocked_bindings(tempify_available = function() FALSE)
+  tmin <- c(11.4, 11.1, 9.2, 6.8, 5.3, 3.9, 3.1, 3.6, 4.6, 6.3, 8.4, 10.3)
+  expect_message(densify_monthly(tmin, tmin + 15, engine = "auto"),
+                 "native\\s+R engine")
+  expect_no_message(densify_monthly(tmin, tmin + 15, engine = "native"))
+})

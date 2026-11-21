@@ -43,4 +43,8 @@ This is a new submission.
   `tempdir()` in examples, tests and vignettes.
 * Messages. When `thermify()` or `thermify_rast()` is called without
   `ch_methods`, a note about a change of default is shown once per
-  session with `message()`, so it can be suppressed.
+  session with `message()`, so it can be suppressed. Likewise, when the
+  automatic engine falls back to the native one because 'tempify' is not
+  installed, a note says once per session how to install it; it is never
+  shown during package checks and can be turned off with
+  `options(thermify.tempify_hint = FALSE)`.

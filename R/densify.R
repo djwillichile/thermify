@@ -80,8 +80,10 @@ densify_monthly <- function(tmin, tmax, year = 2023, method = "pchip_mp",
     stop(sprintf("Monthly `tmin` exceeds `tmax` in %d value(s).",
                  length(bad)), call. = FALSE)
   }
-  if (engine == "auto") engine <- if (tempify_available()) "tempify" else
-    "native"
+  if (engine == "auto") {
+    engine <- if (tempify_available()) "tempify" else "native"
+    if (engine == "native") note_tempify_fallback()
+  }
   if (engine == "native" && !method %in% c("pchip", "pchip_mp")) {
     stop("The native engine implements \"pchip\" and \"pchip_mp\" only; ",
          "use engine = \"tempify\" for other methods.", call. = FALSE)

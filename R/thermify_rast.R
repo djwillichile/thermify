@@ -89,8 +89,10 @@ thermify_rast <- function(tmin, tmax, output_dir, year = 2023,
   cfg <- thermal_config(indices, gdd_methods, base, upper, cutoff,
                         ch_methods, ch_lower, ch_upper, hourly_method,
                         chill_period, heat_period, gdd_weights)
-  if (temporal == "auto") temporal <- if (tempify_available()) "tempify" else
-    "native"
+  if (temporal == "auto") {
+    temporal <- if (tempify_available()) "tempify" else "native"
+    if (temporal == "native") note_tempify_fallback()
+  }
   dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
 
   dates <- seq(as.Date(sprintf("%d-01-01", year)),

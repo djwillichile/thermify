@@ -105,7 +105,10 @@ setup_tempify <- function() {
 #'
 #' Both are skipped when you have already chosen a Python
 #' (`RETICULATE_PYTHON`, `reticulate::use_python()` and similar), which is
-#' used as is. Without tempify, thermify uses an equivalent native R engine.
+#' used as is. Without tempify, thermify uses an equivalent native R engine;
+#' the first time that happens in a session with `temporal = "auto"` (or
+#' `engine = "auto"`), a note says how to install tempify. Hide it with
+#' `options(thermify.tempify_hint = FALSE)`.
 #'
 #' Installing from GitHub needs `git` on the system path.
 #'
@@ -155,4 +158,25 @@ install_tempify <- function(envname = tempify_envname(),
             "'.\nRestart R; thermify will use it automatically.")
   }
   invisible(python)
+}
+
+# Once per session, when temporal/engine = "auto" falls back to the native
+# engine because tempify is not reachable, say that tempify is optional and
+# how to install it. Never shown during checks or when the user opted out.
+note_tempify_fallback <- function() {
+  if (isTRUE(the$tempify_hint_shown) ||
+      isFALSE(getOption("thermify.tempify_hint", TRUE)) ||
+      nzchar(Sys.getenv("_R_CHECK_PACKAGE_NAME_"))) {
+    return(invisible())
+  }
+  the$tempify_hint_shown <- TRUE
+  how <- if (requireNamespace("reticulate", quietly = TRUE)) {
+    "run install_tempify() once, or set options(thermify.tempify_auto = TRUE) before loading thermify"
+  } else {
+    "install the 'reticulate' package and run install_tempify() once"
+  }
+  message("The optional tempify Python backend was not found, so the native ",
+          "R engine is used (same results to within 1e-13 degC). To use tempify, ",
+          how, ". Hide this note with options(thermify.tempify_hint = FALSE).")
+  invisible()
 }

@@ -47,7 +47,10 @@ with it (one or two minutes and about 100 MB, once).
 
 Both are skipped when you have already chosen a Python
 (\code{RETICULATE_PYTHON}, \code{reticulate::use_python()} and similar), which is
-used as is. Without tempify, thermify uses an equivalent native R engine.
+used as is. Without tempify, thermify uses an equivalent native R engine;
+the first time that happens in a session with \code{temporal = "auto"} (or
+\code{engine = "auto"}), a note says how to install tempify. Hide it with
+\code{options(thermify.tempify_hint = FALSE)}.
 
 Installing from GitHub needs \code{git} on the system path.
 }

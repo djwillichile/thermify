@@ -11,6 +11,10 @@
   without tempify all computations use the equivalent native R engine. The
   error raised when the tempify engine is requested but unavailable now
   says how to install it.
+* When `temporal = "auto"` (or `engine = "auto"`) falls back to the native
+  engine because tempify is not installed, a note says, once per session,
+  that tempify is optional and how to install it. It is not shown during
+  package checks, and `options(thermify.tempify_hint = FALSE)` hides it.
 
 # thermify 0.5.0
 

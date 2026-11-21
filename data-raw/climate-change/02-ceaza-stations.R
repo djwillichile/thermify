@@ -35,6 +35,7 @@ wc_dir <- Sys.getenv("THERMIFY_DATA", file.path(tempdir(), "worldclim"))
 cache <- Sys.getenv("THERMIFY_CEAZA_CACHE",
                     file.path(tools::R_user_dir("thermify", "cache"), "ceaza"))
 out_dir <- "vignettes/articles/data"
+cores <- as.integer(Sys.getenv("THERMIFY_CORES", "4"))
 
 gcms <- c("ACCESS-CM2", "BCC-CSM2-MR", "CanESM5", "CMCC-ESM2",
           "CNRM-CM6-1-HR", "EC-Earth3-Veg", "GISS-E2-1-G", "HadGEM3-GC31-LL",

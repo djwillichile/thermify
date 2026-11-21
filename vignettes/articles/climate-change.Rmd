@@ -185,6 +185,153 @@ subtracts chill for warm hours, so their relative changes are unstable near
 zero and exceed -100 % at some stations; use them with care in mild
 climates.
 
+## Through time: historical series and four scenarios
+
+The figure below follows degree-days and chill portions through time, in
+the style of the CMIP6 projection plots of Brunner et al. (2020), for four
+scenarios (SSP1-2.6, SSP2-4.5, SSP3-7.0 and SSP5-8.5) and the four 20-year
+periods of WorldClim (2021-2040 to 2081-2100). Each box spans its period:
+the line is the median of the GCMs and the shaded box the likely range
+(17th to 83rd percentile, 66 % of the models). WorldClim provides 20-year
+means, not yearly projections, so the boxes describe the climate of each
+period, not a forecast of individual years.
+
+* **Cauquenes (left).** The historical series 1951-2023 comes from the
+  WorldClim 2.1 historical monthly weather data (CRU-TS 4.09 downscaled
+  with WorldClim, 2.5 arc-minutes), and the projections from the CMIP6
+  surfaces; all values are computed with the same monthly method from the
+  province-mean temperatures, so the past and the projections are directly
+  comparable. As monthly-based estimates, their absolute values carry the
+  biases measured in the validation.
+* **Vicuna (right; CEAZA-Met, Elqui valley, 634 m).** Observed seasons from
+  the station's hourly record and projections with the delta method on that
+  record. Each model's change is taken from the period of the record
+  (centred on about 2015) to each future period, so that the warming
+  already contained in the record is not counted twice.
+
+```{r timeseries, fig.height = 7.5}
+ts_prov <- read.csv("data/cc-timeseries-cauquenes.csv")
+ts_vic <- read.csv("data/cc-timeseries-vicuna.csv")
+ssp_cols <- c("126" = "#1D3354", "245" = "#D4A20B", "370" = "#F21111",
+              "585" = "#840B22")
+ssp_names <- c("126" = "SSP1-2.6", "245" = "SSP2-4.5", "370" = "SSP3-7.0",
+               "585" = "SSP5-8.5")
+period_span <- function(p) as.numeric(strsplit(p, "-")[[1]]) + c(0, 1)
+
+ts_panel <- function(d, ix, title, ylab, xlim = c(1950, 2101)) {
+  d <- d[d$index == ix, ]
+  proj <- d[d$source == "projection", ]
+  past <- d[d$source %in% c("historical", "observed"), ]
+  past <- past[order(past$year), ]
+  rng <- range(c(past$value, proj$value), na.rm = TRUE)
+  plot(NA, xlim = xlim, ylim = rng + c(-0.04, 0.04) * diff(rng),
+       xlab = "", ylab = ylab, main = title, las = 1, cex.main = 1,
+       panel.first = abline(h = pretty(rng), col = "grey92"))
+  for (s in names(ssp_cols)) for (p in unique(proj$period)) {
+    v <- proj$value[proj$ssp == s & proj$period == p]
+    if (length(v) < 3) next
+    x <- period_span(p)
+    q <- stats::quantile(v, c(0.17, 0.5, 0.83))
+    rect(x[1], q[1], x[2], q[3], col = adjustcolor(ssp_cols[[s]], 0.22),
+         border = NA)
+    segments(x[1], q[2], x[2], q[2], col = ssp_cols[[s]], lwd = 2.2)
+  }
+  base <- d[d$source == "baseline", ]
+  if (nrow(base)) segments(1970, base$value, 2001, base$value, lwd = 2,
+                           lty = 2, col = "grey30")
+  if (any(past$source == "historical")) {
+    lines(past$year, past$value, col = "grey35", lwd = 0.8)
+    sm <- stats::filter(past$value, rep(1 / 11, 11), sides = 2)
+    lines(past$year, sm, lwd = 2.4, col = "black")
+  } else {
+    points(past$year, past$value, pch = 21, bg = "white", cex = 0.9)
+    segments(min(past$year), mean(past$value), max(past$year) + 1,
+             mean(past$value), lwd = 2.4)
+  }
+  invisible(NULL)
+}
+
+n_models <- function(d, s) {
+  length(unique(d$gcm[d$source == "projection" & d$ssp == s]))
+}
+
+op <- par(mfrow = c(2, 2), mar = c(3, 4.5, 2.5, 1), oma = c(4, 0, 0, 0))
+ts_panel(ts_prov, "gdd", "Cauquenes (province mean)",
+         "Degree-days, base 10 degC")
+ts_panel(ts_vic, "gdd", "Vicuna (CEAZA-Met, 634 m)",
+         "Degree-days, base 10 degC", xlim = c(2000, 2101))
+ts_panel(ts_prov, "cp", "", "Chill portions")
+ts_panel(ts_vic, "cp", "", "Chill portions", xlim = c(2000, 2101))
+par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0),
+    new = TRUE)
+plot.new()
+legend("bottom", ncol = 4, bty = "n", cex = 0.82, inset = 0.005,
+       legend = c(paste0(ssp_names, " (",
+                         sapply(names(ssp_names), n_models, d = ts_prov),
+                         " GCMs)"),
+                  "WorldClim historical, 11-yr mean", "WorldClim 1970-2000",
+                  "Observed season", "Observed mean"),
+       col = c(ssp_cols, "black", "grey30", "black", "black"),
+       lwd = c(6, 6, 6, 6, 2.4, 2, NA, 2.4),
+       lty = c(1, 1, 1, 1, 1, 2, NA, 1),
+       pch = c(NA, NA, NA, NA, NA, NA, 21, NA), pt.bg = "white")
+par(op)
+```
+
+```{r timeseries-numbers}
+hist_mean <- function(ix, years) {
+  h <- ts_prov[ts_prov$source == "historical" & ts_prov$index == ix, ]
+  mean(h$value[h$year %in% years])
+}
+proj_median <- function(d, ix, s, p) {
+  stats::median(d$value[d$source == "projection" & d$index == ix &
+                          d$ssp == s & d$period == p])
+}
+obs_mean <- function(ix) mean(ts_vic$value[ts_vic$source == "observed" &
+                                             ts_vic$index == ix])
+gdd_70s <- hist_mean("gdd", 1971:1980)
+gdd_10s <- hist_mean("gdd", 2011:2020)
+cp_base <- ts_prov$value[ts_prov$source == "baseline" & ts_prov$index == "cp"]
+cp_hist <- hist_mean("cp", 1970:2000)
+vic_cp <- obs_mean("cp")
+```
+
+What the figure shows:
+
+* **Degree-days have already risen.** In Cauquenes the historical series
+  rises from `r round(gdd_70s)` degree-days in 1971-1980 to
+  `r round(gdd_10s)` in 2011-2020 (`r sprintf("%+.0f %%", 100 * (gdd_10s / gdd_70s - 1))`),
+  and the 2021-2040 projections continue that trend. After mid-century the
+  scenarios separate: by 2081-2100 the median reaches
+  `r round(proj_median(ts_prov, "gdd", "126", "2081-2100"))` degree-days
+  under SSP1-2.6 and
+  `r round(proj_median(ts_prov, "gdd", "585", "2081-2100"))` under
+  SSP5-8.5.
+* **Chill has not yet changed in Cauquenes, but it will under high
+  emissions.** Chill portions have stayed near
+  `r round(cp_hist)` per season since 1951. Under SSP1-2.6 they hardly
+  change (`r round(proj_median(ts_prov, "cp", "126", "2081-2100"))` in
+  2081-2100); under SSP5-8.5 they fall to
+  `r round(proj_median(ts_prov, "cp", "585", "2081-2100"))`.
+* **The semi-arid north is far more exposed.** At Vicuna the observed mean
+  is `r round(vic_cp)` chill portions per season; by 2081-2100 the median
+  is `r round(proj_median(ts_vic, "cp", "126", "2081-2100"))` under SSP1-2.6
+  and `r round(proj_median(ts_vic, "cp", "585", "2081-2100"))` under
+  SSP5-8.5, too few for most temperate fruit trees. The scenario chosen
+  matters far more than the model: the boxes of SSP1-2.6 and SSP5-8.5 do
+  not overlap after 2060.
+
+Two details are worth reading correctly. The WorldClim 1970-2000 value of
+chill portions (`r round(cp_base)`) is higher than the mean of the
+historical seasons over the same years (`r round(cp_hist)`), while for
+degree-days both agree: the Dynamic model is non-linear, and the index of
+a mean climate is not the mean of the indices of individual years. The
+projections are built on the WorldClim climatology, so compare them with
+the dashed line rather than with single historical seasons. Second, at
+Vicuna the first box (2021-2040) already sits below the observed mean:
+the record is centred on about 2015, and the 2021-2040 box describes the
+models' climate some 15 years later.
+
 ## Limitations
 
 * **Changes, not forecasts.** WorldClim future surfaces add each model's
@@ -210,6 +357,15 @@ Luedeling, E., Girvetz, E. H., Semenov, M. A., & Brown, P. H. (2011).
 Climate change affects winter chill for temperate fruit and nut trees.
 *PLoS ONE*, 6(5), e20155. <https://doi.org/10.1371/journal.pone.0020155>
 
+Brunner, L., Pendergrass, A. G., Lehner, F., Merrifield, A. L., Lorenz, R.,
+& Knutti, R. (2020). Reduced global warming from CMIP6 projections when
+weighting models by performance and independence. *Earth System Dynamics*,
+11(4), 995-1012. <https://doi.org/10.5194/esd-11-995-2020>
+
 Fick, S. E., & Hijmans, R. J. (2017). WorldClim 2: new 1-km spatial
 resolution climate surfaces for global land areas. *International Journal
 of Climatology*, 37(12), 4302-4315. <https://doi.org/10.1002/joc.5086>
+
+Harris, I., Osborn, T. J., Jones, P., & Lister, D. (2020). Version 4 of the
+CRU TS monthly high-resolution gridded multivariate climate dataset.
+*Scientific Data*, 7, 109. <https://doi.org/10.1038/s41597-020-0453-3>

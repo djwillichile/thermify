@@ -240,3 +240,34 @@ round(rbind(gdd_sine_minus_average = summary(valid(d_gdd)),
 * The tutorial checks computation and quantifies method differences; it
   does not validate any method against observations (see
   `vignette("validation")`).
+
+## Other climatologies: CHELSA
+
+The same workflow applies to any monthly temperature climatology once the
+rasters are in degrees Celsius with layer names `m01` to `m12`. For example,
+CHELSA V2.1 (Karger et al., 2017) distributes monthly mean daily minimum
+(`tasmin`) and maximum (`tasmax`) temperatures at 30 arc-seconds as scaled
+integers in units of 0.1 K (scale factor `0.1`, offset `-273.15` to convert
+to degrees Celsius):
+
+```{r chelsa, eval = FALSE}
+months <- sprintf("%02d", 1:12)
+base_url <- "/vsicurl/[https://os.zhdk.cloud.switch.ch/chelsa02/chelsa/global/climatologies](https://os.zhdk.cloud.switch.ch/chelsa02/chelsa/global/climatologies)"
+
+tmin_urls <- paste0(base_url, "/tasmin/1981-2010/CHELSA_tasmin_",
+                    months, "_1981-2010_V.2.1.tif")
+tmax_urls <- paste0(base_url, "/tasmax/1981-2010/CHELSA_tasmax_",
+                    months, "_1981-2010_V.2.1.tif")
+
+tmin_chelsa <- crop(rast(tmin_urls), provincia, mask = TRUE) * 0.1 - 273.15
+tmax_chelsa <- crop(rast(tmax_urls), provincia, mask = TRUE) * 0.1 - 273.15
+names(tmin_chelsa) <- names(tmax_chelsa) <- paste0("m", months)
+
+check_monthly_climate(tmin_chelsa, tmax_chelsa)
+maps_chelsa <- thermify_rast(
+  tmin_chelsa, tmax_chelsa,
+  output_dir = file.path(tempdir(), "cauquenes-chelsa"),
+  temporal = "native", interpolation = "pchip_mp",
+  indices = c("gdd", "ch", "cu", "cp"),
+  gdd_methods = c("average", "single_sine"), base = 10,
+  ch_methods = c("sine", "hourly"), progress = FALSE)

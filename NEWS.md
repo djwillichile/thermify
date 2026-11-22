@@ -7,6 +7,7 @@
   hemisphere, the three levels of `validate_station()`, interpretation,
   several stations) with a reproducible synthetic example, and how to share
   the results.
+ڑ* Tutorial vignette (`vignettes/cauquenes.Rmd`): add an "Other climatologies: CHELSA" section showing how to load, convert from scaled Kelvin, validate, and process CHELSA V2.1 monthly temperatures (#31).
 
 # thermify 0.5.1
 
